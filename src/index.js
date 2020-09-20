@@ -3,7 +3,7 @@ const baseUrl = "http://localhost:3000"
 const usersUrl = "http://localhost:3000/users/"
 const loginUrl = "http://localhost:3000/auth_user"
 const alertLine = document.getElementById("alertViewPort")
-const buttons = document.getElementsByClassName("btn btn-info btn-md")
+const buttons = document.getElementsByClassName("btn")
 let user = {}
 let token
 
@@ -24,8 +24,8 @@ let loginPage = `
                 <input type="password" name="password" id="password" class="form-control">
             </div>
             <div class="form-group text-text">
-                <input type="submit" name="login" class="btn btn-info btn-md" value="Login">
-                <input type="submit" name="register" class="btn btn-info btn-md" value="Register">
+                <input type="button" name="login" class="btn btn-info btn-md" value="Login">
+                <input type="button" name="registerProfile" class="btn btn-info btn-md" value="Register">
             </div>
         </form>
     </div>
@@ -53,7 +53,6 @@ function profilePage() {
         </div>    
     </div>    
     `
-    
 }
 
 function render(){
@@ -63,11 +62,11 @@ function render(){
             infoBox.innerHTML = loginPage
             // buttons for login and register page
             // const buttons = document.getElementsByClassName("btn btn-info btn-md")
-            const registerMenu = buttons.register
+            const registerButton = buttons.registerProfile
             const loginButton = buttons.login
             // event listeners for those buttons
             loginButton.addEventListener("click", (e) => loginHandler(e))
-            registerMenu.addEventListener("click", (e) => registerFormAdder(e))
+            registerButton.addEventListener("click", (e) => registerProfile())
         break; 
         case 'profile':
             profilePage(user)
@@ -77,8 +76,18 @@ function render(){
             const contactsButton = buttons.contacts
             // event listeners for those buttons
             logoffButton.addEventListener("click", (e) => logoff())
-            contactsButton.addEventListener("click", (e) => contacts())
+            contactsButton.addEventListener("click", (e) => contacts(e))
             editPofileButton.addEventListener("click", (e) => editProfile())
+        break;
+        case 'editProfile':
+            editProfilePage()
+            const updateProfileButton = buttons.updateProfile
+            updateProfileButton.addEventListener("click", (e) => updateProfile(e))
+        break;
+        case 'registerProfile':
+            registerPage()
+            const submitProfileButton = buttons.submitProfile
+            submitProfileButton.addEventListener("click", (e) => submitProfile(e))
         break;
 
     }
@@ -146,7 +155,6 @@ function loginHandler(e) {
 }
 
 class User {
-    // debugger
     constructor({callsign, id, email, my_qth}){
         this.callsign = callsign
         this.userId = id
@@ -156,7 +164,6 @@ class User {
 }
 
 function loginWithToken(token){
-    // debugger
         fetch("http://localhost:3000/hastoken", {
           method: 'POST',
           headers: {
@@ -209,5 +216,119 @@ function loginWithToken(token){
 
     function editProfile() {
         console.log('editProfile pressed')
+        state.page = 'editProfile'
+        render()
     }
+
+    function editProfilePage() {
+        infoBox.innerHTML = `
+        <h2 class="text-center text-info">Edit Profile</h2>
+        <div id="profileDiv">
+            <hr>
+            <form>
+                <div class="form-group">
+                    <label for="callsign" class="text-info">Callsign: </label>
+                    <input type="text" class="form-control" id="callsign"  value="${currentUser.callsign}">
+                </div>
+                <div class="form-group">
+                    <label for="email" class="text-info">Email: </label>
+                    <input type="text" class="form-control" id="email" value="${currentUser.email}">
+                </div>
+                <div class="form-group">
+                    <label for="my_qth" class="text-info">Grid Square: </label>
+                    <input type="text" class="form-control" id="my_qth" value="${currentUser.my_qth}">
+                </div>
+                <div class="form-group">
+                    <label for="password" class="text-info">Password:</label>
+                    <input type="password" name="password" id="password" class="form-control" placeholder="Update your password">
+                </div>
+                <button type="button" name="updateProfile" class="btn btn-info">Update Profile</button>
+            </form>
+        </div>
+        `
+    }
+
+    function updateProfile(e) {
+        debugger
+        e.preventDefault()
+        const csProfileInput = document.querySelector("#callsign").value
+        const pwProfileInput = document.querySelector("#password").value
+        const mqProfileInput = document.querySelector("#my_qth").value
+        const emProfileInput = document.querySelector("#email").value
+        const updateProfileData = {user: {
+            callsign: csProfileInput,
+            password: pwProfileInput,
+            email: emProfileInput,
+            my_qth: mqProfileInput
+            }
+        }
+        fetch(usersUrl+ `${currentUser.userId}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+                Authorization: `Bearer: ${localStorage.getItem('jwt')}`
+            },
+            body: JSON.stringify(updateProfileData)
+            
+        })
+        .then(response => response.json())
+        .then(json => {
+            debugger
+            if (!!json.user) {
+                userData=json.user.data.attributes
+                state.page = 'profile'
+                // state.user = json.user
+                currentUser = new User(userData)
+                localStorage.setItem('jwt', json.auth_token)
+                render()
+                } 
+            else {
+                showAlert(json.errors)
+                state.page = 'login'
+                render()
+            }
+        })
+    }
+
+    function registerProfile() {
+        console.log('register pressed')
+        state.page = 'registerProfile'
+        debugger
+        render()
+    }
+
+    function registerPage() {
+        infoBox.innerHTML = `
+        <h2 class="text-center text-info">Register</h2>
+        <div id="registerProfileDiv">
+            <hr>
+            <form>
+                <div class="form-group">
+                    <label for="callsign" class="text-info">Callsign: </label>
+                    <input type="text" class="form-control" id="callsign">
+                </div>
+                <div class="form-group">
+                    <label for="email" class="text-info">Email: </label>
+                    <input type="text" class="form-control" id="email">
+                </div>
+                <div class="form-group">
+                    <label for="my_qth" class="text-info">Grid Square: </label>
+                    <input type="text" class="form-control" id="my_qth">
+                </div>
+                <div class="form-group">
+                    <label for="password" class="text-info">Password:</label>
+                    <input type="password" name="password" id="password" class="form-control" placeholder="Update your password">
+                </div>
+                <button type="button" name="submitProfile" class="btn btn-info">Complete Registration</button>
+            </form>
+        </div>
+        `
+    }
+
+    function submitProfile(e) {
+        e.preventDefault()
+        debugger
+    }
+
     hasToken()
