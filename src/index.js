@@ -1,6 +1,9 @@
 let infoBox = document.querySelector('#container-box')
+const baseUrl = "http://localhost:3000"
 const usersUrl = "http://localhost:3000/users/"
 const loginUrl = "http://localhost:3000/auth_user"
+const alertLine = document.getElementById("alertViewPort")
+const buttons = document.getElementsByClassName("btn btn-info btn-md")
 let user = {}
 let token
 
@@ -30,7 +33,6 @@ let loginPage = `
 
 function profilePage() { 
     navigationBar()
-    debugger
     infoBox.innerHTML += `
     <div id="profileDiv">
         <hr>
@@ -51,6 +53,7 @@ function profilePage() {
         </div>    
     </div>    
     `
+    
 }
 
 function render(){
@@ -59,7 +62,7 @@ function render(){
         case 'login':
             infoBox.innerHTML = loginPage
             // buttons for login and register page
-            const buttons = document.getElementsByClassName("btn btn-info btn-md")
+            // const buttons = document.getElementsByClassName("btn btn-info btn-md")
             const registerMenu = buttons.register
             const loginButton = buttons.login
             // event listeners for those buttons
@@ -68,13 +71,21 @@ function render(){
         break; 
         case 'profile':
             profilePage(user)
+            // buttons = document.getElementsByClassName("btn btn-info btn-md")
+            const editPofileButton = buttons.editProfile
+            const logoffButton = buttons.logoff
+            const contactsButton = buttons.contacts
+            // event listeners for those buttons
+            logoffButton.addEventListener("click", (e) => logoff())
+            contactsButton.addEventListener("click", (e) => contacts())
+            editPofileButton.addEventListener("click", (e) => editProfile())
         break;
 
     }
 }
 
 function navigationBar(){
-    debugger
+    // debugger
     switch (state.page){
         case 'profile':
             infoBox.innerHTML =
@@ -85,14 +96,21 @@ function navigationBar(){
                     <button type="button" name="contacts" class="btn btn-info btn-md">Contacts</button>
                     <button type="button" name="logoff" class="btn btn-info btn-md">Log Off</button>
                 </div>
-        
             `
+            
         break;
     }
 }
 // infoBox.innerHTML = navigationBar
 
-render()
+function hasToken(){
+    if (!!localStorage.getItem('jwt')){
+        state.page = "logged-in"
+        loginWithToken(localStorage.getItem('jwt'))
+    } else {
+        render()
+    }
+}
 
 function loginHandler(e) {
     e.preventDefault()
@@ -110,19 +128,25 @@ function loginHandler(e) {
     })
     .then(response => response.json())
     .then(json => {
-        debugger
+        // debugger
         if (!!json.user) {
             userData=json.user.data.attributes
             state.page = 'profile'
             // state.user = json.user
             currentUser = new User(userData)
-            localStorage.setItem('auth_token', json.auth_token)
+            localStorage.setItem('jwt', json.auth_token)
             render()
             } 
+        else {
+            showAlert(json.errors)
+            state.page = 'login'
+            render()
+        }
     })
 }
 
 class User {
+    // debugger
     constructor({callsign, id, email, my_qth}){
         this.callsign = callsign
         this.userId = id
@@ -130,3 +154,60 @@ class User {
         this.my_qth = my_qth
     }
 }
+
+function loginWithToken(token){
+    // debugger
+        fetch("http://localhost:3000/hastoken", {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        })
+        .then(response => response.json())
+        .then(json => {
+            // debugger
+            if (!!json.errors){
+                localStorage.clear()
+                showAlert(json.errors)
+                state.page = 'login'
+                render()
+            } else {
+                debugger
+                currentUser = new User(json.userdata.data.attributes)
+                localStorage.setItem('jwt', json.jwt)
+                state.page = 'profile'
+                render()
+            }
+        })
+        .catch(errors => showAlert(errors))
+    }
+
+    function showAlert(errors) {
+        if (errors) {
+        alertLine.innerHTML = `
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>${errors}</strong>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        `}
+        else {
+            infoBox.innerHTML = ``
+        }
+    }
+
+    function logoff() {
+        localStorage.clear()
+        state.page = 'login'
+        render()
+    }
+
+    function contacts() {
+        console.log('contacts pressed')
+    }
+
+    function editProfile() {
+        console.log('editProfile pressed')
+    }
+    hasToken()
