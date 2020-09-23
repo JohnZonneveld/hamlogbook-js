@@ -2,6 +2,7 @@ let infoBox = document.querySelector('#container-box')
 const baseUrl = "http://localhost:3000"
 const usersUrl = "http://localhost:3000/users/"
 const loginUrl = "http://localhost:3000/auth_user"
+const registerUrl = 'http://localhost:3000/auth/register'
 const alertLine = document.getElementById("alertViewPort")
 const buttons = document.getElementsByClassName("btn")
 let user = {}
@@ -24,7 +25,7 @@ let loginPage = `
                 <input type="password" name="password" id="password" class="form-control">
             </div>
             <div class="form-group text-text">
-                <input type="button" name="login" class="btn btn-info btn-md" value="Login">
+                <input type="submit" name="login" class="btn btn-info btn-md" value="Login">
                 <input type="button" name="registerProfile" class="btn btn-info btn-md" value="Register">
             </div>
         </form>
@@ -306,19 +307,19 @@ function loginWithToken(token){
             <form>
                 <div class="form-group">
                     <label for="callsign" class="text-info">Callsign: </label>
-                    <input type="text" class="form-control" id="callsign">
+                    <input type="text" class="form-control" id="callsign"placeholder="Callsign">
                 </div>
                 <div class="form-group">
                     <label for="email" class="text-info">Email: </label>
-                    <input type="text" class="form-control" id="email">
+                    <input type="text" class="form-control" id="email"placeholder="Email">
                 </div>
                 <div class="form-group">
                     <label for="my_qth" class="text-info">Grid Square: </label>
-                    <input type="text" class="form-control" id="my_qth">
+                    <input type="text" class="form-control" id="my_qth"placeholder="Grid Square">
                 </div>
                 <div class="form-group">
                     <label for="password" class="text-info">Password:</label>
-                    <input type="password" name="password" id="password" class="form-control" placeholder="Update your password">
+                    <input type="password" name="password" id="password" class="form-control" placeholder="Password">
                 </div>
                 <button type="button" name="submitProfile" class="btn btn-info">Complete Registration</button>
             </form>
@@ -328,7 +329,40 @@ function loginWithToken(token){
 
     function submitProfile(e) {
         e.preventDefault()
+        csRegisterInput=document.getElementById('callsign').value
+        pwRegisterInput=document.getElementById('password').value
+        emRegisterInput=document.getElementById('email').value
+        gsRegisterInput=document.getElementById('my_qth').value
+        const registerProfileData = {user: {
+            callsign: csRegisterInput,
+            password: pwRegisterInput,
+            email: emRegisterInput,
+            my_qth: gsRegisterInput
+            }
+        }
+        fetch(registerUrl, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(registerProfileData)
+        })
+        .then(response => response.json())
+        .then(json => {
         debugger
+        if (!!json.user) {
+            userData=json.user.data.attributes
+            state.page = 'profile'
+            // state.user = json.user
+            currentUser = new User(userData)
+            localStorage.setItem('jwt', json.auth_token)
+            render()
+            } 
+        else {
+            showAlert(json.errors)
+            state.page = 'login'
+            render()
+        }
+        })
+
     }
 
     hasToken()
