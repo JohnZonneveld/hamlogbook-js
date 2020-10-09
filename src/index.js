@@ -6,7 +6,10 @@ const registerUrl = 'http://localhost:3000/auth/register'
 const alertLine = document.getElementById("alertViewPort")
 const buttons = document.getElementsByClassName("btn")
 let user = {}
-let token
+// let token
+let contactObjects = []
+let current_page = 1;
+let records_per_page = 15
 
 // set initial state and user
 let state = {page: 'login', user: null}
@@ -90,6 +93,12 @@ function render(){
             const submitProfileButton = buttons.submitProfile
             submitProfileButton.addEventListener("click", (e) => submitProfile(e))
         break;
+        case 'contacts':
+            navigationBar()
+            contactsPage()
+            logoffButton = buttons.logoff
+            logoffButton.addEventListener("click", (e) => logoff())
+        break;
 
     }
 }
@@ -107,11 +116,18 @@ function navigationBar(){
                     <button type="button" name="logoff" class="btn btn-info btn-md">Log Off</button>
                 </div>
             `
-            
         break;
+        case 'contacts':
+            infoBox.innerHTML =
+            `
+            <div class='form-group text-left'>
+                <button type="button" name="logoff" class="btn btn-info btn-md">Log Off</button>
+            </div>
+            `
+        break;
+
     }
 }
-// infoBox.innerHTML = navigationBar
 
 function hasToken(){
     if (!!localStorage.getItem('jwt')){
@@ -148,7 +164,7 @@ function loginHandler(e) {
             render()
             } 
         else {
-            showAlert(json.errors)
+            showAlert(json.error)
             state.page = 'login'
             render()
         }
@@ -173,7 +189,6 @@ function loginWithToken(token){
         })
         .then(response => response.json())
         .then(json => {
-            // debugger
             if (!!json.errors){
                 localStorage.clear()
                 showAlert(json.errors)
@@ -213,6 +228,109 @@ function loginWithToken(token){
 
     function contacts() {
         console.log('contacts pressed')
+        state.page = 'contacts'
+        render()
+    }
+
+    function contactsPage() {
+        fetch("http://localhost:3000/contacts", {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('jwt')}`
+          }
+        })
+        .then(response => response.json())
+        .then(json => {
+            contactObjects = json
+            debugger
+            infoBox.innerHTML += `
+                <div id="contactsTable"></div>
+                <a href="javascript:prevPage()" id="btn_prev">Prev</a>
+                <a href="javascript:nextPage()" id="btn_next">Next</a>
+                page: <span id="page"></span>
+            `
+            changePage(1)
+        })
+    }
+
+    function prevPage()
+    {
+        if (current_page > 1) {
+            current_page--;
+            changePage(current_page);
+        }
+    }
+
+    function nextPage()
+    {
+        if (current_page < numPages()) {
+            current_page++;
+            changePage(current_page);
+        }
+    }
+    
+    function changePage(page)
+    {
+        let btn_next = document.getElementById("btn_next");
+        let btn_prev = document.getElementById("btn_prev");
+        let contacts_table = document.getElementById("contactsTable");
+        let page_span = document.getElementById("page");
+    
+        // Validate page
+        if (page < 1) page = 1;
+        if (page > numPages()) page = numPages();
+
+        contacts_table.innerHTML = `
+            <table id="myContacts">
+                <thead>
+                    <tr>
+                        <th>Your Contacts</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td>My footer</td>
+                    </tr>
+                <tfoot>
+            </table>
+        `;
+        let tableRef = document.getElementById('myContacts').getElementsByTagName('tbody')[0];
+
+        for (let i = (page-1) * records_per_page; i < (page * records_per_page) && i < contactObjects.length; i++) {
+            // contacts_table.innerHTML += contactObjects[i].call + "<br>"
+            // Insert a row in the table at the last row
+            let newRow   = tableRef.insertRow();
+
+            // Insert a cell in the row at index 0
+            let newCell  = newRow.insertCell(0);
+
+            // Append a text node to the cell
+            let newText  = document.createTextNode(contactObjects[i].call);
+            newCell.appendChild(newText);
+        }
+        page_span.innerHTML = page;
+
+        if (page == 1) {
+            btn_prev.style.visibility = "hidden";
+        } else {
+            btn_prev.style.visibility = "visible";
+        }
+
+        if (page == numPages()) {
+            btn_next.style.visibility = "hidden";
+        } else {
+            btn_next.style.visibility = "visible";
+        }
+    }
+
+    function numPages()
+    {
+        return Math.ceil(contactObjects.length / records_per_page);
     }
 
     function editProfile() {
@@ -250,7 +368,6 @@ function loginWithToken(token){
     }
 
     function updateProfile(e) {
-        debugger
         e.preventDefault()
         const csProfileInput = document.querySelector("#callsign").value
         const pwProfileInput = document.querySelector("#password").value
@@ -275,7 +392,7 @@ function loginWithToken(token){
         })
         .then(response => response.json())
         .then(json => {
-            debugger
+            // debugger
             if (!!json.user) {
                 userData=json.user.data.attributes
                 state.page = 'profile'
@@ -295,7 +412,7 @@ function loginWithToken(token){
     function registerProfile() {
         console.log('register pressed')
         state.page = 'registerProfile'
-        debugger
+        // debugger
         render()
     }
 
@@ -347,11 +464,9 @@ function loginWithToken(token){
         })
         .then(response => response.json())
         .then(json => {
-        debugger
         if (!!json.user) {
             userData=json.user.data.attributes
             state.page = 'profile'
-            // state.user = json.user
             currentUser = new User(userData)
             localStorage.setItem('jwt', json.auth_token)
             render()
@@ -364,5 +479,7 @@ function loginWithToken(token){
         })
 
     }
+
+
 
     hasToken()
