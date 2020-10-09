@@ -96,8 +96,8 @@ function render(){
         case 'contacts':
             navigationBar()
             contactsPage()
-            logoffButton = buttons.logoff
-            logoffButton.addEventListener("click", (e) => logoff())
+            // logoffButton = buttons.logoff
+            // logoffButton.addEventListener("click", (e) => logoff())
         break;
 
     }
@@ -154,7 +154,7 @@ function loginHandler(e) {
     })
     .then(response => response.json())
     .then(json => {
-        // debugger
+        debugger
         if (!!json.user) {
             userData=json.user.data.attributes
             state.page = 'profile'
@@ -197,7 +197,7 @@ function loginWithToken(token){
             } else {
                 debugger
                 currentUser = new User(json.userdata.data.attributes)
-                localStorage.setItem('jwt', json.jwt)
+                localStorage.setItem('jwt', json.auth_token)
                 state.page = 'profile'
                 render()
             }
@@ -241,7 +241,8 @@ function loginWithToken(token){
         })
         .then(response => response.json())
         .then(json => {
-            contactObjects = json
+            contactObjects = json.contacts
+            localStorage.setItem('jwt', json.auth_token)
             debugger
             infoBox.innerHTML += `
                 <div id="contactsTable"></div>
