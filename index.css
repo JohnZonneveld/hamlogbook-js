@@ -33,7 +33,6 @@ body::before {
 #main .container #container-row #container-column #container-box {
     margin-top: 10px;
     max-width: 2000px;
-
     border: 2px solid #9C9C9C;
     background-color: #EAEAEA;
     display: flex;
@@ -76,10 +75,19 @@ body::before {
     max-width: 40%;
     margin-left: auto;
     margin-right: auto;
+    width: 100%;
 }
 
 .table-borderless td, .table-borderless th {
     border: 0;
+}
+
+tr.border_bottom td {
+    border-bottom: 1px solid black;
+}
+
+tr.border_top td {
+    border-top: 1px solid black;
 }
 
 #profileDiv {
@@ -90,15 +98,17 @@ body::before {
     width: 90%;
 }
 
+#contactsDiv {
+    width: 90%;
+}
+
 btn {
     margin: 13px 12px 12px 10px;
 }
 
 .table-striped {
     font-size: 12px;
-    white-space: nowrap;
-    width: 1%;
-    line-height: 0pc;
+    
 }
 
 
