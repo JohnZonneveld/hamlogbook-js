@@ -6,7 +6,6 @@ const registerUrl = 'http://localhost:3000/auth/register'
 const alertLine = document.getElementById("alertViewPort")
 const buttons = document.getElementsByClassName("btn")
 let user = {}
-// let token
 let contactObjects = []
 let current_page = 1;
 let records_per_page = 15
@@ -36,7 +35,6 @@ let loginPage = `
     `
 
 function profilePage() { 
-    navigationBar()
     infoBox.innerHTML += `
     <div id="profileDiv">
         <hr>
@@ -60,6 +58,7 @@ function profilePage() {
 }
 
 function render(){
+    navigationBar()
     switch (state.page){
         // first page people see to log in
         case 'login':
@@ -87,6 +86,8 @@ function render(){
             editProfilePage()
             const updateProfileButton = buttons.updateProfile
             updateProfileButton.addEventListener("click", (e) => updateProfile(e))
+            // const logoffButton = buttons.logoff
+            // logoffButton.addEventListener("click", (e) => logoff())
         break;
         case 'registerProfile':
             registerPage()
@@ -94,17 +95,13 @@ function render(){
             submitProfileButton.addEventListener("click", (e) => submitProfile(e))
         break;
         case 'contacts':
-            navigationBar()
             contactsPage()
-            // logoffButton = buttons.logoff
-            // logoffButton.addEventListener("click", (e) => logoff())
         break;
 
     }
 }
 
 function navigationBar(){
-    // debugger
     switch (state.page){
         case 'profile':
             infoBox.innerHTML =
@@ -115,6 +112,14 @@ function navigationBar(){
                     <button type="button" name="contacts" class="btn btn-info btn-md">Contacts</button>
                     <button type="button" name="logoff" class="btn btn-info btn-md">Log Off</button>
                 </div>
+            `
+        break;
+        case 'editProfile':
+            infoBox.innerHTML =
+            `
+            <div class='form-group text-left'>
+                <button type="button" name="logoff" class="btn btn-info btn-md">Log Off</button>
+            </div>
             `
         break;
         case 'contacts':
@@ -227,12 +232,12 @@ function loginWithToken(token){
     }
 
     function contacts() {
-        console.log('contacts pressed')
         state.page = 'contacts'
         render()
     }
 
     function contactsPage() {
+        
         fetch("http://localhost:3000/contacts", {
           method: 'POST',
           headers: {
@@ -241,7 +246,7 @@ function loginWithToken(token){
         })
         .then(response => response.json())
         .then(json => {
-            contactObjects = json.contacts
+            contactObjects = json.contacts.data
             localStorage.setItem('jwt', json.auth_token)
             debugger
             infoBox.innerHTML += `
@@ -253,6 +258,7 @@ function loginWithToken(token){
             changePage(1)
         })
     }
+    
 
     function prevPage()
     {
@@ -272,30 +278,41 @@ function loginWithToken(token){
     
     function changePage(page)
     {
+        const logoffButton = buttons.logoff
+        logoffButton.addEventListener("click", (e) => logoff())
         let btn_next = document.getElementById("btn_next");
         let btn_prev = document.getElementById("btn_prev");
         let contacts_table = document.getElementById("contactsTable");
         let page_span = document.getElementById("page");
+        
     
         // Validate page
         if (page < 1) page = 1;
         if (page > numPages()) page = numPages();
 
         contacts_table.innerHTML = `
-            <table id="myContacts">
-                <thead>
-                    <tr>
-                        <th>Your Contacts</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        
-                    </tr>
-                </tbody>
+            <table class="table table-striped" id="myContacts">    
+            <tr>
+                    <td align="right">
+                    <a href="javascript:nextPage()" id="btn_next">Next</a>
+                    </td>
+                </tr>
+                </td>
+                <tr style="font-weight:bold">
+                    <td></td>
+                    <td>Callsign</td>
+                    <td>Worked</td>
+                    <td>Date</td>
+                    <td>Time</td>
+                    <td>Band</td>
+                    <td>Mode</td>
+                    <td>Frequency</td>
+                    <td>Country</td>
+                </tr>
+                
                 <tfoot>
                     <tr>
-                        <td>My footer</td>
+                        <td><a href="javascript:prevPage()" id="btn_prev">Prev</a></td>
                     </tr>
                 <tfoot>
             </table>
@@ -306,13 +323,34 @@ function loginWithToken(token){
             // contacts_table.innerHTML += contactObjects[i].call + "<br>"
             // Insert a row in the table at the last row
             let newRow   = tableRef.insertRow();
-
-            // Insert a cell in the row at index 0
-            let newCell  = newRow.insertCell(0);
-
-            // Append a text node to the cell
-            let newText  = document.createTextNode(contactObjects[i].call);
-            newCell.appendChild(newText);
+            let newCell0  = newRow.insertCell(0);
+            newCell0.innerHTML = `<a href="javascript:ContactDetail(${contactObjects[i].attributes.id})" id="btn_next">detail</a>`
+             
+            let newCell1  = newRow.insertCell(1);
+            let newText1  = document.createTextNode(contactObjects[i].attributes.owncall);
+            newCell1.appendChild(newText1);
+            let newCell2  = newRow.insertCell(2);
+            let newText2  = document.createTextNode(contactObjects[i].attributes.call);
+            newCell2.appendChild(newText2);
+            let newCell3  = newRow.insertCell(3);
+            let newText3  = document.createTextNode(contactObjects[i].attributes.qso_date);
+            newCell3.appendChild(newText3);
+            let newCell4  = newRow.insertCell(4);
+            let newText4  = document.createTextNode(contactObjects[i].attributes.time_on.slice(11,19));
+            newCell4.appendChild(newText4);
+            let newCell5  = newRow.insertCell(5);
+            let newText5  = document.createTextNode(contactObjects[i].attributes.band);
+            newCell5.appendChild(newText5);
+            let newCell6  = newRow.insertCell(6);
+            let newText6  = document.createTextNode(contactObjects[i].attributes.mode);
+            newCell6.appendChild(newText6);
+            let newCell7  = newRow.insertCell(7);
+            let newText7  = document.createTextNode(contactObjects[i].attributes.freq);
+            newCell7.appendChild(newText7);
+            let newCell8  = newRow.insertCell(8);
+            debugger
+            let newText8  = document.createTextNode(contactObjects[i].attributes.country);
+            newCell8.appendChild(newText8);
         }
         page_span.innerHTML = page;
 
@@ -341,7 +379,7 @@ function loginWithToken(token){
     }
 
     function editProfilePage() {
-        infoBox.innerHTML = `
+        infoBox.innerHTML += `
         <h2 class="text-center text-info">Edit Profile</h2>
         <div id="profileDiv">
             <hr>
@@ -481,6 +519,10 @@ function loginWithToken(token){
 
     }
 
+    function getContactDetail(id) {
+        
+    }
 
 
+    
     hasToken()

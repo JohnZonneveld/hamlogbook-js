@@ -59,7 +59,6 @@ body::before {
 
 #container-box, th, td {
     max-width: 100%;
-    align: left;
     border: 0px solid black;
     border-collapse: collapse;
     text-align: center;
@@ -95,3 +94,14 @@ btn {
     margin: 13px 12px 12px 10px;
 }
 
+.table-striped {
+    font-size: 12px;
+    white-space: nowrap;
+    width: 1%;
+    line-height: 0pc;
+}
+
+
+#btn_next {
+    float-right;
+}
