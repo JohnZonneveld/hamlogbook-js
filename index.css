@@ -1,31 +1,29 @@
 .title {
-    /* text-shadow: 3px 3px #000000; */
     color: #17a2b8;
+    text-align: center;
 }
   
-body {
+html,body {
+    position: relative;
     margin: 0;
-    padding: 0;
-    /* background-color: #87ceeb; */
-    /* background-image: url("images/globe.png"); */
-    /* background-size:100% 100%;
-    background-repeat: no-repeat; */
-    
-    height: 100vh;
-    color: 
 } 
 
-body::before {
+html::before {
     content:"";
-    position:absolute;
-    width:100%;
+    position:fixed;
+    min-width:100%;
     height:100%;
     left:0;
     top:0;
     z-index: -1;
-    opacity:0.4;
-    background-image: url('images/globe.png');
-    background-size: auto 100%;
+    opacity:0.2;
+    background: url('images/globe.png') no-repeat center center fixed;
+    background-size: cover; 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    background-attachment: fixed;
     background-repeat: no-repeat;
     background-position: center;
 }
@@ -34,7 +32,8 @@ body::before {
     margin-top: 10px;
     max-width: 2000px;
     border: 2px solid #9C9C9C;
-    background-color: #EAEAEA;
+    background-color: #faf8f8;
+    opacity: 0.75;
     display: flex;
     flex-direction: column;
 }
@@ -56,12 +55,11 @@ body::before {
     color: white;
 }
 
-#container-box, th, td {
-    max-width: 100%;
+#container-box {
+    width: 80%;
+    margin: auto;
     border: 0px solid black;
     border-collapse: collapse;
-    text-align: center;
-    vertical-align: middle;
     padding: 5px;
     align-items: center;
 }
@@ -69,17 +67,6 @@ body::before {
 #card-body {
     table-layout: auto;
     width: 100%;
-}
-
-.table {
-    max-width: 40%;
-    margin-left: auto;
-    margin-right: auto;
-    width: 100%;
-}
-
-.table-borderless td, .table-borderless th {
-    border: 0;
 }
 
 tr.border_bottom td {
@@ -107,11 +94,34 @@ btn {
 }
 
 .table-striped {
+    table-layout:auto; width: 100%;
     font-size: 12px;
-    
+    margin-left:auto; 
+    margin-right:auto;
+    text-align: center;    
 }
-
 
 #btn_next {
     float-right;
+}
+
+#data_index {
+    font-weight: bold;
+}
+
+.mapColumn {
+    margin-left:auto; 
+    margin-right:auto;
+    float: right;
+    width: 300px;
+    height: 400px;
+    margin-bottom: 10px;
+}
+
+.contactColumn {
+    margin-left:auto; 
+    margin-right:auto;
+    font-size: 12px;
+    float: left;
+    width: 400px;
 }
