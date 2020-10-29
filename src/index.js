@@ -15,6 +15,7 @@ let remLatLon
 let myLatLon
 let page
 
+
 // set initial state and user
 let state = {page: 'login', user: null}
 
@@ -104,6 +105,9 @@ const registerForm = `
     `
 
 function profilePage() { 
+    document.getElementById('logoffButton').classList.remove('hidden')
+    document.getElementById('contactsButton').classList.remove('hidden')
+    document.getElementById('editProfileButton').classList.remove('hidden')
     infoBox.innerHTML += `
     <div id="profileDiv">
         <hr>
@@ -131,9 +135,8 @@ function render(id){
     switch (state.page){
         // first page people see to log in
         case 'login':
-            infoBox.innerHTML = loginPage
+            infoBox.innerHTML += loginPage
             // buttons for login and register page
-            // const buttons = document.getElementsByClassName("btn btn-info btn-md")
             const registerButton = buttons.registerProfile
             const loginButton = buttons.login
             // event listeners for those buttons
@@ -142,13 +145,6 @@ function render(id){
         break; 
         case 'profile':
             profilePage(user)
-            const editPofileButton = buttons.editProfile
-            const logoffButton = buttons.logoff
-            const contactsButton = buttons.contacts
-            // event listeners for those buttons
-            logoffButton.addEventListener("click", (e) => logoff())
-            contactsButton.addEventListener("click", (e) => contacts(e))
-            editPofileButton.addEventListener("click", (e) => editProfile())
         break;
         case 'editProfile':
             editProfilePage()
@@ -161,64 +157,49 @@ function render(id){
             submitProfileButton.addEventListener("click", (e) => submitProfile(e))
         break;
         case 'contacts':
-            contactsPage()
+            getcontacts()
         break;
         case 'contactDetail':
             getContactDetail(id)
         break;
+        case 'editContactDetail':
+            editContactDetail()
+        break;
 
     }
+    const editPofileButton = buttons.editProfile
+    const logoffButton = buttons.logoff
+    const contactsButton = buttons.contacts
+    logoffButton.addEventListener("click", (e) => logoff())
+    contactsButton.addEventListener("click", (e) => contacts(e))
+    editProfileButton.addEventListener("click", (e) => editProfile())
+    editContactButton.addEventListener("click", function() {
+        console.log('edit Contact clicked')
+        state.page='editContactDetail'
+        render()
+    })
 }
 
 function navigationBar(){
-    switch (state.page){
-        case 'profile':
-            infoBox.innerHTML =
-            `
-            <br>
-            <div class='form-group text-left'>
-                <button type="button" name="editProfile" class="btn btn-info btn-md">Edit Profile</button>
-                <button type="button" name="contacts" class="btn btn-info btn-md">Contacts</button>
-                <button type="button" name="logoff" class="btn btn-info btn-md">Log Off</button>
-            </div>
-            `
-        break;
-        case 'editProfile':
-            infoBox.innerHTML =
-            `
-            <div class='form-group text-left'>
-                <button type="button" name="logoff" class="btn btn-info btn-md">Log Off</button>
-            </div>
-            `
-        break;
-        case 'contacts':
-            infoBox.innerHTML =
-            `
-            <div class='form-group text-left'>
-                <button type="button" name="logoff" class="btn btn-info btn-md">Log Off</button>
-                <button type="button" name="profile" class="btn btn-info btn-md">Profile</button>
-            </div>
-            `
-        break;
-        case 'contactDetail':
-            infoBox.innerHTML =
-            `
-            <div class='form-group text-left'>
-                <button type="button" name="logoff" class="btn btn-info btn-md">Log Off</button>
-                <button type="button" name="contacts" class="btn btn-info btn-md">Contacts</button>
-                <button type="button" name="profile" class="btn btn-info btn-md">Profile</button>
-            </div>
-            `
-        break;
-
-    }
+    infoBox.innerHTML =
+    `
+    <br>
+    <div class='form-group text-left'>
+        <button type="button" name="logoff" class="btn btn-info btn-md hidden" id="logoffButton">Log Off</button>
+        <button type="button" name="profile" class="btn btn-info btn-md hidden" id="profileButton">Profile</button>
+        <button type="button" name="editProfile" class="btn btn-info btn-md hidden"id="editProfileButton">Edit Profile</button>
+        <button type="button" name="contacts" class="btn btn-info btn-md hidden" id="contactsButton">Contacts</button>
+        <button type="button" name="addContact" class="btn btn-info btn-md hidden" id="addContactButton">Add Contact</button>
+        <button type="button" name="editContact" class="btn btn-info btn-md hidden" id="editContactButton">Edit Contact</button>
+        
+    </div>
+    `
 }
 
 function hasToken(){
     if (!!localStorage.getItem('jwt')){
         // state.page = "loggedIn"
         loginWithToken(localStorage.getItem('jwt'))
-        debugger
     } else {
         render()
     }
@@ -273,8 +254,8 @@ function loginWithToken(token){
     })
     .then(response => response.json())
     .then(json => {
-        debugger
         if (!!json.errors){
+            debugger
             localStorage.clear()
             showAlert(json.errors)
             state.page = 'login'
@@ -292,7 +273,7 @@ function loginWithToken(token){
 function showAlert(messages) {
     if (messages) {
         alertLine.innerHTML = `
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
             <strong>${messages}</strong>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
@@ -315,7 +296,7 @@ function contacts() {
     render()
 }
 
-function contactsPage() {
+function getcontacts() {
     fetch("http://localhost:3000/contacts", {
         method: 'GET',
         headers: {
@@ -325,10 +306,15 @@ function contactsPage() {
     .then(response => response.json())
     .then(json => {
         debugger
-        contactObjects = json.contacts.data
-        localStorage.setItem('jwt', json.auth_token)
-        infoBox.innerHTML += contactHeader
-        changePage(currentPage)
+        if (!!json.contacts.data) {
+            contactObjects = json.contacts.data
+            localStorage.setItem('jwt', json.auth_token)
+            infoBox.innerHTML += contactHeader
+            changePage(currentPage)
+        } else {
+            state.page = 'login'
+            render()
+        }
     })
 }
 
@@ -350,15 +336,16 @@ function nextPage()
     
 function changePage(page)
 {
-    const logoffButton = buttons.logoff
-    logoffButton.addEventListener("click", (e) => logoff())
     let contactsTable = document.getElementById("contactsContentDiv");
     let pageSpan = document.getElementById("page");
     
     // Validate page
     if (page < 1) page = 1;
     if (page > numPages()) page = numPages();
-
+    document.getElementById('logoffButton').classList.remove('hidden')
+    document.getElementById('profileButton').classList.remove('hidden')
+    document.getElementById('addContactButton').classList.remove('hidden')
+    document.getElementById('editContactButton').classList.add('hidden')
     contactsTable.innerHTML = contactsTableHeader;
     let tableRef = document.getElementById('Contacts').getElementsByTagName('tbody')[0];
 
@@ -400,12 +387,17 @@ function changePage(page)
     } else {
         btnPrev.style.visibility = "visible";
     }
-
     if (page == numPages()) {
         btnNext.style.visibility = "hidden";
     } else {
         btnNext.style.visibility = "visible";
     }
+    logoffButton.addEventListener("click", (e) => logoff())
+    profileButton.addEventListener("click", function() {
+        console.log('profile clicked')
+        state.page='profile'
+        render()
+    })
 }
 
 function numPages()
@@ -420,6 +412,9 @@ function editProfile() {
 }
 
 function editProfilePage() {
+    document.getElementById('logoffButton').classList.remove('hidden')
+    document.getElementById('profileButton').classList.remove('hidden')
+    document.getElementById('contactsButton').classList.remove('hidden')
     infoBox.innerHTML += `
     <h2 class="text-center text-info">Edit Profile</h2>
     <div id="profileDiv">
@@ -568,9 +563,8 @@ function getContactDetail(id) {
 function displayContact(data) {
     state.page="contactDetail"
     navigationBar()
-    const logoffButton = buttons.logoff
-    logoffButton.addEventListener("click", (e) => logoff())
-    const contactButton = buttons.contacts
+    
+    // const contactButton = buttons.contacts
     let myGrid = data.my_gridsquare
     let remGrid = data.gridsquare
     myLatLon = gridSquareToLatLon(myGrid)
@@ -580,7 +574,14 @@ function displayContact(data) {
         remLatLon = gridSquareToLatLon(remGrid)
     }
     let dist = distance(myLatLon, remLatLon)
+    document.getElementById('logoffButton').classList.remove('hidden')
+    document.getElementById('contactsButton').classList.remove('hidden')
+    document.getElementById('addContactButton').classList.remove('hidden')
+    document.getElementById('editContactButton').classList.remove('hidden')
+    document.getElementById('profileButton').classList.remove('hidden')
     
+
+
     infoBox.innerHTML+=`
     <h3 class="text-center text-info">Your contact</h3>
     <hr>
@@ -614,6 +615,30 @@ function displayContact(data) {
                     <td class="col-9">${data.country}</td>
                 </tr>
                 <tr class="d-flex">
+                    <td class="col-6" id="data_index">Gridsquare</td>
+                    <td class="col-9">${data.gridsquare ? data.gridsquare : '-'}</td>
+                </tr>
+                <tr class="d-flex">
+                    <td class="col-6" id="data_index">Date/Time</td>
+                    <td class="col-9">${data.qso_date} / ${data.time_on.slice(11,16)}</td>
+                </tr>
+                <tr class="d-flex">
+                    <td class="col-6" id="data_index">Frequency </td>
+                    <td class="col-9">${data.freq}</td>
+                </tr>
+                <tr class="d-flex">
+                    <td class="col-6" id="data_index">Band</td>
+                    <td class="col-9">${data.band}</td>
+                </tr>
+                <tr class="d-flex">
+                    <td class="col-6" id="data_index">Mode (Modegroup)</td>
+                    <td class="col-9">${data.mode}, ${data.modegroup}</td>
+                </tr>
+                <tr class="d-flex">
+                    <td class="col-6" id="data_index">QSL Received</td>
+                    <td class="col-9">${data.qsl_rcvd ? 'Y' : 'N'}</td>
+                </tr>
+                <tr class="d-flex">
                     <td class="col-6" id="data_index">CQZone</td>
                     <td class="col-9">${data.cqz ? data.cqz : '-'}</td>
                 </tr>
@@ -624,26 +649,6 @@ function displayContact(data) {
                 <tr class="d-flex">
                     <td class="col-6" id="data_index">IOTA</td>
                     <td class="col-9">${data.iota ? data.iota : '-'}</td>
-                </tr>
-                <tr class="d-flex">
-                    <td class="col-6" id="data_index">Gridsquare</td>
-                    <td class="col-9">${data.gridsquare ? data.gridsquare : '-'}</td>
-                </tr>
-                <tr class="d-flex">
-                    <td class="col-6" id="data_index">Date/Time</td>
-                    <td class="col-9">${data.qso_date} / ${data.time_on.slice(11,16)}</td>
-                </tr>
-                <tr class="d-flex">
-                    <td class="col-6" id="data_index">Mode (Modegroup)</td>
-                    <td class="col-9">${data.mode}, ${data.modegroup}</td>
-                </tr>
-                <tr class="d-flex">
-                    <td class="col-6" id="data_index">Band</td>
-                    <td class="col-9">${data.band}</td>
-                </tr>
-                <tr class="d-flex">
-                    <td class="col-6" id="data_index">QSL Received</td>
-                    <td class="col-9">${data.qsl_rcvd ? 'Y' : 'N'}</td>
                 </tr>
                 <tr class="d-flex">
                     <td class="col-6" id="data_index">Distance (miles)</td>
@@ -657,7 +662,99 @@ function displayContact(data) {
             
     ` 
     loadMapScript()
-    monitor()
+    logoffButton.addEventListener("click", (e) => logoff())
+    contactsButton.addEventListener("click", function () {
+        state.page='contacts'
+        render()
+    })
+    editContactButton.addEventListener("click", function() {
+            console.log('edit Contact clicked')
+            state.page='editContactDetail'
+            render()
+    })
+}
+
+function editContactDetail() {
+    debugger
+    infoBox.innerHTML=`
+    <h3 class="text-center text-info">Edit your contact</h3>
+    <hr>
+    <b>Station</b>
+    <form>
+        <div class="form-group">
+            <label for="callsign" class="text-info">Callsign: </label>
+            <input type="text" class="form-control" id="owncall"  value="${contactData.owncall}">
+        </div>
+        <div class="form-group">
+            <label for="callsign" class="text-info">Station Callsign: </label>
+            <input type="text" class="form-control" id="station_callsign"  value="${contactData.station_callsign}">
+        </div>
+        <div class="form-group">
+            <label for="callsign" class="text-info">Gridsquare: </label>
+            <input type="text" class="form-control" id="my_gridsquare"  value="${contactData.my_gridsquare}">
+        </div>
+    </form>
+    <b>Worked Station</b>
+    <form>
+        <div class="form-group">
+            <label for="callsign" class="text-info">Callsign: </label>
+            <input type="text" class="form-control" id="call"  value="${contactData.call}">
+        </div>
+        <div class="form-group">
+            <label for="callsign" class="text-info">Country: </label>
+            <input type="text" class="form-control" id="country"  value="${contactData.country}">
+        </div>
+        <div class="form-group">
+            <label for="callsign" class="text-info">CQ Zone: </label>
+            <input type="text" class="form-control" id="cqz"  value="${contactData.cqz}">
+        </div>
+        <div class="form-group">
+            <label for="callsign" class="text-info">ITU Zone: </label>
+            <input type="text" class="form-control" id="ituz"  value="${contactData.ituz}">
+        </div>
+        <div class="form-group">
+            <label for="callsign" class="text-info">IOTA: </label>
+            <input type="text" class="form-control" id="iota"  value="${contactData.iota}">
+        </div>
+        <div class="form-group">
+            <label for="callsign" class="text-info">Gridsquare: </label>
+            <input type="text" class="form-control" id="gridsquare"  value="${contactData.gridsquare}">
+        </div>
+        <div class="form-group">
+            <label for="callsign" class="text-info">Date: </label>
+            <input type="text" class="form-control" id="date"  value="${contactData.qso_date}">
+        </div>
+        <div class="form-group">
+            <label for="callsign" class="text-info">Time: </label>
+            <input type="text" class="form-control" id="time_on"  value="${contactData.time_on.slice(11,16)}">
+        </div>
+        <div class="form-group">
+            <label for="callsign" class="text-info">Callsign: </label>
+            <input type="text" class="form-control" id="call"  value="${contactData.call}">
+        </div>
+        <div class="form-group">
+            <label for="callsign" class="text-info">Mode: </label>
+            <input type="text" class="form-control" id="mode"  value="${contactData.mode}">
+        </div>
+        <div class="form-group">
+            <label for="callsign" class="text-info">Modegroup: </label>
+            <input type="text" class="form-control" id="modegroup"  value="${contactData.modegroup}">
+        </div>
+        <div class="form-group">
+            <label for="callsign" class="text-info">Frequency: </label>
+            <input type="text" class="form-control" id="freq"  value="${contactData.freq}">
+        </div>
+        <div class="form-group">
+            <label for="callsign" class="text-info">Band: </label>
+            <input type="text" class="form-control" id="band"  value="${contactData.band}">
+        </div>
+        <div class="form-group">
+            <label for="callsign" class="text-info">Callsign: </label>
+            <input type="text" class="form-control" id="call"  value="${contactData.call}">
+        </div>
+
+    </form>  
+    ` 
 }
 
 function loadMapScript() {
@@ -672,14 +769,6 @@ function loadMapScript() {
     mapScript.src = gMapsScript;
     mapSpace.appendChild(mapScript);
     
-}
-
-function monitor() {
-    contactsButton = buttons.contacts
-    contactsButton.addEventListener("click", function () {
-        state.page='contacts'
-        render()
-    })
 }
 
 // The Maidenhead Grid system is build up by squares of 10° latitude
