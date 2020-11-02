@@ -29,7 +29,7 @@ html::before {
 }
 
 #main .container #container-row #container-column #container-box {
-    margin-top: 10px;
+    margin-top: 5px;
     max-width: 2000px;
     border: 2px solid #9C9C9C;
     background-color: #faf8f8;
@@ -38,20 +38,22 @@ html::before {
     flex-direction: column;
 }
 
-#login-form .container #login-row #login-column #login-box #login-form {
+#loginDiv {
+    width: 90%;
+}
+/* #login-form .container #login-row #login-column #login-box #login-form {
     padding: 0px;
     display: flex;
     flex-direction: column;
-}
+} */
 
-#login-form .container #login-row #login-column #login-box #login-form #register-link {
+/* #login-form .container #login-row #login-column #login-box #login-form #register-link {
     margin-top: -85px;
-}
+} */
 
 .nav {
     display: flex;
     padding: 4px;
-    
     color: white;
 }
 
@@ -64,10 +66,10 @@ html::before {
     align-items: center;
 }
 
-#card-body {
+/* #card-body {
     table-layout: auto;
     width: 100%;
-}
+} */
 
 tr.border_bottom td {
     border-bottom: 1px solid black;
@@ -81,16 +83,15 @@ tr.border_top td {
     width: 90%;
 }
 
-#loginDiv {
-    width: 90%;
-}
+
 
 #contactsDiv {
     width: 90%;
 }
 
-btn {
+.btn {
     margin: 13px 12px 12px 10px;
+    width: auto;
 }
 
 .table-striped {
@@ -128,4 +129,38 @@ btn {
 
 .hidden {
     display: none;
+}
+
+.editContact {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+form {
+    width: 100%;
+    margin: 0 auto;
+  }
+
+label, input {
+    /* In order to define widths */
+    display: inline-block;
+}
+
+label {
+    width: 80c;
+    display: inline-block;
+    margin-left: 32px;
+}
+
+input, textarea {
+    text-align: left;
+    width: 20em;
+}
+
+label+input {
+    width: 40%;
+    /* Large margin-right to force the next element to the new-line
+             and margin-left to create a gutter between the label and input */
+    margin: 0 20% 0 3%;
 }
