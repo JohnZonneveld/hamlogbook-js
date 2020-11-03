@@ -627,7 +627,7 @@ function displayContact(data) {
                 </tr>
                 <tr class="d-flex">
                     <td class="col-6" id="data_index">Date/Time</td>
-                    <td class="col-9">${data.qso_date} / ${data.time_on.slice(11,16)}</td>
+                    <td class="col-9">${data.qso_date} / ${data.time_on.slice(11,19)}</td>
                 </tr>
                 <tr class="d-flex">
                     <td class="col-6" id="data_index">Frequency </td>
@@ -689,105 +689,134 @@ function editContactDetail() {
     infoBox.innerHTML+=`
     <h3 class="text-center text-info">Edit your contact</h3>
     <b>Station</b>
-    <div class="editContact">
     <form>
-        <div>
-            <label for="callsign" class="text-info">Callsign: </label>
-            <input type="text" class="form-control" id="owncall"  value="${contactData.owncall}">
+        <div class="form-group form-inline">
+            <label for="callsign" class="addContact text-info">Callsign: </label>
+            <input type="text" id="owncall" value="${currentUser.callsign}">
         </div>
-        <div>
-            <label for="callsign" class="text-info">Station Callsign: </label>
-            <input type="text" class="form-control" id="station_callsign"  value="${contactData.station_callsign}">
+        <div class="form-group form-inline">
+            <label for="callsign" class="addContact text-info">Callsign: </label>
+            <input type="text" id="owncall"  value="${contactData.owncall}">
         </div>
-        <div>
-            <label for="gridsquare" class="text-info">Gridsquare: </label>
-            <input type="text" class="form-control" id="my_gridsquare"  value="${contactData.my_gridsquare}">
+        <div class="form-group form-inline">
+            <label for="callsign" class="addContact text-info">Station Callsign: </label>
+            <input type="text" id="station_callsign"  value="${contactData.station_callsign}">
+        </div>
+        <div class="form-group form-inline">
+            <label for="gridsquare" class="addContact text-info">Gridsquare: </label>
+            <input type="text" id="my_gridsquare"  value="${contactData.my_gridsquare}">
         </div>
     </form>
     <b>Worked Station</b>
     <form>
-        <div>
-            <label for="callsign" class="text-info">Callsign: </label>
-            <input type="text" class="form-control" id="call"  value="${contactData.call}">
+        <div class="form-group form-inline">
+            <label for="callsign" class="addContact text-info">Callsign: </label>
+            <input type="text" id="call"  value="${contactData.call}">
         </div>
-        <div>
-            <label for="band" class="text-info">Band: </label>
-            <input type="text" class="form-control" id="band"  value="${contactData.band}">
+        <div class="form-group form-inline">
+            <label for="band" class="addContact text-info">Band: </label>
+            <input type="text" list="band" value="${contactData.band}">
+            <datalist id="band">
+                <option value="2200M">2200M</option>
+                <option value="630M">630M</option>
+                <option value="160M">160M</option>
+                <option value="80M">80M</option>
+                <option value="60M">60M</option>
+                <option value="40M">40M</option>
+                <option value="30M">30M</option>
+                <option value="20M">20M</option>
+                <option value="17M">17M</option>
+                <option value="15M">15M</option>
+                <option value="12M">12M</option>
+                <option value="10M">10M</option>
+                <option value="6M">6M</option>
+                <option value="2M">2M</option>
+                <option value="1.25M">1.25M</option>
+                <option value="70CM">70CM</option>
+                <option value="33CM">33CM</option>
+                <option value="23CM">23CM</option>
+            </datalist>
         </div>
-        <div>
-            <label for="frequency" class="text-info">Frequency: </label>
-            <input type="text" class="form-control" id="freq"  value="${contactData.freq}">
+        <div class="form-group form-inline">
+            <label for="frequency" class="addContact text-info">Frequency: </label>
+            <input type="text" id="freq"  value="${contactData.freq}">
         </div>
-        <div>
-            <label for="frequency_rcvd" class="text-info">Frequency received: </label>
-            <input type="text" class="form-control" id="freq_rcvd"  value="${contactData.freq_rcvd}">
+        <div class="form-group form-inline">
+            <label for="frequency_rcvd" class="addContact text-info">Frequency received: </label>
+            <input type="text" id="freq_rcvd"  value="${contactData.freq_rcvd}">
         </div>
-        <div>
-            <label for="mode" class="text-info">Mode: </label>
-            <input type="text" class="form-control" id="mode"  value="${contactData.mode}">
+        <div class="form-group form-inline">
+            <label for="mode" class="addContact text-info">Mode: </label>
+            <input type="text" id="mode"  value="${contactData.mode}">
         </div>
-        <div>
-            <label for="submode" class="text-info">Submode: </label>
-            <input type="text" class="form-control" id="submode"  value="${contactData.submode ? contactData.submode : '-'}">
+        <div class="form-group form-inline">
+            <label for="submode" class="addContact text-info">Submode: </label>
+            <input type="text" id="submode"  value="${contactData.submode ? contactData.submode : '-'}">
         </div>
-        <div>
-            <label for="modegroup" class="text-info">Modegroup: </label>
-            <input type="text" class="form-control" id="modegroup"  value="${contactData.modegroup}">
+        <div class="form-group form-inline">
+            <label for="modegroup" class="addContact text-info">Modegroup: </label>
+            <input type="text" list="modegroup" value="${contactData.modegroup}">
+            <datalist id="modegroup">
+                <option value="-">-</option>
+                <option value="CW">CW</option>
+                <option value="PHONE">PHONE</option>
+                <option value="IMAGE">IMAGE</option>
+                <option value="DATA">DATA</option>
+            </datalist>
         </div>
-        <div>
-            <label for="qso_date" class="text-info">Date: </label>
-            <input type="text" class="form-control" id="qso_date"  value="${contactData.qso_date}">
+        <div class="form-group form-inline">
+            <label for="qso_date" class="addContact text-info">Date: </label>
+            <input type="text" id="qso_date"  value="${contactData.qso_date}">
         </div>
-        <div>
-            <label for="time_on" class="text-info">Time: </label>
-            <input type="text" class="form-control" id="time_on"  value="${contactData.time_on.slice(11,16)}">
+        <div class="form-group form-inline">
+            <label for="time_on" class="addContact text-info">Time: </label>
+            <input type="text" id="time_on"  value="${contactData.time_on.slice(11,19)}">
         </div>
-        <div>
-            <label for="qsl_rcvd" class="text-info">QSL received: </label>
-            <input type="text" class="form-control" id="qsl_rcvd"  value="${contactData.qsl_rcvd}">
+        <div class="form-group form-inline">
+            <label for="qsl_rcvd" class="addContact text-info">QSL received: </label>
+            <input type="text" id="qsl_rcvd"  value="${contactData.qsl_rcvd}">
         </div>
-        <div>
-            <label for="qsl_rdate" class="text-info">QSL receive date: </label>
-            <input type="text" class="form-control" id="qsl_rdate"  value="${contactData.qsl_rdate}">
+        <div class="form-group form-inline">
+            <label for="qsl_rdate" class="addContact text-info">QSL receive date: </label>
+            <input type="text" id="qsl_rdate"  value="${contactData.qsl_rdate}">
         </div>
-        <div>
-            <label for="dxcc" class="text-info">DXCC: </label>
-            <input type="text" class="form-control" id="dxcc"  value="${contactData.dxcc}">
+        <div class="form-group form-inline">
+            <label for="dxcc" class="addContact text-info">DXCC: </label>
+            <input type="text" id="dxcc"  value="${contactData.dxcc}">
         </div>
-        <div>
-            <label for="country" class="text-info">Country: </label>
-            <input type="text" class="form-control" id="country"  value="${contactData.country}">
+        <div class="form-group form-inline">
+            <label for="country" class="addContact text-info">Country: </label>
+            <input type="text" id="country"  value="${contactData.country}">
         </div>
-        <div>
-            <label for="callsign" class="text-info">IOTA: </label>
-            <input type="text" class="form-control" id="iota"  value="${contactData.iota ? contactData.iota : '-'}">
+        <div class="form-group form-inline">
+            <label for="callsign" class="addContact text-info">IOTA: </label>
+            <input type="text" id="iota"  value="${contactData.iota ? contactData.iota : '-'}">
         </div>
-        <div>
-            <label for="gridsquare" class="text-info">Gridsquare: </label>
-            <input type="text" class="form-control" id="gridsquare"  value="${contactData.gridsquare}">
+        <div class="form-group form-inline">
+            <label for="gridsquare" class="addContact text-info">Gridsquare: </label>
+            <input type="text" id="gridsquare"  value="${contactData.gridsquare}">
         </div>
-        <div>
-            <label for="state" class="text-info">State: </label>
-            <input type="text" class="form-control" id="state"  value="${contactData.state}">
+        <div class="form-group form-inline">
+            <label for="state" class="addContact text-info">State: </label>
+            <input type="text" id="state"  value="${contactData.state}">
         </div>
-        <div>
-            <label for="county" class="text-info">County: </label>
-            <input type="text" class="form-control" id="cnty"  value="${contactData.cnty}">
+        <div class="form-group form-inline">
+            <label for="county" class="addContact text-info">County: </label>
+            <input type="text" id="cnty"  value="${contactData.cnty}">
         </div>
-        <div>
-            <label for="cqz" class="text-info">CQ Zone: </label>
-            <input type="text" class="form-control" id="cqz"  value="${contactData.cqz}">
+        <div class="form-group form-inline">
+            <label for="cqz" class="addContact text-info">CQ Zone: </label>
+            <input type="text" id="cqz"  value="${contactData.cqz}">
         </div>
-        <div>
-            <label for="ituz" class="text-info">ITU Zone: </label>
-            <input type="text" class="form-control" id="ituz"  value="${contactData.ituz}">
+        <div class="form-group form-inline">
+            <label for="ituz" class="addContact text-info">ITU Zone: </label>
+            <input type="text" id="ituz"  value="${contactData.ituz}">
         </div>
-        <div>
-            <label for="park" class="text-info">Park: </label>
-            <input type="text" class="form-control" id="park"  value="${contactData.park ? contactData.park : '-'}">
+        <div class="form-group form-inline">
+            <label for="park" class="addContact text-info">Park: </label>
+            <input type="text" id="park"  value="${contactData.park ? contactData.park : '-'}">
         </div>
     </form>  
-    </div>
     <br>
     <button type="button" name="submitEditContact" class="btn btn-info">Update Contact</button>
     ` 
@@ -875,31 +904,32 @@ function addContact() {
     document.getElementById('profileButton').classList.remove('hidden')
     let utcDate = new Date().toISOString()
     let utcD = utcDate.slice(0,10)
-    let utcT = utcDate.slice(11,16)
+    let utcT = utcDate.slice(11,19)
     infoBox.innerHTML+=`
     <h3 class="text-center text-info">Add contact</h3>
-    <b>Station</b>
-    <div class="addContact">
+    <h4><b>Station</b></h4>
     <form>
-            <label for="callsign" class="text-info">Callsign: </label>
+        <div class="form-group form-inline">
+            <label for="callsign" class="addContact text-info">Callsign: </label>
             <input type="text" id="owncall" value="${currentUser.callsign}">
-        <div>
-            <label for="callsign" class="text-info">Station Callsign: </label>
+        </div>
+        <div class="form-group form-inline">
+            <label for="callsign" class="addContact text-info">Station Callsign: </label>
             <input type="text" id="station_callsign" value="${currentUser.callsign}">
         </div>
-        <div>
-            <label for="gridsquare" class="text-info">Gridsquare: </label>
+        <div class="form-group form-inline">
+            <label for="gridsquare" class="addContact text-info">Gridsquare: </label>
             <input type="text" id="my_gridsquare" value="${currentUser.my_qth}">
         </div>
     </form>
-    <b>Worked Station</b>
+    <h3><b>Worked Station</b></h3>
     <form>
-        <div>
-            <label for="callsign" class="text-info">Callsign: </label>
+        <div class="form-group form-inline">
+            <label for="callsign" class="addContact text-info">Callsign: </label>
             <input type="text" id="call">
         </div>
-        <div>
-            <label for="band" class="text-info">Band: </label>
+        <div class="form-group form-inline">
+            <label for="band" class="addContact text-info">Band: </label>
             <input type="text" list="band" />
             <datalist id="band">
                 <option value="2200M">2200M</option>
@@ -922,16 +952,16 @@ function addContact() {
                 <option value="23CM">23CM</option>
             </datalist>
         </div>
-        <div>
-            <label for="frequency" class="text-info">Frequency: </label>
+        <div class="form-group form-inline">
+            <label for="frequency" class="addContact text-info">Frequency: </label>
             <input type="text" id="freq">
         </div>
-        <div>
-            <label for="frequency_rcvd" class="text-info">Frequency received: </label>
+        <div class="form-group form-inline">
+            <label for="frequency_rcvd" class="addContact text-info">Frequency received: </label>
             <input type="text" id="freq_rcvd" value="-">
         </div>
-        <div>
-        <label for="mode" class="text-info">Mode: </label>
+        <div class="form-group form-inline">
+        <label for="mode" class="addContact text-info">Mode: </label>
         <input type="text" list="mode" />
             <datalist id="mode">
                 <option value="CW">CW</option>
@@ -996,15 +1026,15 @@ function addContact() {
                 <option value="WSPR">WSPR</option>
             </datalist>
         </div>
-        <div>
-            <label for="submode" class="text-info">Submode: </label>
+        <div class="form-group form-inline">
+            <label for="submode" class="addContact text-info">Submode: </label>
             <input type="text" list="submode" />
             <datalist id="submode">
                 <option value="FT4">FT4</option>
             </datalist>
         </div>
-        <div>
-            <label for="modegroup" class="text-info">Modegroup: </label>
+        <div class="form-group form-inline">
+            <label for="modegroup" class="addContact text-info">Modegroup: </label>
             <input type="text" list="modegroup" />
             <datalist id="modegroup">
                 <option value="-">-</option>
@@ -1014,56 +1044,56 @@ function addContact() {
                 <option value="DATA">DATA</option>
             </datalist>
         </div>
-        <div>
-            <label for="qso_date" class="text-info">Date: </label>
+        <div class="form-group form-inline">
+            <label for="qso_date" class="addContact text-info">Date: </label>
             <input type="text" id="qso_date"   value="${utcD}">
         </div>
-        <div>
-            <label for="time_on" class="text-info">Time: </label>
+        <div class="form-group form-inline">
+            <label for="time_on" class="addContact text-info">Time: </label>
             <input type="text" id="time_on" value="${utcT}">
         </div>
-        <div>
-            <label for="qsl_rcvd" class="text-info">QSL received: </label>
+        <div class="form-group form-inline">
+            <label for="qsl_rcvd" class="addContact text-info">QSL received: </label>
             <input type="checkbox" id="qsl_rcvd">
         </div>
-        <div>
-            <label for="qsl_rdate" class="text-info">QSL receive date: </label>
+        <div class="form-group form-inline">
+            <label for="qsl_rdate" class="addContact text-info">QSL receive date: </label>
             <input type="text" id="qsl_rdate" value="-">
         </div>
-        <div>
-            <label for="dxcc" class="text-info">DXCC: </label>
+        <div class="form-group form-inline">
+            <label for="dxcc" class="addContact text-info">DXCC: </label>
             <input type="text" id="dxcc"  value="-">
         </div>
-        <div>
-            <label for="country" class="text-info">Country: </label>
+        <div class="form-group form-inline">
+            <label for="country" class="addContact text-info">Country: </label>
             <input type="text" id="country">
         </div>
-        <div>
-            <label for="callsign" class="text-info">IOTA: </label>
+        <div class="form-group form-inline">
+            <label for="callsign" class="addContact text-info">IOTA: </label>
             <input type="text" id="iota"  value="-">
         </div>
-        <div>
-            <label for="gridsquare" class="text-info">Gridsquare: </label>
+        <div class="form-group form-inline">
+            <label for="gridsquare" class="addContact text-info">Gridsquare: </label>
             <input type="text" id="gridsquare">
         </div>
-        <div>
-            <label for="state" class="text-info">State: </label>
+        <div class="form-group form-inline">
+            <label for="state" class="addContact text-info">State: </label>
             <input type="text" id="state">
         </div>
-        <div>
-            <label for="county" class="text-info">County: </label>
+        <div class="form-group form-inline">
+            <label for="county" class="addContact text-info">County: </label>
             <input type="text" id="cnty" value="-">
         </div>
-        <div>
-            <label for="cqz" class="text-info">CQ Zone: </label>
+        <div class="form-group form-inline">
+            <label for="cqz" class="addContact text-info">CQ Zone: </label>
             <input type="text" id="cqz" value="-">
         </div>
-        <div>
-            <label for="ituz" class="text-info">ITU Zone: </label>
+        <div class="form-group form-inline">
+            <label for="ituz" class="addContact text-info">ITU Zone: </label>
             <input type="text" id="ituz" value="-">
         </div>
-        <div>
-            <label for="park" class="text-info">Park: </label>
+        <div class="form-group form-inline">
+            <label for="park" class="addContact text-info">Park: </label>
             <input type="text" id="park" value="-">
         </div>
     </form>  
