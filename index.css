@@ -53,7 +53,7 @@ html::before {
 
 .nav {
     display: flex;
-    padding: 4px;
+    padding: 2px;
     color: white;
 }
 
@@ -83,14 +83,12 @@ tr.border_top td {
     width: 90%;
 }
 
-
-
 #contactsDiv {
     width: 90%;
 }
 
 .btn {
-    margin: 13px 12px 12px 10px;
+    margin: 10px 5px 5px 5px;
     width: auto;
 }
 

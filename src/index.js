@@ -4,16 +4,18 @@ const usersUrl = "http://localhost:3000/users/"
 const loginUrl = "http://localhost:3000/auth_user"
 const registerUrl = "http://localhost:3000/auth/register"
 const contactsUrl = "http://localhost:3000/contacts/"
-const gMapsScript = 'https://maps.googleapis.com/maps/api/js?callback=initMap&signed_in=true&key=AIzaSyBXq06q4pG6fATSosF-sSte5QK8WuanI1Q&language=en'
-const alertLine = document.getElementById("alertViewPort")
+const gMapsScript = "https://maps.googleapis.com/maps/api/js?callback=initMap&signed_in=true&key=AIzaSyBXq06q4pG6fATSosF-sSte5QK8WuanI1Q&language=en"
+const infoLine = document.getElementById("infoViewPort")
 const buttons = document.getElementsByClassName("btn")
 let user = {}
 let contactObjects = []
+let prevContacts = []
 let currentPage = 1;
 let recordsPerPage = 15
 let remLatLon
 let myLatLon
 let page
+
 
 
 // set initial state and user
@@ -69,7 +71,7 @@ const contactsTableHeader = `
 
 const contactHeader =`
 <div id="contactsDiv">
-    <h3 class="text-center text-info">Your contacts</h3>
+    <h4 class="text-center text-info">Your contacts</h4>
     <div class="table-responsive" id="contactsContentDiv">
     </div>
 </div>
@@ -107,7 +109,7 @@ function showProfilePage() {
     document.getElementById('editProfileButton').classList.remove('hidden')
     infoBox.innerHTML += `
     <div id="profileDiv">
-        <h3 class="text-center text-info">Your profile:</h3>
+        <h4 class="text-center text-info">Your profile:</h4>
         <div class='table-responsive'>
             <table class='table table-sm table-borderless table-condensed table-hover'>
                 <tr>
@@ -135,8 +137,14 @@ function render(id){
             const registerButton = buttons.registerProfile
             const loginButton = buttons.login
             // event listeners for those buttons
-            loginButton.addEventListener("click", (e) => loginHandler(e))
-            registerButton.addEventListener("click", (e) => registerProfile())
+            loginButton.addEventListener("click", function(e) {
+                e.preventDefault()
+                loginHandler(e)
+            })
+            registerButton.addEventListener("click", function(e) {
+                e.preventDefault()
+                registerProfile()
+            })
         break; 
         case 'profile':
             showProfilePage(user)
@@ -144,30 +152,40 @@ function render(id){
         case 'editProfile':
             editProfilePage()
             const updateProfileButton = buttons.updateProfile
-            updateProfileButton.addEventListener("click", (e) => updateProfile(e))
+            updateProfileButton.addEventListener("click", function(e) {
+                e.preventDefault()
+                updateProfile(e)
+            })
         break;
         case 'registerProfile':
             registerPage()
             const submitProfileButton = buttons.submitProfile
-            submitProfileButton.addEventListener("click", (e) => submitProfile(e))
+            submitProfileButton.addEventListener("click", function(e) {
+                e.preventDefault()
+                submitProfile(e)
+            })
         break;
         case 'contacts':
-            getcontacts()
+            getContacts()
         break;
         case 'contactDetail':
             getContactDetail(id)
         break;
         case 'editContactDetail':
-            editContactDetail()
+            editContactForm()
             const submitEditContactButton = buttons.submitEditContact
-            submitEditContactButton.addEventListener("click", (e) => submitEditContact(e))
+            submitEditContactButton.addEventListener("click", function(e) {
+                e.preventDefault()
+                submitEditContact(e)
+            })
         break;
         case 'addContactDetail':
             addContactForm()
             const submitAddContactButton = buttons.submitAddContact
-            submitAddContactButton.addEventListener("click", (e) => submitAddContact(e))
-            // const submitProfileButton = buttons.submitProfile
-            // submitProfileButton.addEventListener("click", (e) => submitProfile(e))
+            submitAddContactButton.addEventListener("click", function(e) {
+                e.preventDefault()
+                submitAddContact(e)
+            })
         break;
 
     }
@@ -176,15 +194,26 @@ function render(id){
     const logoffButton = buttons.logoff
     const contactsButton = buttons.contacts
     const addContactButton = buttons.addContact
-    logoffButton.addEventListener("click", (e) => logoff())
-    contactsButton.addEventListener("click", (e) => contacts(e))
-    editProfileButton.addEventListener("click", (e) => editProfile())
-    editContactButton.addEventListener("click", function() {
+    logoffButton.addEventListener("click", function(e) {
+        e.preventDefault()
+        logoff()
+    })
+    contactsButton.addEventListener("click", function(e) {
+        e.preventDefault()
+        contacts(e)
+    })
+    editProfileButton.addEventListener("click", function(e) {
+        e.preventDefault()
+        editProfile()
+    })
+    editContactButton.addEventListener("click", function(e) {
+        e.preventDefault()
         console.log('edit Contact clicked')
         state.page='editContactDetail'
         render()
     })
-    addContactButton.addEventListener("click", function() {
+    addContactButton.addEventListener("click", function(e) {
+        e.preventDefault
         console.log('add Contact clicked')
         state.page='addContactDetail'
         render()
@@ -201,6 +230,7 @@ function navigationBar(){
         <button type="button" name="contacts" class="btn btn-info btn-md hidden" id="contactsButton">Contacts</button>
         <button type="button" name="addContact" class="btn btn-info btn-md hidden" id="addContactButton">Add Contact</button>
         <button type="button" name="editContact" class="btn btn-info btn-md hidden" id="editContactButton">Edit Contact</button>
+        <button type="button" name="deleteContact" class="btn btn-danger btn-md hidden" id="deleteContactButton">Delete Contact</button>
     </div>
     `
 }
@@ -232,7 +262,7 @@ function loginHandler(e) {
     .then(response => response.json())
     .then(json => {
         if (json.errors) {
-            showAlert(json.errors)
+            showInfo(json.errors)
             state.page = 'login'
             render()
             } 
@@ -266,7 +296,7 @@ function loginWithToken(token){
     .then(json => {
         if (json.errors){
             localStorage.clear()
-            showAlert(json.errors)
+            showInfo(json.errors)
             state.page = 'login'
             render()
         } else {
@@ -276,12 +306,13 @@ function loginWithToken(token){
             render()
         }
     })
-    .catch(errors => showAlert(errors))
+    .catch(errors => showInfo(errors))
 }
 
-function showAlert(messages) {
+function showInfo(messages) {
+    debugger
     if (messages) {
-        alertLine.innerHTML = `
+        infoLine.innerHTML = `
         <div class="alert alert-warning alert-dismissible fade show" role="alert">
             <strong>${messages}</strong>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -307,7 +338,8 @@ function contacts() {
     render()
 }
 
-function getcontacts() {
+function getContacts() {
+    // infoBox.innerHTML = `one moment... contacting database`
     fetch("http://localhost:3000/contacts", {
         method: 'GET',
         headers: {
@@ -317,7 +349,7 @@ function getcontacts() {
     .then(response => response.json())
     .then(json => {
         if (json.errors) {
-            showAlert(json.errors)
+            showInfo(json.errors)
             state.page = 'login'
             render()
         } else {
@@ -404,13 +436,18 @@ function changePage(page)
         btnNext.style.visibility = "visible";
     }
     // Because the pagination for the contacts page we need some 'local' eventListeners
-    logoffButton.addEventListener("click", (e) => logoff())
-    profileButton.addEventListener("click", function() {
+    logoffButton.addEventListener("click", function(e) { 
+        e.preventDefault()
+        logoff()
+    })
+    profileButton.addEventListener("click", function(e) {
+        e.preventDefault()
         console.log('profile clicked')
         state.page='profile'
         render()
     })
-    addContactButton.addEventListener("click", function() {
+    addContactButton.addEventListener("click", function(e) {
+        e.preventDefault()
         console.log('add Contact clicked')
         state.page='addContactDetail'
         render()
@@ -484,7 +521,7 @@ function updateProfile(e) {
     .then(response => response.json())
     .then(json => {
         if (json.errors) {
-            showAlert(json.errors)
+            showInfo(json.errors)
             state.page = 'login'
             render()
         } 
@@ -529,7 +566,7 @@ function submitProfile(e) {
     .then(response => response.json())
     .then(json => {
     if (json.errors) {
-        showAlert(json.errors)
+        showInfo(json.errors)
         state.page = 'login'
         render()
     } 
@@ -563,7 +600,7 @@ function getContactDetail(id) {
     .then(response => response.json())
     .then(json => {
         if (json.errors) {
-            showAlert(json.errors)
+            showInfo(json.errors)
             state.page = 'profile'
             render()
             } 
@@ -592,9 +629,10 @@ function displayContact(data) {
     document.getElementById('addContactButton').classList.remove('hidden')
     document.getElementById('editContactButton').classList.remove('hidden')
     document.getElementById('profileButton').classList.remove('hidden')
+    document.getElementById('deleteContactButton').classList.remove('hidden')
     
     infoBox.innerHTML+=`
-    <h3 class="text-center text-info">Your contact</h3>
+    <h4 class="text-center text-info">Your contact</h4>
     <section>
         <div class="contactColumn">
             <table>
@@ -672,36 +710,49 @@ function displayContact(data) {
             
     ` 
     loadMapScript()
-    logoffButton.addEventListener("click", (e) => logoff())
-    contactsButton.addEventListener("click", function () {
+    logoffButton.addEventListener("click", function(e) {
+        e.preventDefault()
+        logoff()
+    })
+    contactsButton.addEventListener("click", function (e) {
+        e.preventDefault()
         console.log('contacts clicked')
         state.page='contacts'
         render()
     })
-    editContactButton.addEventListener("click", function() {
-            console.log('edit Contact clicked')
-            state.page='editContactDetail'
-            render()
+    editContactButton.addEventListener("click", function(e) {
+        e.preventDefault()
+        console.log('edit Contact clicked')
+        state.page='editContactDetail'
+        render()
     })
-    addContactButton.addEventListener("click", function() {
+    addContactButton.addEventListener("click", function(e) {
+        e.preventDefault()
         console.log('add contact clicked')
         state.page='addContactDetail'
         render()
     })
-    profileButton.addEventListener("click", function() {
+    profileButton.addEventListener("click", function(e) {
+        e.preventDefault()
         console.log('profile clicked')
         state.page='profile'
         render()
     })
+    
+    buttons.deleteContact.addEventListener("click", function(e) {
+        e.preventDefault()
+        console.log('delete contact clicked')
+        deleteContact()
+    })
 }
 
-function editContactDetail() {
+function editContactForm() {
     document.getElementById('logoffButton').classList.remove('hidden')
     document.getElementById('contactsButton').classList.remove('hidden')
     document.getElementById('addContactButton').classList.remove('hidden')
     document.getElementById('profileButton').classList.remove('hidden')
     infoBox.innerHTML+=`
-    <h3 class="text-center text-info">Edit your contact</h3>
+    <h4 class="text-center text-info">Edit your contact</h4>
     <b>Station</b>
     <form>
         <div class="form-group form-inline">
@@ -869,7 +920,7 @@ function editContactDetail() {
         </div>
         <div class="form-group form-inline">
             <label for="gridsquare" class="addContact text-info">Gridsquare: </label>
-            <input type="text" id="gridsquare"  value="${contactDetail.gridsquare}">
+            <input type="text" id="gridsquare" value="${contactDetail.gridsquare}">
         </div>
         <div class="form-group form-inline">
             <label for="state" class="addContact text-info">State: </label>
@@ -912,7 +963,7 @@ function submitEditContact(e) {
     .then(response => response.json())
     .then(json => {
         if (json.errors) {
-            showAlert(json.errors)
+            showInfo(json.errors)
             state.page = 'login'
             render()
         } else {
@@ -931,7 +982,7 @@ function addContactForm() {
     let utcD = utcDate.slice(0,10)
     let utcT = utcDate.slice(11,19)
     infoBox.innerHTML+=`
-    <h3 class="text-center text-info">Add contact</h3>
+    <h4 class="text-center text-info">Add contact</h4>
     <h4><b>Station</b></h4>
     <form>
         <div class="form-group form-inline">
@@ -947,11 +998,11 @@ function addContactForm() {
             <input type="text" id="my_gridsquare" value="${currentUser.my_qth}">
         </div>
     </form>
-    <h3><b>Worked Station</b></h3>
+    <h4><b>Worked Station</b></h4>
     <form>
         <div class="form-group form-inline">
             <label for="callsign" class="addContact text-info">Callsign: </label>
-            <input type="text" id="call">
+            <input type="text" id="call" oninput="searchContact()">
         </div>
         <div class="form-group form-inline">
             <label for="band" class="addContact text-info">Band: </label>
@@ -1128,6 +1179,11 @@ function addContactForm() {
     ` 
 }
 
+function searchContact() {
+    searchItem=document.getElementById('call')
+    console.log(searchItem.value)
+}
+
 function readContactForm() {
     owncallContactInput=document.getElementById('owncall').value
     stationcallsignContactInput=document.getElementById('station_callsign').value
@@ -1196,7 +1252,7 @@ function submitAddContact(e) {
     .then(response => response.json())
     .then(json => {
         if (json.errors) {
-            showAlert(json.errors)
+            showInfo(json.errors)
             state.page = 'login'
             render()
         } else {
@@ -1296,7 +1352,7 @@ function distance(myLatLon, remLatLon) {
     if (a != 0) {
     return (2 * radius * Math.asin(Math.sqrt(a))).toFixed(0); // no decimals needed as loaction is not pinpointed.
     } else {
-        return 'Info missing for calculation'
+        return 'Location info missing for calculation'
     }
 }
 
@@ -1329,4 +1385,26 @@ function initMap() {
     map.fitBounds( bounds );
 }
 
+
+
+function deleteContact() {
+    console.log('delete contact clicked')
+    fetch(contactsUrl+`/${contactDetail.id}`, { method: "DELETE",
+    headers: {
+        Authorization: `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-type':'application/json'
+    }
+    })
+    .then(response => response.json())
+    .then(json => {
+        if (json.errors) {
+            showInfo(json.errors)
+            changePage(currentPage)
+        } else {
+            showInfo(json.message)
+            localStorage.setItem('jwt', json.auth_token)
+            getContacts()
+        }
+    })
+}
 hasToken()
