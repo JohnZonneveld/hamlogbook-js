@@ -101,7 +101,7 @@ const registerForm = `
     </div>
     `
 
-function profilePage() { 
+function showProfilePage() { 
     document.getElementById('logoffButton').classList.remove('hidden')
     document.getElementById('contactsButton').classList.remove('hidden')
     document.getElementById('editProfileButton').classList.remove('hidden')
@@ -139,7 +139,7 @@ function render(id){
             registerButton.addEventListener("click", (e) => registerProfile())
         break; 
         case 'profile':
-            profilePage(user)
+            showProfilePage(user)
         break;
         case 'editProfile':
             editProfilePage()
@@ -160,10 +160,14 @@ function render(id){
         case 'editContactDetail':
             editContactDetail()
             const submitEditContactButton = buttons.submitEditContact
-            submitEditContactButton.addEventListener("click", (e) => readContact(e))
+            submitEditContactButton.addEventListener("click", (e) => submitEditContact(e))
         break;
-        case 'addContact':
-            addContact()
+        case 'addContactDetail':
+            addContactForm()
+            const submitAddContactButton = buttons.submitAddContact
+            submitAddContactButton.addEventListener("click", (e) => submitAddContact(e))
+            // const submitProfileButton = buttons.submitProfile
+            // submitProfileButton.addEventListener("click", (e) => submitProfile(e))
         break;
 
     }
@@ -182,7 +186,7 @@ function render(id){
     })
     addContactButton.addEventListener("click", function() {
         console.log('add Contact clicked')
-        state.page='addContact'
+        state.page='addContactDetail'
         render()
     })
 }
@@ -212,6 +216,7 @@ function hasToken(){
 
 function loginHandler(e) {
     e.preventDefault()
+    console.log('login clicked')
     const csInput = document.querySelector("#callsign").value
     const pwInput = document.querySelector("#password").value
     const loginData = {user: {
@@ -260,7 +265,6 @@ function loginWithToken(token){
     .then(response => response.json())
     .then(json => {
         if (json.errors){
-            debugger
             localStorage.clear()
             showAlert(json.errors)
             state.page = 'login'
@@ -291,12 +295,14 @@ function showAlert(messages) {
 }
 
 function logoff() {
+    console.log('logoff clicked')
     localStorage.clear()
     state.page = 'login'
     render()
 }
 
 function contacts() {
+    console.log('contacts clicked')
     state.page = 'contacts'
     render()
 }
@@ -310,7 +316,6 @@ function getcontacts() {
     })
     .then(response => response.json())
     .then(json => {
-        debugger
         if (json.errors) {
             showAlert(json.errors)
             state.page = 'login'
@@ -385,7 +390,6 @@ function changePage(page)
         let newText8  = document.createTextNode(contactObjects[i].attributes.country);
         newCell8.appendChild(newText8);
     }
-    debugger
     pageSpan.innerHTML = `${page} of ${numPages()}`;
     let btnNext = document.getElementById("btnNext");
     let btnPrev = document.getElementById("btnPrev");
@@ -408,7 +412,7 @@ function changePage(page)
     })
     addContactButton.addEventListener("click", function() {
         console.log('add Contact clicked')
-        state.page='addContact'
+        state.page='addContactDetail'
         render()
     })
 }
@@ -419,7 +423,7 @@ function numPages()
 }
 
 function editProfile() {
-    console.log('editProfile pressed')
+    console.log('editProfile clicked')
     state.page = 'editProfile'
     render()
 }
@@ -495,7 +499,7 @@ function updateProfile(e) {
 }
 
 function registerProfile() {
-    console.log('register pressed')
+    console.log('register clicked')
     state.page = 'registerProfile'
     render()
 }
@@ -564,10 +568,9 @@ function getContactDetail(id) {
             render()
             } 
         else {
-            debugger
-            contactData=json.contact.data.attributes
+            contactDetail=json.contact.data.attributes
             localStorage.setItem('jwt', json.auth_token)
-            displayContact(contactData)
+            displayContact(contactDetail)
         }
     })
 }
@@ -671,6 +674,7 @@ function displayContact(data) {
     loadMapScript()
     logoffButton.addEventListener("click", (e) => logoff())
     contactsButton.addEventListener("click", function () {
+        console.log('contacts clicked')
         state.page='contacts'
         render()
     })
@@ -678,6 +682,16 @@ function displayContact(data) {
             console.log('edit Contact clicked')
             state.page='editContactDetail'
             render()
+    })
+    addContactButton.addEventListener("click", function() {
+        console.log('add contact clicked')
+        state.page='addContactDetail'
+        render()
+    })
+    profileButton.addEventListener("click", function() {
+        console.log('profile clicked')
+        state.page='profile'
+        render()
     })
 }
 
@@ -692,30 +706,26 @@ function editContactDetail() {
     <form>
         <div class="form-group form-inline">
             <label for="callsign" class="addContact text-info">Callsign: </label>
-            <input type="text" id="owncall" value="${currentUser.callsign}">
-        </div>
-        <div class="form-group form-inline">
-            <label for="callsign" class="addContact text-info">Callsign: </label>
-            <input type="text" id="owncall"  value="${contactData.owncall}">
+            <input type="text" id="owncall"  value="${contactDetail.owncall}">
         </div>
         <div class="form-group form-inline">
             <label for="callsign" class="addContact text-info">Station Callsign: </label>
-            <input type="text" id="station_callsign"  value="${contactData.station_callsign}">
+            <input type="text" id="station_callsign"  value="${contactDetail.station_callsign}">
         </div>
         <div class="form-group form-inline">
             <label for="gridsquare" class="addContact text-info">Gridsquare: </label>
-            <input type="text" id="my_gridsquare"  value="${contactData.my_gridsquare}">
+            <input type="text" id="my_gridsquare"  value="${contactDetail.my_gridsquare}">
         </div>
     </form>
     <b>Worked Station</b>
     <form>
         <div class="form-group form-inline">
             <label for="callsign" class="addContact text-info">Callsign: </label>
-            <input type="text" id="call"  value="${contactData.call}">
+            <input type="text" id="call"  value="${contactDetail.call}">
         </div>
         <div class="form-group form-inline">
             <label for="band" class="addContact text-info">Band: </label>
-            <input type="text" list="band" value="${contactData.band}">
+            <input type="text" list="band" id="getBand" value="${contactDetail.band}">
             <datalist id="band">
                 <option value="2200M">2200M</option>
                 <option value="630M">630M</option>
@@ -739,234 +749,19 @@ function editContactDetail() {
         </div>
         <div class="form-group form-inline">
             <label for="frequency" class="addContact text-info">Frequency: </label>
-            <input type="text" id="freq"  value="${contactData.freq}">
+            <input type="text" id="freq"  value="${contactDetail.freq}">
         </div>
         <div class="form-group form-inline">
             <label for="frequency_rcvd" class="addContact text-info">Frequency received: </label>
-            <input type="text" id="freq_rcvd"  value="${contactData.freq_rcvd}">
+            <input type="text" id="freq_rcvd"  value="${contactDetail.freq_rcvd}">
         </div>
         <div class="form-group form-inline">
             <label for="mode" class="addContact text-info">Mode: </label>
-            <input type="text" id="mode"  value="${contactData.mode}">
-        </div>
-        <div class="form-group form-inline">
-            <label for="submode" class="addContact text-info">Submode: </label>
-            <input type="text" id="submode"  value="${contactData.submode ? contactData.submode : '-'}">
-        </div>
-        <div class="form-group form-inline">
-            <label for="modegroup" class="addContact text-info">Modegroup: </label>
-            <input type="text" list="modegroup" value="${contactData.modegroup}">
-            <datalist id="modegroup">
-                <option value="-">-</option>
-                <option value="CW">CW</option>
-                <option value="PHONE">PHONE</option>
-                <option value="IMAGE">IMAGE</option>
-                <option value="DATA">DATA</option>
-            </datalist>
-        </div>
-        <div class="form-group form-inline">
-            <label for="qso_date" class="addContact text-info">Date: </label>
-            <input type="text" id="qso_date"  value="${contactData.qso_date}">
-        </div>
-        <div class="form-group form-inline">
-            <label for="time_on" class="addContact text-info">Time: </label>
-            <input type="text" id="time_on"  value="${contactData.time_on.slice(11,19)}">
-        </div>
-        <div class="form-group form-inline">
-            <label for="qsl_rcvd" class="addContact text-info">QSL received: </label>
-            <input type="text" id="qsl_rcvd"  value="${contactData.qsl_rcvd}">
-        </div>
-        <div class="form-group form-inline">
-            <label for="qsl_rdate" class="addContact text-info">QSL receive date: </label>
-            <input type="text" id="qsl_rdate"  value="${contactData.qsl_rdate}">
-        </div>
-        <div class="form-group form-inline">
-            <label for="dxcc" class="addContact text-info">DXCC: </label>
-            <input type="text" id="dxcc"  value="${contactData.dxcc}">
-        </div>
-        <div class="form-group form-inline">
-            <label for="country" class="addContact text-info">Country: </label>
-            <input type="text" id="country"  value="${contactData.country}">
-        </div>
-        <div class="form-group form-inline">
-            <label for="callsign" class="addContact text-info">IOTA: </label>
-            <input type="text" id="iota"  value="${contactData.iota ? contactData.iota : '-'}">
-        </div>
-        <div class="form-group form-inline">
-            <label for="gridsquare" class="addContact text-info">Gridsquare: </label>
-            <input type="text" id="gridsquare"  value="${contactData.gridsquare}">
-        </div>
-        <div class="form-group form-inline">
-            <label for="state" class="addContact text-info">State: </label>
-            <input type="text" id="state"  value="${contactData.state}">
-        </div>
-        <div class="form-group form-inline">
-            <label for="county" class="addContact text-info">County: </label>
-            <input type="text" id="cnty"  value="${contactData.cnty}">
-        </div>
-        <div class="form-group form-inline">
-            <label for="cqz" class="addContact text-info">CQ Zone: </label>
-            <input type="text" id="cqz"  value="${contactData.cqz}">
-        </div>
-        <div class="form-group form-inline">
-            <label for="ituz" class="addContact text-info">ITU Zone: </label>
-            <input type="text" id="ituz"  value="${contactData.ituz}">
-        </div>
-        <div class="form-group form-inline">
-            <label for="park" class="addContact text-info">Park: </label>
-            <input type="text" id="park"  value="${contactData.park ? contactData.park : '-'}">
-        </div>
-    </form>  
-    <br>
-    <button type="button" name="submitEditContact" class="btn btn-info">Update Contact</button>
-    ` 
-}
-
-function readContact(e) {
-    e.preventDefault()
-    owncallContactInput=document.getElementById('owncall').value
-    stationcallsignContactInput=document.getElementById('station_callsign').value
-    my_gridsquareContactInput=document.getElementById('my_gridsquare').value
-    callContactInput=document.getElementById('call').value
-    bandContactInput=document.getElementById('band').value
-    freqContactInput=document.getElementById('freq').value
-    freq_rcvdContactInput=document.getElementById('freq_rcvd').value
-    modeContactInput=document.getElementById('mode').value
-    submodeContactInput=document.getElementById('submode').value
-    modegroupContactInput=document.getElementById('modegroup').value
-    qso_dateContactInput=document.getElementById('qso_date').value
-    time_onContactInput=document.getElementById('time_on').value
-    qsl_rcvdContactInput=document.getElementById('qsl_rcvd').value
-    qsl_rdateContactInput=document.getElementById('qsl_rdate').value
-    dxccContactInput=document.getElementById('dxcc').value
-    countryContactInput=document.getElementById('country').value
-    stateContactInput=document.getElementById('state').value
-    cntyContactInput=document.getElementById('cnty').value
-    cqzContactInput=document.getElementById('cqz').value
-    ituzContactInput=document.getElementById('ituz').value
-    iotaContactInput=document.getElementById('iota').value
-    gridsquareContactInput=document.getElementById('gridsquare').value
-    parkContactInput=document.getElementById('park').value
-    
-    const editContactData = {contact: {
-        owncall: owncallContactInput,
-        station_callsign: stationcallsignContactInput,
-        my_gridsquare: my_gridsquareContactInput,
-        call: callContactInput,
-        band: bandContactInput,
-        freq: freqContactInput,
-        freq_rcvd: freqContactInput,
-        mode: modeContactInput,
-        submode: submodeContactInput,
-        modegroup: modegroupContactInput,
-        qso_date: qso_dateContactInput,
-        time_on: time_onContactInput,
-        qsl_rcvd: qsl_rcvdContactInput,
-        qsl_rdate: qsl_rdateContactInput,
-        dxcc: dxccContactInput,
-        country: countryContactInput,
-        state: stateContactInput,
-        cnty: cntyContactInput,
-        cqz: cqzContactInput,
-        ituz: ituzContactInput,
-        iota: iotaContactInput,
-        gridsquare: gridsquareContactInput,
-        park: parkContactInput,
-        }
-    }
-    fetch(contactsUrl+ `${contactData.id}`, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization: `Bearer: ${localStorage.getItem('jwt')}`
-        },
-        body: JSON.stringify(editContactData)
-    })
-    .then(response => response.json())
-    .then(json => {
-        if (json.errors) {
-            showAlert(json.errors)
-            state.page = 'login'
-            render()
-        } else {
-            contactData=json.contact.data.attributes
-            localStorage.setItem('jwt', json.auth_token)
-            displayContact(contactData)
-        }
-    })
-}
-
-function addContact() {
-    debugger
-    document.getElementById('logoffButton').classList.remove('hidden')
-    document.getElementById('contactsButton').classList.remove('hidden')
-    document.getElementById('profileButton').classList.remove('hidden')
-    let utcDate = new Date().toISOString()
-    let utcD = utcDate.slice(0,10)
-    let utcT = utcDate.slice(11,19)
-    infoBox.innerHTML+=`
-    <h3 class="text-center text-info">Add contact</h3>
-    <h4><b>Station</b></h4>
-    <form>
-        <div class="form-group form-inline">
-            <label for="callsign" class="addContact text-info">Callsign: </label>
-            <input type="text" id="owncall" value="${currentUser.callsign}">
-        </div>
-        <div class="form-group form-inline">
-            <label for="callsign" class="addContact text-info">Station Callsign: </label>
-            <input type="text" id="station_callsign" value="${currentUser.callsign}">
-        </div>
-        <div class="form-group form-inline">
-            <label for="gridsquare" class="addContact text-info">Gridsquare: </label>
-            <input type="text" id="my_gridsquare" value="${currentUser.my_qth}">
-        </div>
-    </form>
-    <h3><b>Worked Station</b></h3>
-    <form>
-        <div class="form-group form-inline">
-            <label for="callsign" class="addContact text-info">Callsign: </label>
-            <input type="text" id="call">
-        </div>
-        <div class="form-group form-inline">
-            <label for="band" class="addContact text-info">Band: </label>
-            <input type="text" list="band" />
-            <datalist id="band">
-                <option value="2200M">2200M</option>
-                <option value="630M">630M</option>
-                <option value="160M">160M</option>
-                <option value="80M">80M</option>
-                <option value="60M">60M</option>
-                <option value="40M">40M</option>
-                <option value="30M">30M</option>
-                <option value="20M">20M</option>
-                <option value="17M">17M</option>
-                <option value="15M">15M</option>
-                <option value="12M">12M</option>
-                <option value="10M">10M</option>
-                <option value="6M">6M</option>
-                <option value="2M">2M</option>
-                <option value="1.25M">1.25M</option>
-                <option value="70CM">70CM</option>
-                <option value="33CM">33CM</option>
-                <option value="23CM">23CM</option>
-            </datalist>
-        </div>
-        <div class="form-group form-inline">
-            <label for="frequency" class="addContact text-info">Frequency: </label>
-            <input type="text" id="freq">
-        </div>
-        <div class="form-group form-inline">
-            <label for="frequency_rcvd" class="addContact text-info">Frequency received: </label>
-            <input type="text" id="freq_rcvd" value="-">
-        </div>
-        <div class="form-group form-inline">
-        <label for="mode" class="addContact text-info">Mode: </label>
-        <input type="text" list="mode" />
+            <input type="text" id="getMode"  list="mode" value="${contactDetail.mode}">
             <datalist id="mode">
-                <option value="CW">CW</option>
-                <option value="PHONE">PHONE</option>
-                <option value="IMAGE">IMAGE</option>
+                <option value="CW"CW</option>
+                <option value="PHONE"E">PHONE</option>
+                <option value="IMAGE"E">IMAGE</option>
                 <option value="DATA">DATA</option>
                 <option value="AM">AM</option>
                 <option value="C4FM">C4FM</option>
@@ -987,7 +782,7 @@ function addContact() {
                 <option value="FSK441">FSK441</option>
                 <option value="FT4">FT4</option>
                 <option value="FT8">FT8</option>
-                <option value="GTOR">GTOR</option>
+                <option value="GTOR""GTOR</option>
                 <option value="HELL">HELL</option>
                 <option value="HFSK">HFSK</option>
                 <option value="ISCAT">ISCAT</option>
@@ -1028,14 +823,244 @@ function addContact() {
         </div>
         <div class="form-group form-inline">
             <label for="submode" class="addContact text-info">Submode: </label>
-            <input type="text" list="submode" />
+            <input type="text" id="getSubmode" list="submode" value="${contactDetail.submode ? contactDetail.submode : '-'}">
             <datalist id="submode">
                 <option value="FT4">FT4</option>
             </datalist>
         </div>
         <div class="form-group form-inline">
             <label for="modegroup" class="addContact text-info">Modegroup: </label>
-            <input type="text" list="modegroup" />
+            <input type="text" list="modegroup" id="getModegroup" value="${contactDetail.modegroup}">
+            <datalist id="modegroup">
+                <option value="-">-</option>
+                <option value="CW">CW</option>
+                <option value="PHONE">PHONE</option>
+                <option value="IMAGE">IMAGE</option>
+                <option value="DATA">DATA</option>
+            </datalist>
+        </div>
+        <div class="form-group form-inline">
+            <label for="qso_date" class="addContact text-info">Date: </label>
+            <input type="text" id="qso_date"  value="${contactDetail.qso_date}">
+        </div>
+        <div class="form-group form-inline">
+            <label for="time_on" class="addContact text-info">Time: </label>
+            <input type="text" id="time_on"  value="${contactDetail.time_on.slice(11,19)}">
+        </div>
+        <div class="form-group form-inline">
+            <label for="qsl_rcvd" class="addContact text-info">QSL received: </label>
+            <input type="text" id="qsl_rcvd"  value="${contactDetail.qsl_rcvd}">
+        </div>
+        <div class="form-group form-inline">
+            <label for="qsl_rdate" class="addContact text-info">QSL receive date: </label>
+            <input type="text" id="qsl_rdate"  value="${contactDetail.qsl_rdate}">
+        </div>
+        <div class="form-group form-inline">
+            <label for="dxcc" class="addContact text-info">DXCC: </label>
+            <input type="text" id="dxcc"  value="${contactDetail.dxcc}">
+        </div>
+        <div class="form-group form-inline">
+            <label for="country" class="addContact text-info">Country: </label>
+            <input type="text" id="country"  value="${contactDetail.country}">
+        </div>
+        <div class="form-group form-inline">
+            <label for="callsign" class="addContact text-info">IOTA: </label>
+            <input type="text" id="iota"  value="${contactDetail.iota ? contactDetail.iota : '-'}">
+        </div>
+        <div class="form-group form-inline">
+            <label for="gridsquare" class="addContact text-info">Gridsquare: </label>
+            <input type="text" id="gridsquare"  value="${contactDetail.gridsquare}">
+        </div>
+        <div class="form-group form-inline">
+            <label for="state" class="addContact text-info">State: </label>
+            <input type="text" id="state"  value="${contactDetail.state}">
+        </div>
+        <div class="form-group form-inline">
+            <label for="county" class="addContact text-info">County: </label>
+            <input type="text" id="cnty"  value="${contactDetail.cnty}">
+        </div>
+        <div class="form-group form-inline">
+            <label for="cqz" class="addContact text-info">CQ Zone: </label>
+            <input type="text" id="cqz"  value="${contactDetail.cqz}">
+        </div>
+        <div class="form-group form-inline">
+            <label for="ituz" class="addContact text-info">ITU Zone: </label>
+            <input type="text" id="ituz"  value="${contactDetail.ituz}">
+        </div>
+        <div class="form-group form-inline">
+            <label for="park" class="addContact text-info">Park: </label>
+            <input type="text" id="park"  value="${contactDetail.park ? contactDetail.park : '-'}">
+        </div>
+    </form>  
+    <br>
+    <button type="button" name="submitEditContact" class="btn btn-info" id="submitEditContact">Update Contact</button>
+    ` 
+}
+
+function submitEditContact(e) {
+    e.preventDefault()
+    editContactData = readContactForm()
+    fetch(contactsUrl+ `${contactDetail.id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer: ${localStorage.getItem('jwt')}`
+        },
+        body: JSON.stringify(editContactData)
+    })
+    .then(response => response.json())
+    .then(json => {
+        if (json.errors) {
+            showAlert(json.errors)
+            state.page = 'login'
+            render()
+        } else {
+            contactData=json.contact.data.attributes
+            localStorage.setItem('jwt', json.auth_token)
+            displayContact(contactData)
+        }
+    })
+}
+
+function addContactForm() {
+    document.getElementById('logoffButton').classList.remove('hidden')
+    document.getElementById('contactsButton').classList.remove('hidden')
+    document.getElementById('profileButton').classList.remove('hidden')
+    let utcDate = new Date().toISOString()
+    let utcD = utcDate.slice(0,10)
+    let utcT = utcDate.slice(11,19)
+    infoBox.innerHTML+=`
+    <h3 class="text-center text-info">Add contact</h3>
+    <h4><b>Station</b></h4>
+    <form>
+        <div class="form-group form-inline">
+            <label for="callsign" class="addContact text-info">Callsign: </label>
+            <input type="text" id="owncall" value="${currentUser.callsign}">
+        </div>
+        <div class="form-group form-inline">
+            <label for="callsign" class="addContact text-info">Station Callsign: </label>
+            <input type="text" id="station_callsign" value="${currentUser.callsign}">
+        </div>
+        <div class="form-group form-inline">
+            <label for="gridsquare" class="addContact text-info">Gridsquare: </label>
+            <input type="text" id="my_gridsquare" value="${currentUser.my_qth}">
+        </div>
+    </form>
+    <h3><b>Worked Station</b></h3>
+    <form>
+        <div class="form-group form-inline">
+            <label for="callsign" class="addContact text-info">Callsign: </label>
+            <input type="text" id="call">
+        </div>
+        <div class="form-group form-inline">
+            <label for="band" class="addContact text-info">Band: </label>
+            <input type="text" id="getBand" list="band" />
+            <datalist id="band">
+                <option value="2200M">2200M</option>
+                <option value="630M">630M</option>
+                <option value="160M">160M</option>
+                <option value="80M">80M</option>
+                <option value="60M">60M</option>
+                <option value="40M">40M</option>
+                <option value="30M">30M</option>
+                <option value="20M">20M</option>
+                <option value="17M">17M</option>
+                <option value="15M">15M</option>
+                <option value="12M">12M</option>
+                <option value="10M">10M</option>
+                <option value="6M">6M</option>
+                <option value="2M">2M</option>
+                <option value="1.25M">1.25M</option>
+                <option value="70CM">70CM</option>
+                <option value="33CM">33CM</option>
+                <option value="23CM">23CM</option>
+            </datalist>
+        </div>
+        <div class="form-group form-inline">
+            <label for="frequency" class="addContact text-info">Frequency: </label>
+            <input type="text" id="freq">
+        </div>
+        <div class="form-group form-inline">
+            <label for="frequency_rcvd" class="addContact text-info">Frequency received: </label>
+            <input type="text" id="freq_rcvd" value="-">
+        </div>
+        <div class="form-group form-inline">
+        <label for="mode" class="addContact text-info">Mode: </label>
+        <input type="text" list="mode" id="getMode"/>
+            <datalist id="mode">
+                <option value="CW"CW</option>
+                <option value="PHONE"E">PHONE</option>
+                <option value="IMAGE"E">IMAGE</option>
+                <option value="DATA">DATA</option>
+                <option value="AM">AM</option>
+                <option value="C4FM">C4FM</option>
+                <option value="DIGITALVOICE">DIGITALVOICE</option>
+                <option value="DSTAR">DSTAR</option>
+                <option value="FM">FM</option>
+                <option value="SSB">SSB</option>
+                <option value="ATV">ATV</option>
+                <option value="FAX">FAX</option>
+                <option value="SSTV">SSTV</option>
+                <option value="AMTOR">AMTOR</option>
+                <option value="ARDOP">ARDOP</option>
+                <option value="CHIP">CHIP</option>
+                <option value="CLOVER">CLOVER</option>
+                <option value="CONTESTI">CONTESTI</option>
+                <option value="DOMINO">DOMINO</option>
+                <option value="FSK31">FSK31</option>
+                <option value="FSK441">FSK441</option>
+                <option value="FT4">FT4</option>
+                <option value="FT8">FT8</option>
+                <option value="GTOR""GTOR</option>
+                <option value="HELL">HELL</option>
+                <option value="HFSK">HFSK</option>
+                <option value="ISCAT">ISCAT</option>
+                <option value="JT4">JT4</option>
+                <option value="JT65">JT65</option>
+                <option value="JT6M">JT6M</option>
+                <option value="JT9">JT9</option>
+                <option value="MFSK16">MFSK16</option>
+                <option value="MFSK8">MFSK8</option>
+                <option value="MINIRTTY">MINIRTTY</option>
+                <option value="MSK144">MSK144</option>
+                <option value="MT63">MT63</option>
+                <option value="OLIVIA">OLIVIA</option>
+                <option value="OPERA">OPERA</option>
+                <option value="PACKET">PACKET</option>
+                <option value="PACTOR">PACTOR</option>
+                <option value="PAX">PAX</option>
+                <option value="PSK10">PSK10</option>
+                <option value="PSK125">PSK125</option>
+                <option value="PSK2K">PSK2K</option>
+                <option value="PSK31">PSK31</option>
+                <option value="PSK63">PSK63</option>
+                <option value="PSK63F">PSK63F</option>
+                <option value="PSKAM">PSKAM</option>
+                <option value="PSFEC31">PSFEC31</option>
+                <option value="Q15">Q15</option>
+                <option value="QRA64">QRA64</option>
+                <option value="ROS">ROS</option>
+                <option value="RTTY">RTTY</option>
+                <option value="RTTYM">RTTYM</option>
+                <option value="T10">T10</option>
+                <option value="THOR">THOR</option>
+                <option value="THROB">THROB</option>
+                <option value="VOI">VOI</option>
+                <option value="WINMOR">WINMOR</option>
+                <option value="WSPR">WSPR</option>
+            </datalist>
+        </div>
+        <div class="form-group form-inline">
+            <label for="submode" class="addContact text-info">Submode: </label>
+            <input type="text" list="submode" id="getSubmode"/>
+            <datalist id="submode">
+                <option value="FT4">FT4</option>
+            </datalist>
+        </div>
+        <div class="form-group form-inline">
+            <label for="modegroup" class="addContact text-info">Modegroup: </label>
+            <input type="text" list="modegroup" id="getModegroup"/>
             <datalist id="modegroup">
                 <option value="-">-</option>
                 <option value="CW">CW</option>
@@ -1099,8 +1124,87 @@ function addContact() {
     </form>  
     </div>
     <br>
-    <button type="button" name="submitAddContact" class="btn btn-info">Add Contact</button>
+    <button type="button" name="submitAddContact" class="btn btn-info" id="submitAddContact">Submit Contact</button>
     ` 
+}
+
+function readContactForm() {
+    owncallContactInput=document.getElementById('owncall').value
+    stationcallsignContactInput=document.getElementById('station_callsign').value
+    my_gridsquareContactInput=document.getElementById('my_gridsquare').value
+    callContactInput=document.getElementById('call').value
+    bandContactInput=document.getElementById('getBand').value
+    freqContactInput=document.getElementById('freq').value
+    freq_rcvdContactInput=document.getElementById('freq_rcvd').value
+    modeContactInput=document.getElementById('getMode').value
+    submodeContactInput=document.getElementById('getSubmode').value
+    modegroupContactInput=document.getElementById('getModegroup').value
+    qso_dateContactInput=document.getElementById('qso_date').value
+    time_onContactInput=document.getElementById('time_on').value
+    qsl_rcvdContactInput=document.getElementById('qsl_rcvd').value
+    qsl_rdateContactInput=document.getElementById('qsl_rdate').value
+    dxccContactInput=document.getElementById('dxcc').value
+    countryContactInput=document.getElementById('country').value
+    stateContactInput=document.getElementById('state').value
+    cntyContactInput=document.getElementById('cnty').value
+    cqzContactInput=document.getElementById('cqz').value
+    ituzContactInput=document.getElementById('ituz').value
+    iotaContactInput=document.getElementById('iota').value
+    gridsquareContactInput=document.getElementById('gridsquare').value
+    parkContactInput=document.getElementById('park').value
+    
+    const contactData = {contact: {
+        owncall: owncallContactInput,
+        station_callsign: stationcallsignContactInput,
+        my_gridsquare: my_gridsquareContactInput,
+        call: callContactInput,
+        band: bandContactInput,
+        freq: freqContactInput,
+        freq_rcvd: freqContactInput,
+        mode: modeContactInput,
+        submode: submodeContactInput,
+        modegroup: modegroupContactInput,
+        qso_date: qso_dateContactInput,
+        time_on: time_onContactInput,
+        qsl_rcvd: qsl_rcvdContactInput,
+        qsl_rdate: qsl_rdateContactInput,
+        dxcc: dxccContactInput,
+        country: countryContactInput,
+        state: stateContactInput,
+        cnty: cntyContactInput,
+        cqz: cqzContactInput,
+        ituz: ituzContactInput,
+        iota: iotaContactInput,
+        gridsquare: gridsquareContactInput,
+        park: parkContactInput,
+    }}
+    return contactData
+}
+
+function submitAddContact(e) {
+    e.preventDefault()
+    const contactData = readContactForm()
+    fetch(contactsUrl, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer: ${localStorage.getItem('jwt')}`
+        },
+        body: JSON.stringify(contactData)
+    })
+    .then(response => response.json())
+    .then(json => {
+        if (json.errors) {
+            showAlert(json.errors)
+            state.page = 'login'
+            render()
+        } else {
+            contactDetail=json.contact.data.attributes
+            localStorage.setItem('jwt', json.auth_token)
+            displayContact(contactDetail)
+        }
+    })
 }
 
 function loadMapScript() {
