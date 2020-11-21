@@ -15,6 +15,7 @@ let recordsPerPage = 15
 let remLatLon
 let myLatLon
 let page
+let messageHTML=""
 
 
 
@@ -94,7 +95,7 @@ const registerForm = `
             </div>
             <div class="form-group">
                 <label for="my_qth" class="text-info">Grid Square: </label>
-                <input type="text" class="form-control" id="my_qth"placeholder="Grid Square, format AA11((aa)(11))" pattern="[A-R]{2}[0-9]{2}([a-x]{2})?([0-9]{2})?" required>
+                <input type="text" class="form-control" id="my_qth" placeholder="Grid Square, format AA11((aa)(11))" pattern="[A-R]{2}[0-9]{2}([a-x]{2})?([0-9]{2})?" required>
             </div>
             <div class="form-group">
                 <label for="password" class="text-info">Password:</label>
@@ -210,6 +211,7 @@ function render(id){
     const logoffButton = buttons.logoff
     const contactsButton = buttons.contacts
     const addContactButton = buttons.addContact
+    const homeButton = buttons.homeButton
     logoffButton.addEventListener("click", function(e) {
         e.preventDefault()
         logoff()
@@ -234,11 +236,17 @@ function render(id){
         state.page="addContactDetail"
         render()
     })
+    homeButton.addEventListener("click", function(e) {
+        e.preventDefault()
+        state.page="login"
+        render()
+    })
 }
 
 function navigationBar(){
     infoBox.innerHTML = `
         <div class="form-group text-left">
+            <button type="button" name-"home" class="btn btn-info btn-md hidden" id="homeButton">Back To Login</button>
             <button type="button" name="logoff" class="btn btn-info btn-md hidden" id="logoffButton">Log Off</button>
             <button type="button" name="profile" class="btn btn-info btn-md hidden" id="profileButton">Profile</button>
             <button type="button" name="editProfile" class="btn btn-info btn-md hidden"id="editProfileButton">Edit Profile</button>
@@ -321,12 +329,20 @@ function loginWithToken(token){
 }
 
 function showInfo(messages) {
-    if (messages.length >= 1) {
-        let messageHTML=""
+    debugger
+    if (Array.isArray(messages)) {
+        messageHTML=""
         messages.forEach(function (message) {
             messageHTML += "<li>" + message + "</li>";
         });
-        infoLine.innerHTML = `
+    } else {
+        messageHTML = messages
+    }
+    showInfoMessage(messageHTML)
+}
+
+function showInfoMessage() {
+    infoLine.innerHTML = `
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
                 <strong>${messageHTML}</strong>
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -334,9 +350,6 @@ function showInfo(messages) {
                 </button>
             </div>
         `
-    } else {
-        infoLine.innerHTML = ``
-    }
 }
 
 function logoff() {
@@ -576,6 +589,7 @@ function registerProfile() {
 }
 
 function registerPage() {
+    document.getElementById("homeButton").classList.remove("hidden")
     infoBox.innerHTML += registerForm
 }
 
@@ -705,6 +719,14 @@ function displayContact(data) {
                         <td class="col-9">${data.country}</td>
                     </tr>
                     <tr class="d-flex">
+                        <td class="col-6" id="data_index">State</td>
+                        <td class="col-9">${data.state}</td>
+                    </tr>
+                    <tr class="d-flex">
+                        <td class="col-6" id="data_index">County</td>
+                        <td class="col-9">${data.cnty}</td>
+                    </tr>
+                    <tr class="d-flex">
                         <td class="col-6" id="data_index">Gridsquare</td>
                         <td class="col-9">${data.gridsquare ? data.gridsquare : "-"}</td>
                     </tr>
@@ -803,26 +825,26 @@ function editContactForm() {
         <form>
             <div class="form-group form-inline">
                 <label for="callsign" class="addContact text-info">Callsign: </label>
-                <input type="text" id="owncall"  value="${contactDetail.owncall}">
+                <input type="text" class="form-control" id="owncall"  value="${contactDetail.owncall}" required>
             </div>
             <div class="form-group form-inline">
                 <label for="callsign" class="addContact text-info">Station Callsign: </label>
-                <input type="text" id="station_callsign"  value="${contactDetail.station_callsign}">
+                <input type="text" class="form-control" id="station_callsign"  value="${contactDetail.station_callsign}">
             </div>
             <div class="form-group form-inline">
                 <label for="gridsquare" class="addContact text-info">Gridsquare: </label>
-                <input type="text" id="my_gridsquare"  value="${contactDetail.my_gridsquare}">
+                <input type="text" class="form-control" id="my_gridsquare" required value="${contactDetail.my_gridsquare}" pattern="[A-R]{2}[0-9]{2}([a-x]{2})?([0-9]{2})?" required>
             </div>
         </form>
         <b>Worked Station</b>
         <form>
             <div class="form-group form-inline">
                 <label for="callsign" class="addContact text-info">Callsign: </label>
-                <input type="text" id="call"  value="${contactDetail.call}">
+                <input type="text" class="form-control" id="call"  value="${contactDetail.call}" required>
             </div>
             <div class="form-group form-inline">
                 <label for="band" class="addContact text-info">Band: </label>
-                <input type="text" list="band" id="getBand" value="${contactDetail.band}">
+                <input type="text" class="form-control" list="band" id="getBand" value="${contactDetail.band}" required>
                 <datalist id="band">
                     <option value="2200M">2200M</option>
                     <option value="630M">630M</option>
@@ -846,15 +868,15 @@ function editContactForm() {
             </div>
             <div class="form-group form-inline">
                 <label for="frequency" class="addContact text-info">Frequency: </label>
-                <input type="text" id="freq"  value="${contactDetail.freq}">
+                <input type="text" class="form-control" id="freq" required value="${contactDetail.freq}" required>
             </div>
             <div class="form-group form-inline">
                 <label for="frequency_rcvd" class="addContact text-info">Frequency received: </label>
-                <input type="text" id="freq_rcvd"  value="${contactDetail.freq_rcvd}">
+                <input type="text" class="form-control" id="freq_rcvd"  value="${contactDetail.freq_rcvd}">
             </div>
             <div class="form-group form-inline">
                 <label for="mode" class="addContact text-info">Mode: </label>
-                <input type="text" id="getMode"  list="mode" value="${contactDetail.mode}">
+                <input type="text" class="form-control" id="getMode"  list="mode" value="${contactDetail.mode}" required>
                 <datalist id="mode">
                     <option value="CW"CW</option>
                     <option value="PHONE"E">PHONE</option>
@@ -920,14 +942,14 @@ function editContactForm() {
             </div>
             <div class="form-group form-inline">
                 <label for="submode" class="addContact text-info">Submode: </label>
-                <input type="text" id="getSubmode" list="submode" value="${contactDetail.submode ? contactDetail.submode : "-"}">
+                <input type="text" class="form-control" id="getSubmode" list="submode" value="${contactDetail.submode ? contactDetail.submode : "-"}">
                 <datalist id="submode">
                     <option value="FT4">FT4</option>
                 </datalist>
             </div>
             <div class="form-group form-inline">
                 <label for="modegroup" class="addContact text-info">Modegroup: </label>
-                <input type="text" list="modegroup" id="getModegroup" value="${contactDetail.modegroup}">
+                <input type="text" class="form-control" list="modegroup" id="getModegroup" value="${contactDetail.modegroup}">
                 <datalist id="modegroup">
                     <option value="-">-</option>
                     <option value="CW">CW</option>
@@ -938,55 +960,55 @@ function editContactForm() {
             </div>
             <div class="form-group form-inline">
                 <label for="qso_date" class="addContact text-info">Date: </label>
-                <input type="text" id="qso_date"  value="${contactDetail.qso_date}">
+                <input type="text" class="form-control" id="qso_date"  value="${contactDetail.qso_date}" required>
             </div>
             <div class="form-group form-inline">
                 <label for="time_on" class="addContact text-info">Time: </label>
-                <input type="text" id="time_on"  value="${contactDetail.time_on.slice(11,19)}">
+                <input type="text" class="form-control" id="time_on"  value="${contactDetail.time_on.slice(11,19)}" required>
             </div>
             <div class="form-group form-inline">
                 <label for="qsl_rcvd" class="addContact text-info">QSL received: </label>
-                <input type="text" id="qsl_rcvd"  value="${contactDetail.qsl_rcvd}">
+                <input type="checkbox" id="qsl_rcvd" value="${contactDetail.qsl_rcvd.value}" checkbox="${contactDetail.qsl_rcvd.value ? checked="checked" : checked="unchecked"}">
             </div>
             <div class="form-group form-inline">
                 <label for="qsl_rdate" class="addContact text-info">QSL receive date: </label>
-                <input type="text" id="qsl_rdate"  value="${contactDetail.qsl_rdate ? contactDetail.qsl_rdate : "-"}">
+                <input type="text" class="form-control" id="qsl_rdate"  value="${contactDetail.qsl_rdate ? contactDetail.qsl_rdate : "-"}">
             </div>
             <div class="form-group form-inline">
                 <label for="dxcc" class="addContact text-info">DXCC: </label>
-                <input type="text" id="dxcc"  value="${contactDetail.dxcc}">
+                <input type="text" class="form-control" id="dxcc"  value="${contactDetail.dxcc}">
             </div>
             <div class="form-group form-inline">
                 <label for="country" class="addContact text-info">Country: </label>
-                <input type="text" id="country"  value="${contactDetail.country}">
+                <input type="text" class="form-control" id="country"  value="${contactDetail.country}">
             </div>
             <div class="form-group form-inline">
                 <label for="callsign" class="addContact text-info">IOTA: </label>
-                <input type="text" id="iota"  value="${contactDetail.iota ? contactDetail.iota : "-"}">
+                <input type="text" class="form-control" id="iota"  value="${contactDetail.iota ? contactDetail.iota : "-"}">
             </div>
             <div class="form-group form-inline">
                 <label for="gridsquare" class="addContact text-info">Gridsquare: </label>
-                <input type="text" id="gridsquare" value="${contactDetail.gridsquare}">
+                <input type="text" class="form-control" id="gridsquare" value="${contactDetail.gridsquare}" pattern="[A-R]{2}[0-9]{2}([a-x]{2})?([0-9]{2})?" required>
             </div>
             <div class="form-group form-inline">
                 <label for="state" class="addContact text-info">State: </label>
-                <input type="text" id="state"  value="${contactDetail.state}">
+                <input type="text" class="form-control" id="state"  value="${contactDetail.state}">
             </div>
             <div class="form-group form-inline">
                 <label for="county" class="addContact text-info">County: </label>
-                <input type="text" id="cnty"  value="${contactDetail.cnty}">
+                <input type="text" class="form-control" id="cnty"  value="${contactDetail.cnty}">
             </div>
             <div class="form-group form-inline">
                 <label for="cqz" class="addContact text-info">CQ Zone: </label>
-                <input type="text" id="cqz"  value="${contactDetail.cqz}">
+                <input type="text" class="form-control" id="cqz"  value="${contactDetail.cqz}">
             </div>
             <div class="form-group form-inline">
                 <label for="ituz" class="addContact text-info">ITU Zone: </label>
-                <input type="text" id="ituz"  value="${contactDetail.ituz}">
+                <input type="text" class="form-control" id="ituz"  value="${contactDetail.ituz}">
             </div>
             <div class="form-group form-inline">
                 <label for="park" class="addContact text-info">Park: </label>
-                <input type="text" id="park"  value="${contactDetail.park ? contactDetail.park : "-"}">
+                <input type="text" class="form-control" id="park"  value="${contactDetail.park ? contactDetail.park : "-"}">
             </div>
         </form>  
         <br>
@@ -1009,9 +1031,8 @@ function submitEditContact(e) {
     .then(response => response.json())
     .then(json => {
         if (json.error) {
+            debugger
             showInfo(json.error)
-            state.page = "login"
-            render()
         } else {
             contactData=json.contact.data.attributes
             localStorage.setItem("jwt", json.auth_token)
@@ -1033,22 +1054,22 @@ function addContactForm() {
         <form>
             <div class="form-group form-inline">
                 <label for="callsign" class="addContact text-info">Callsign: </label>
-                <input type="text" id="owncall" value="${currentUser.callsign}">
+                <input type="text" class="form-control" id="owncall" value="${currentUser.callsign}" required>
             </div>
             <div class="form-group form-inline">
                 <label for="callsign" class="addContact text-info">Station Callsign: </label>
-                <input type="text" id="station_callsign" value="${currentUser.callsign}">
+                <input type="text" class="form-control" id="station_callsign" value="${currentUser.callsign}" required>
             </div>
             <div class="form-group form-inline">
                 <label for="gridsquare" class="addContact text-info">Gridsquare: </label>
-                <input type="text" id="my_gridsquare" value="${currentUser.my_qth}">
+                <input type="text" class="form-control" id="my_gridsquare" value="${currentUser.my_qth}" pattern="[A-R]{2}[0-9]{2}([a-x]{2})?([0-9]{2})?" required>
             </div>
         </form>
         <h4><b>Worked Station</b></h4>
         <form>
             <div class="form-group form-inline">
                 <label for="callsign" class="addContact text-info">Callsign: </label>
-                <input type="text" id="call" oninput="searchContact()">
+                <input type="text" class="form-control" id="call" oninput="searchContact()">
             </div>
             </form>
             <div id="prevContacts">
@@ -1057,7 +1078,7 @@ function addContactForm() {
             <form>
             <div class="form-group form-inline">
                 <label for="band" class="addContact text-info">Band: </label>
-                <input type="text" id="getBand" list="band" />
+                <input type="text" class="form-control" id="getBand" list="band" />
                 <datalist id="band">
                     <option value="2200M">2200M</option>
                     <option value="630M">630M</option>
@@ -1081,15 +1102,15 @@ function addContactForm() {
             </div>
             <div class="form-group form-inline">
                 <label for="frequency" class="addContact text-info">Frequency: </label>
-                <input type="text" id="freq">
+                <input type="text" class="form-control" id="freq">
             </div>
             <div class="form-group form-inline">
                 <label for="frequency_rcvd" class="addContact text-info">Frequency received: </label>
-                <input type="text" id="freq_rcvd" value="-">
+                <input type="text" class="form-control" id="freq_rcvd" value="-">
             </div>
             <div class="form-group form-inline">
             <label for="mode" class="addContact text-info">Mode: </label>
-            <input type="text" list="mode" id="getMode"/>
+            <input type="text" class="form-control" list="mode" id="getMode"/>
                 <datalist id="mode">
                     <option value="CW"CW</option>
                     <option value="PHONE"E">PHONE</option>
@@ -1155,14 +1176,14 @@ function addContactForm() {
             </div>
             <div class="form-group form-inline">
                 <label for="submode" class="addContact text-info">Submode: </label>
-                <input type="text" list="submode" id="getSubmode"/>
+                <input type="text" class="form-control" list="submode" id="getSubmode"/>
                 <datalist id="submode">
                     <option value="FT4">FT4</option>
                 </datalist>
             </div>
             <div class="form-group form-inline">
                 <label for="modegroup" class="addContact text-info">Modegroup: </label>
-                <input type="text" list="modegroup" id="getModegroup"/>
+                <input type="text" class="form-control" list="modegroup" id="getModegroup"/>
                 <datalist id="modegroup">
                     <option value="-">-</option>
                     <option value="CW">CW</option>
@@ -1173,11 +1194,11 @@ function addContactForm() {
             </div>
             <div class="form-group form-inline">
                 <label for="qso_date" class="addContact text-info">Date: </label>
-                <input type="text" id="qso_date"   value="${utcD}">
+                <input type="text" class="form-control" id="qso_date"   value="${utcD}">
             </div>
             <div class="form-group form-inline">
                 <label for="time_on" class="addContact text-info">Time: </label>
-                <input type="text" id="time_on" value="${utcT}">
+                <input type="text" class="form-control" id="time_on" value="${utcT}">
             </div>
             <div class="form-group form-inline">
                 <label for="qsl_rcvd" class="addContact text-info">QSL received: </label>
@@ -1185,43 +1206,43 @@ function addContactForm() {
             </div>
             <div class="form-group form-inline">
                 <label for="qsl_rdate" class="addContact text-info">QSL receive date: </label>
-                <input type="text" id="qsl_rdate" value="-">
+                <input type="text" class="form-control" id="qsl_rdate" value="-">
             </div>
             <div class="form-group form-inline">
                 <label for="dxcc" class="addContact text-info">DXCC: </label>
-                <input type="text" id="dxcc"  value="-">
+                <input type="text" class="form-control" id="dxcc"  value="-">
             </div>
             <div class="form-group form-inline">
                 <label for="country" class="addContact text-info">Country: </label>
-                <input type="text" id="country">
-            </div>
-            <div class="form-group form-inline">
-                <label for="callsign" class="addContact text-info">IOTA: </label>
-                <input type="text" id="iota"  value="-">
-            </div>
-            <div class="form-group form-inline">
-                <label for="gridsquare" class="addContact text-info">Gridsquare: </label>
-                <input type="text" id="gridsquare">
+                <input type="text" class="form-control" id="country">
             </div>
             <div class="form-group form-inline">
                 <label for="state" class="addContact text-info">State: </label>
-                <input type="text" id="state">
+                <input type="text" class="form-control" id="state">
             </div>
             <div class="form-group form-inline">
                 <label for="county" class="addContact text-info">County: </label>
-                <input type="text" id="cnty" value="-">
+                <input type="text" class="form-control" id="cnty" value="-">
+            </div>
+            <div class="form-group form-inline">
+                <label for="callsign" class="addContact text-info">IOTA: </label>
+                <input type="text" class="form-control" id="iota"  value="-">
+            </div>
+            <div class="form-group form-inline">
+                <label for="gridsquare" class="addContact text-info">Gridsquare: </label>
+                <input type="text" class="form-control" pattern="[A-R]{2}[0-9]{2}([a-x]{2})?([0-9]{2})?" id="gridsquare">
             </div>
             <div class="form-group form-inline">
                 <label for="cqz" class="addContact text-info">CQ Zone: </label>
-                <input type="text" id="cqz" value="-">
+                <input type="text" class="form-control" id="cqz" value="-">
             </div>
             <div class="form-group form-inline">
                 <label for="ituz" class="addContact text-info">ITU Zone: </label>
-                <input type="text" id="ituz" value="-">
+                <input type="text" class="form-control" id="ituz" value="-">
             </div>
             <div class="form-group form-inline">
                 <label for="park" class="addContact text-info">Park: </label>
-                <input type="text" id="park" value="-">
+                <input type="text" class="form-control" id="park" value="-">
             </div>
         </form>  
         </div>
@@ -1290,10 +1311,11 @@ function searchContact() {
 
 
 function readContactForm() {
+    debugger
     owncallContactInput=document.getElementById("owncall").value
     stationcallsignContactInput=document.getElementById("station_callsign").value
     my_gridsquareContactInput=document.getElementById("my_gridsquare").value
-    callContactInput=document.getElementById("call").value
+    callContactInput=document.getElementById("call").value.toUpperCase()
     bandContactInput=document.getElementById("getBand").value
     freqContactInput=document.getElementById("freq").value
     freq_rcvdContactInput=document.getElementById("freq_rcvd").value
@@ -1302,12 +1324,12 @@ function readContactForm() {
     modegroupContactInput=document.getElementById("getModegroup").value
     qso_dateContactInput=document.getElementById("qso_date").value
     time_onContactInput=document.getElementById("time_on").value
-    qsl_rcvdContactInput=document.getElementById("qsl_rcvd").value
+    qsl_rcvdContactInput=document.getElementById("qsl_rcvd").checked
     qsl_rdateContactInput=document.getElementById("qsl_rdate").value
     dxccContactInput=document.getElementById("dxcc").value
-    countryContactInput=document.getElementById("country").value
-    stateContactInput=document.getElementById("state").value
-    cntyContactInput=document.getElementById("cnty").value
+    countryContactInput=document.getElementById("country").value.toUpperCase()
+    stateContactInput=document.getElementById("state").value.toUpperCase()
+    cntyContactInput=document.getElementById("cnty").value.toUpperCase()
     cqzContactInput=document.getElementById("cqz").value
     ituzContactInput=document.getElementById("ituz").value
     iotaContactInput=document.getElementById("iota").value
@@ -1363,6 +1385,8 @@ function submitAddContact(e) {
         } else {
             contactDetail=json.contact.data.attributes
             localStorage.setItem("jwt", json.auth_token)
+            debugger
+            showInfo(json.message)
             displayContact(contactDetail)
         }
     })
@@ -1502,10 +1526,12 @@ function deleteContact() {
             showInfo(json.error)
             changePage(currentPage)
         } else {
+            debugger
             showInfo(json.message)
             localStorage.setItem("jwt", json.auth_token)
             getContacts()
         }
     })
 }
+
 hasToken()
