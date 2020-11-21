@@ -1234,6 +1234,7 @@ function searchContact() {
     filter=document.getElementById("call").value
     filter = filter.toUpperCase()
     console.log(filter)
+    prevContactsView=document.getElementById('prevContacts')
     if (filter.length > 2) {
         console.log('filtering')
         filteredContacts=[]
@@ -1250,55 +1251,40 @@ function searchContact() {
                filteredContacts.push(contactObject)
             }
         }
-        prevContactsView=document.getElementById('prevContacts')
         if (filteredContacts.length > 0) {
             prevContactsView.innerHTML=prevContactsTableHeader
-            // for (let i=0; i < filteredContacts.length; i++) {
-            //     let filteredContact = filteredContacts[i]
-                // prevContactsView.innerHTML += `
-                //     <div>${filteredContact.attributes.call}</div>, 
-                //     <div>${filteredContact.attributes.qso_date}</div>, 
-                //     <div>${filteredContact.attributes.time_on.slice(11,19)}</div>, 
-                //     <div>${filteredContact.attributes.band}</div>, 
-                //     <div>${filteredContact.attributes.freq}</div>,
-                //     <div>${filteredContact.attributes.mode}</div>
-                //     <br>
-                // `
-            // }
             let tableRef = document.getElementById("prevContacts").getElementsByTagName("tbody")[0];
-                for (let i = 0; i < filteredContacts.length; i++) {
-                    let filteredContact = filteredContacts[i]
-                    // Insert a row in the table at the last row
-                    let newRow   = tableRef.insertRow();
-                    // let newCell0  = newRow.insertCell(0);
-                    // newCell0.innerHTML = `<a href="javascript:ContactDetail(${contactObjects[i].attributes.id})" id="contactDetail">detail</a>`
-                    // let newCell1  = newRow.insertCell(1);
-                    // let newText1  = document.createTextNode(contactObjects[i].attributes.owncall);
-                    // newCell1.appendChild(newText1);
-                    let newCell0  = newRow.insertCell(0);
-                    let newText0  = document.createTextNode(filteredContact.attributes.call);
-                    newCell0.appendChild(newText0);
-                    let newCell1  = newRow.insertCell(1);
-                    let newText1  = document.createTextNode(filteredContact.attributes.qso_date);
-                    newCell1.appendChild(newText1);
-                    let newCell2  = newRow.insertCell(2);
-                    let newText2  = document.createTextNode(filteredContact.attributes.time_on.slice(11,19));
-                    newCell2.appendChild(newText2);
-                    let newCell3  = newRow.insertCell(3);
-                    let newText3  = document.createTextNode(filteredContact.attributes.band);
-                    newCell3.appendChild(newText3);
-                    let newCell4  = newRow.insertCell(4);
-                    let newText4  = document.createTextNode(filteredContact.attributes.mode);
-                    newCell4.appendChild(newText4);
-                    let newCell5  = newRow.insertCell(5);
-                    let newText5  = document.createTextNode(filteredContact.attributes.freq);
-                    newCell5.appendChild(newText5);
-                    let newCell6  = newRow.insertCell(6);
-                    let newText6  = document.createTextNode(filteredContact.attributes.country);
-                    newCell6.appendChild(newText6);   
-                }
+            for (let i = 0; i < filteredContacts.length; i++) {
+                let filteredContact = filteredContacts[i]
+                // Insert a row in the table at the last row
+                let newRow   = tableRef.insertRow();
+                let newCell0  = newRow.insertCell(0);
+                let newText0  = document.createTextNode(filteredContact.attributes.call);
+                newCell0.appendChild(newText0);
+                let newCell1  = newRow.insertCell(1);
+                let newText1  = document.createTextNode(filteredContact.attributes.qso_date);
+                newCell1.appendChild(newText1);
+                let newCell2  = newRow.insertCell(2);
+                let newText2  = document.createTextNode(filteredContact.attributes.time_on.slice(11,19));
+                newCell2.appendChild(newText2);
+                let newCell3  = newRow.insertCell(3);
+                let newText3  = document.createTextNode(filteredContact.attributes.band);
+                newCell3.appendChild(newText3);
+                let newCell4  = newRow.insertCell(4);
+                let newText4  = document.createTextNode(filteredContact.attributes.mode);
+                newCell4.appendChild(newText4);
+                let newCell5  = newRow.insertCell(5);
+                let newText5  = document.createTextNode(filteredContact.attributes.freq);
+                newCell5.appendChild(newText5);
+                let newCell6  = newRow.insertCell(6);
+                let newText6  = document.createTextNode(filteredContact.attributes.country);
+                newCell6.appendChild(newText6);
+            }
+        } else {
+            prevContactsView.innerHTML=""
         }
-        
+    } else {
+        prevContactsView.innerHTML=""
     }
 }
 
