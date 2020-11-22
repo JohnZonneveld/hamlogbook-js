@@ -8,16 +8,14 @@ const gMapsScript = "https://maps.googleapis.com/maps/api/js?callback=initMap&si
 const infoLine = document.getElementById("infoViewPort")
 const buttons = document.getElementsByClassName("btn")
 let user = {}
-let contactObjects = []
+let unfilteredContactObjects = []
 let prevContacts = []
 let currentPage = 1;
 let recordsPerPage = 15
 let remLatLon
 let myLatLon
 let page
-let messageHTML=""
-
-
+let messageHTML = ""
 
 // set initial state and user
 let state = {page: "login", user: null}
@@ -72,14 +70,28 @@ const contactsTableHeader = `
     </table>
 `
 
-const contactHeader =`
+const contactHeader = `
     <div id="contactsDiv">
         <h4 class="text-center text-info">Your contacts</h4>
-        <div class="table-responsive" id="contactsContentDiv">
+        <div class="optionsDiv">
+            Filter By 
+            <select id="selectField" onchange="changePlaceholder()">
+                <option value="contacts" selected>Contacts</option>
+                <option value="country">Country</option>
+                <br> 
+            </select>
+            <input type="text" id="searchInput" placeholder="Filter contacts" oninput="filterContactObjects()">
         </div>
+        <div class="table-responsive" id="contactsContentDiv"></div>
     </div>
     page: <span id="page"></span>
 `
+
+function changePlaceholder() {
+    console.log('change placeholder')
+    let changePlaceholder =document.getElementById('selectField').value
+    document.getElementById('searchInput').placeholder = `Filter by ${changePlaceholder}`
+}
 
 const registerForm = `
     <h2 class="text-center text-info">Register</h2>
@@ -204,7 +216,6 @@ function render(id){
                 submitAddContact(e)
             })
         break;
-
     }
 
     const editPofileButton = buttons.editProfile
@@ -227,18 +238,18 @@ function render(id){
     editContactButton.addEventListener("click", function(e) {
         e.preventDefault()
         console.log("edit Contact clicked")
-        state.page="editContactDetail"
+        state.page = "editContactDetail"
         render()
     })
     addContactButton.addEventListener("click", function(e) {
         e.preventDefault
         console.log("add Contact clicked")
-        state.page="addContactDetail"
+        state.page = "addContactDetail"
         render()
     })
     homeButton.addEventListener("click", function(e) {
         e.preventDefault()
-        state.page="login"
+        state.page = "login"
         render()
     })
 }
@@ -256,6 +267,53 @@ function navigationBar(){
             <button type="button" name="deleteContact" class="btn btn-danger btn-md hidden" id="deleteContactButton">Delete Contact</button>
         </div>
     `
+}
+
+function filterContactObjects() {
+    console.log("filter unfiltered")
+    let filterCategory = document.getElementById('selectField').value
+    let searchFilter = document.getElementById('searchInput').value.toUpperCase()
+    contactObjects=[]
+    if (filterCategory == "contacts" ) {
+        if (searchFilter.length > 0) {
+            console.log('filtering')
+            for (let i=0; i < unfilteredContactObjects.length; i++) {
+                // grab an instance
+                let contactObject = unfilteredContactObjects[i]
+                let call = contactObject.attributes.call
+                // https://www.w3schools.com/jsref/jsref_indexof.asp
+                // indexOf will return -1 if the name does not contain the filter
+                if (call.indexOf(searchFilter) > -1){
+                    //if it is greater than -1 then the name does contain the filter
+                    //therefor push it into the array of filteredDottomodachi
+                contactObjects.push(contactObject)
+                }
+            }
+        } else {
+            contactObjects = unfilteredContactObjects
+        }
+    }
+    if (filterCategory == "country" ) {
+        if (searchFilter.length > 0) {
+            console.log('filtering')
+            for (let i=0; i < unfilteredContactObjects.length; i++) {
+                // grab an instance
+                let contactObject = unfilteredContactObjects[i]
+                let country = contactObject.attributes.country
+                // https://www.w3schools.com/jsref/jsref_indexof.asp
+                // indexOf will return -1 if the name does not contain the filter
+                if (country.indexOf(searchFilter) > -1){
+                    //if it is greater than -1 then the name does contain the filter
+                    //therefor push it into the array of filteredDottomodachi
+                contactObjects.push(contactObject)
+                }
+            }
+        } else {
+            contactObjects = unfilteredContactObjects
+        }
+    }
+    page = 1
+    changePage(page)
 }
 
 function hasToken(){
@@ -329,9 +387,8 @@ function loginWithToken(token){
 }
 
 function showInfo(messages) {
-    debugger
     if (Array.isArray(messages)) {
-        messageHTML=""
+        messageHTML = ""
         messages.forEach(function (message) {
             messageHTML += "<li>" + message + "</li>";
         });
@@ -377,10 +434,11 @@ function getContacts() {
             state.page = "login"
             render()
         } else {
-            contactObjects = json.contacts.data
+            unfilteredContactObjects = json.contacts.data
             localStorage.setItem("jwt", json.auth_token)
             navigationBar()
             infoBox.innerHTML += contactHeader
+            contactObjects=unfilteredContactObjects
             changePage(currentPage)
         }
     })
@@ -422,7 +480,6 @@ function changePage(page)
 {
     let contactsTable = document.getElementById("contactsContentDiv");
     let pageSpan = document.getElementById("page");
-    
     // Validate page
     if (page < 1) page = 1;
     if (page > numPages()) page = numPages();
@@ -490,13 +547,13 @@ function changePage(page)
     profileButton.addEventListener("click", function(e) {
         e.preventDefault()
         console.log("profile clicked")
-        state.page="profile"
+        state.page= " profile"
         render()
     })
     addContactButton.addEventListener("click", function(e) {
         e.preventDefault()
         console.log("add Contact clicked")
-        state.page="addContactDetail"
+        state.page = "addContactDetail"
         render()
     })
 }
@@ -594,7 +651,6 @@ function registerPage() {
 }
 
 function submitProfile() {
-    // e.preventDefault()
     csRegisterInput=document.getElementById("callsign").value.toUpperCase()
     pwRegisterInput=document.getElementById("password").value
     emRegisterInput=document.getElementById("email").value
@@ -615,7 +671,6 @@ function submitProfile() {
     .then(json => {
     if (json.error) {
         showInfo(json.error)
-        // keep the page just display the error(s)
     } 
     else {
         userData=json.user.data.attributes
@@ -663,13 +718,12 @@ function getContactDetail(id) {
                     submitEditContact(e)
                 })
             }
-            
         }
     })
 }
 
 function displayContact(data) {
-    state.page="contactDetail"
+    state.page = "contactDetail"
     navigationBar()
     let myGrid = data.my_gridsquare
     let remGrid = data.gridsquare
@@ -686,7 +740,6 @@ function displayContact(data) {
     document.getElementById("editContactButton").classList.remove("hidden")
     document.getElementById("profileButton").classList.remove("hidden")
     document.getElementById("deleteContactButton").classList.remove("hidden")
-    
     infoBox.innerHTML+=`
         <h4 class="text-center text-info">Your contact</h4>
         <section>
@@ -785,13 +838,13 @@ function displayContact(data) {
     contactsButton.addEventListener("click", function (e) {
         e.preventDefault()
         console.log("contacts clicked")
-        state.page="contacts"
+        state.page = "contacts"
         render()
     })
     editContactButton.addEventListener("click", function(e) {
         e.preventDefault()
         console.log("edit Contact clicked")
-        state.page="editContactDetail"
+        state.page = "editContactDetail"
         render()
     })
     addContactButton.addEventListener("click", function(e) {
@@ -803,10 +856,9 @@ function displayContact(data) {
     profileButton.addEventListener("click", function(e) {
         e.preventDefault()
         console.log("profile clicked")
-        state.page="profile"
+        state.page = "profile"
         render()
     })
-    
     buttons.deleteContact.addEventListener("click", function(e) {
         e.preventDefault()
         console.log("delete contact clicked")
@@ -1031,7 +1083,6 @@ function submitEditContact(e) {
     .then(response => response.json())
     .then(json => {
         if (json.error) {
-            debugger
             showInfo(json.error)
         } else {
             contactData=json.contact.data.attributes
@@ -1048,7 +1099,7 @@ function addContactForm() {
     let utcDate = new Date().toISOString()
     let utcD = utcDate.slice(0,10)
     let utcT = utcDate.slice(11,19)
-    infoBox.innerHTML+=`
+    infoBox.innerHTML += `
         <h4 class="text-center text-info">Add contact</h4>
         <h4><b>Station</b></h4>
         <form>
@@ -1252,7 +1303,7 @@ function addContactForm() {
 }
 
 function searchContact() {
-    filter=document.getElementById("call").value
+    filter = document.getElementById("call").value
     filter = filter.toUpperCase()
     console.log(filter)
     prevContactsView=document.getElementById('prevContacts')
@@ -1262,10 +1313,8 @@ function searchContact() {
         for (let i=0; i < contactObjects.length; i++) {
             // grab an instance
             let contactObject = contactObjects[i]
-            // toUpperCase since we're ignoring case sensitivity
             let call = contactObject.attributes.call
-            // https://www.w3schools.com/jsref/jsref_indexof.asp
-            // indexOf will return -1 if the name does not contain the filter
+            // indexOf will return -1 if the call does not contain the filter
             if (call.indexOf(filter) > -1){
                 //if it is greater than -1 then the name does contain the filter
                 //therefor push it into the array of filteredDottomodachi
@@ -1302,16 +1351,15 @@ function searchContact() {
                 newCell6.appendChild(newText6);
             }
         } else {
-            prevContactsView.innerHTML=""
+            prevContactsView.innerHTML = ""
         }
     } else {
-        prevContactsView.innerHTML=""
+        prevContactsView.innerHTML = ""
     }
 }
 
 
 function readContactForm() {
-    debugger
     owncallContactInput=document.getElementById("owncall").value
     stationcallsignContactInput=document.getElementById("station_callsign").value
     my_gridsquareContactInput=document.getElementById("my_gridsquare").value
@@ -1335,7 +1383,6 @@ function readContactForm() {
     iotaContactInput=document.getElementById("iota").value
     gridsquareContactInput=document.getElementById("gridsquare").value
     parkContactInput=document.getElementById("park").value
-    
     const contactData = {contact: {
         owncall: owncallContactInput,
         station_callsign: stationcallsignContactInput,
@@ -1385,7 +1432,6 @@ function submitAddContact(e) {
         } else {
             contactDetail=json.contact.data.attributes
             localStorage.setItem("jwt", json.auth_token)
-            debugger
             showInfo(json.message)
             displayContact(contactDetail)
         }
@@ -1403,7 +1449,6 @@ function loadMapScript() {
     mapScript.type = "text/javascript";
     mapScript.src = gMapsScript;
     mapSpace.appendChild(mapScript);
-
 }
 
 // The Maidenhead Grid system is build up by squares of 10° latitude
@@ -1421,12 +1466,11 @@ function loadMapScript() {
 // convert it to a latitide and longitude it will lead us to the left bottom 
 // corner of the square. 
 // The longer the given gridsquare, the more precise the calculated location is.
-    
 gridSquareToLatLon = function(grid){
     // set lat and lon to 0.0
     let lat=0.0,lon=0.0
     // determine the ASCII value of "a" and "A", aNum = 97 and numA = 65
-    let aNum="a".charCodeAt(0),numA="A".charCodeAt(0);
+    let aNum="a".charCodeAt(0),numA = "A".charCodeAt(0);
     // latitude is divided in 10°, because the equator is 0 we have to substract 90°
     function lat4(g){
         //  example my location EL15 = 25.5, -97
@@ -1526,7 +1570,6 @@ function deleteContact() {
             showInfo(json.error)
             changePage(currentPage)
         } else {
-            debugger
             showInfo(json.message)
             localStorage.setItem("jwt", json.auth_token)
             getContacts()
