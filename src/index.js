@@ -1,9 +1,5 @@
 let infoBox = document.querySelector("#container-box")
 const baseUrl = "http://localhost:3000"
-const usersUrl = "http://localhost:3000/users/"
-const loginUrl = "http://localhost:3000/auth_user"
-const registerUrl = "http://localhost:3000/auth/register"
-const contactsUrl = "http://localhost:3000/contacts/"
 const gMapsScript = "https://maps.googleapis.com/maps/api/js?callback=initMap&signed_in=true&key=AIzaSyBXq06q4pG6fATSosF-sSte5QK8WuanI1Q&language=en"
 const infoLine = document.getElementById("infoViewPort")
 const buttons = document.getElementsByClassName("btn")
@@ -334,7 +330,7 @@ function loginHandler(e) {
         password: pwInput
         }
     }
-    fetch(loginUrl, {
+    fetch(baseUrl+`/auth_user`, {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(loginData)
@@ -612,7 +608,7 @@ function updateProfile(e) {
         my_qth: mqProfileInput
         }
     }
-    fetch(usersUrl+ `${currentUser.userId}`, {
+    fetch(baseUrl+`/users/${currentUser.userId}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
@@ -662,7 +658,7 @@ function submitProfile() {
         my_qth: gsRegisterInput
         }
     }
-    fetch(registerUrl, {
+    fetch(baseUrl+`/auth/register`, {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(registerProfileData)
@@ -690,7 +686,7 @@ function ContactDetail(id) {
 }
 
 function getContactDetail(id) {
-    fetch(contactsUrl+ `${id}`, {
+    fetch(baseUrl+`/contacts/${id}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -1071,7 +1067,7 @@ function editContactForm() {
 function submitEditContact(e) {
     e.preventDefault()
     editContactData = readContactForm()
-    fetch(contactsUrl+ `${contactDetail.id}`, {
+    fetch(baseUrl+ `/contacts/${contactDetail.id}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
@@ -1414,7 +1410,7 @@ function readContactForm() {
 function submitAddContact(e) {
     e.preventDefault()
     const contactData = readContactForm()
-    fetch(contactsUrl, {
+    fetch(baseUrl+`/contacts/`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -1427,8 +1423,6 @@ function submitAddContact(e) {
     .then(json => {
         if (json.error) {
             showInfo(json.error)
-            state.page = "login"
-            render()
         } else {
             contactDetail=json.contact.data.attributes
             localStorage.setItem("jwt", json.auth_token)
@@ -1558,7 +1552,7 @@ function initMap() {
 }
 
 function deleteContact() {
-    fetch(contactsUrl+`/${contactDetail.id}`, { method: "DELETE",
+    fetch(baseUrl+`/contacts/${contactDetail.id}`, { method: "DELETE",
         headers: {
             Authorization: `Bearer ${localStorage.getItem("jwt")}`,
             "Content-type":"application/json"
