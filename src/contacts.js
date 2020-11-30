@@ -36,6 +36,7 @@ const contactHeader = `
             <select id="selectField" onchange="changePlaceholder()">
                 <option value="contacts" selected>Contacts</option>
                 <option value="country">Country</option>
+                <option value="mode">Mode</option>
                 <br> 
             </select>
             <input type="text" id="searchInput" placeholder="Start entering contact" oninput="filterContactObjects()">
@@ -883,6 +884,47 @@ function filterContactObjects() {
             contactObjects = unfilteredContactObjects
         }
     }
+    if (filterCategory == "mode" ) {
+        if (searchFilter.length > 0) {
+            console.log('filtering')
+            for (let i=0; i < unfilteredContactObjects.length; i++) {
+                // grab an instance
+                let contactObject = unfilteredContactObjects[i]
+                let mode = contactObject.attributes.mode
+                // https://www.w3schools.com/jsref/jsref_indexof.asp
+                // indexOf will return -1 if the name does not contain the filter
+                if (mode.indexOf(searchFilter) > -1){
+                    //if it is greater than -1 then the name does contain the filter
+                    //therefor push it into the array of filteredDottomodachi
+                contactObjects.push(contactObject)
+                }
+            }
+        } else {
+            contactObjects = unfilteredContactObjects
+        }
+    }
     page = 1
     changePage(page)
+}
+
+function getContacts() {
+    fetch("http://localhost:3000/contacts", {
+        method: "GET",
+        headers: { Authorization: `Bearer ${localStorage.getItem("jwt")}` }
+    })
+    .then(response => response.json())
+    .then(json => {
+        if (json.error) {
+            createInfo(json.error)
+            state.page = "login"
+            render()
+        } else {
+            unfilteredContactObjects = json.contacts.data
+            localStorage.setItem("jwt", json.auth_token)
+            navigationBar()
+            infoBox.innerHTML += contactHeader
+            contactObjects=unfilteredContactObjects
+            changePage(currentPage)
+        }
+    })
 }

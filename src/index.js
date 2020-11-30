@@ -278,27 +278,7 @@ function contacts() {
     render()
 }
 
-function getContacts() {
-    fetch("http://localhost:3000/contacts", {
-        method: "GET",
-        headers: { Authorization: `Bearer ${localStorage.getItem("jwt")}` }
-    })
-    .then(response => response.json())
-    .then(json => {
-        if (json.error) {
-            createInfo(json.error)
-            state.page = "login"
-            render()
-        } else {
-            unfilteredContactObjects = json.contacts.data
-            localStorage.setItem("jwt", json.auth_token)
-            navigationBar()
-            infoBox.innerHTML += contactHeader
-            contactObjects=unfilteredContactObjects
-            changePage(currentPage)
-        }
-    })
-}
+
 
 function prevPage()
 {
