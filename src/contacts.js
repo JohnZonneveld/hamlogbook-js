@@ -91,13 +91,13 @@ function getDisplayContactDetail(id) {
     })
     .then(response => response.json())
     .then(json => {
+        localStorage.setItem("jwt", json.auth_token)
         if (json.error) {
             createInfo(json.error)
             } 
         else {
             contactDetail=json.contact.data.attributes
             localStorage.setItem("jwt", json.auth_token)
-            // displayContact(contactDetail)
             state.page = "displayContact"
             render()
         }
@@ -320,12 +320,11 @@ function submitEditContact(e) {
     })
     .then(response => response.json())
     .then(json => {
+        localStorage.setItem("jwt", json.auth_token)
         if (json.error) {
             createInfo(json.error)
         } else {
             contactDetail = json.contact.data.attributes
-            localStorage.setItem("jwt", json.auth_token)
-            // displayContact(contactData)
             state.page = "displayContact"
             render()
         }
@@ -664,13 +663,12 @@ function submitAddContact(e) {
     })
     .then(response => response.json())
     .then(json => {
+        localStorage.setItem("jwt", json.auth_token)
         if (json.error) {
             createInfo(json.error)
         } else {
             contactDetail=json.contact.data.attributes
-            localStorage.setItem("jwt", json.auth_token)
             createInfo(json.message)
-            // displayContact(contactDetail)
             page = "displayContact"
             render()
         }
@@ -686,12 +684,12 @@ function deleteContact() {
     })
     .then(response => response.json())
     .then(json => {
+        localStorage.setItem("jwt", json.auth_token)
         if (json.error) {
             createInfo(json.error)
             changePage(currentPage)
         } else {
             createInfo(json.message)
-            localStorage.setItem("jwt", json.auth_token)
             getContacts()
         }
     })
@@ -882,13 +880,13 @@ function getContacts() {
     })
     .then(response => response.json())
     .then(json => {
+        localStorage.setItem("jwt", json.auth_token)
         if (json.error) {
             createInfo(json.error)
             state.page = "login"
             render()
         } else {
             unfilteredContactObjects = json.contacts.data
-            localStorage.setItem("jwt", json.auth_token)
             infoBox.innerHTML = navigationBar
             infoBox.innerHTML += contactHeader
             contactObjects=unfilteredContactObjects

@@ -221,6 +221,7 @@ function loginHandler(e) {
     })
     .then(response => response.json())
     .then(json => {
+        localStorage.setItem("jwt", json.auth_token)
         if (json.error) {
             createInfo(json.error)
             state.page = "login"
@@ -229,7 +230,6 @@ function loginHandler(e) {
             userData=json.user.data.attributes
             state.page = "profile"
             currentUser = new User(userData)
-            localStorage.setItem("jwt", json.auth_token)
             render()
         }
     })
@@ -251,6 +251,7 @@ function loginWithToken(token){
     })
     .then(response => response.json())
     .then(json => {
+        localStorage.setItem("jwt", json.auth_token)
         if (json.error){
             localStorage.clear()
             createInfo(json.error)
@@ -258,7 +259,6 @@ function loginWithToken(token){
             render()
         } else {
             currentUser = new User(json.userdata.data.attributes)
-            localStorage.setItem("jwt", json.auth_token)
             state.page = "profile"
             render()
         }
@@ -460,6 +460,7 @@ function updateProfile(e) {
     .then(response => response.json())
     .then(json => {
         if (json.error) {
+            localStorage.setItem("jwt", json.auth_token)
             createInfo(json.error)
             state.page = "login"
             render()
@@ -468,7 +469,6 @@ function updateProfile(e) {
             userData=json.user.data.attributes
             state.page = "profile"
             currentUser = new User(userData)
-            localStorage.setItem("jwt", json.auth_token)
             render()
         }
     })
@@ -504,6 +504,7 @@ function submitProfile() {
     })
     .then(response => response.json())
     .then(json => {
+        localStorage.setItem("jwt", json.auth_token)
     if (json.error) {
         createInfo(json.error)
     } 
@@ -511,7 +512,6 @@ function submitProfile() {
         userData=json.user.data.attributes
         state.page = "profile"
         currentUser = new User(userData)
-        localStorage.setItem("jwt", json.auth_token)
         render()
     }
     })
