@@ -1,3 +1,6 @@
+let remLatLon
+let myLatLon
+
 function loadMapScript() {
     try {
         if (google) {

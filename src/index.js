@@ -4,14 +4,7 @@ const gMapsScript = "https://maps.googleapis.com/maps/api/js?callback=initMap&si
 const infoLine = document.getElementById("infoViewPort")
 const buttons = document.getElementsByClassName("btn")
 let user = {}
-let unfilteredContactObjects = []
-let prevContacts = []
-let currentPage = 1;
-let recordsPerPage = 15
-let remLatLon
-let myLatLon
 let page
-let messageHTML = ""
 
 // set initial state and user
 let state = {page: "login"}
@@ -61,6 +54,19 @@ const registerForm = `
     </div>
 `
 
+const navigationBar = `
+        <div class="form-group text-left">
+            <button type="button" name-"home" class="btn btn-info btn-md hidden" id="homeButton">Back To Login</button>
+            <button type="button" name="logoff" class="btn btn-info btn-md hidden" id="logoffButton">Log Off</button>
+            <button type="button" name="profile" class="btn btn-info btn-md hidden" id="profileButton">Profile</button>
+            <button type="button" name="editProfile" class="btn btn-info btn-md hidden"id="editProfileButton">Edit Profile</button>
+            <button type="button" name="contacts" class="btn btn-info btn-md hidden" id="contactsButton">Contacts</button>
+            <button type="button" name="addContact" class="btn btn-info btn-md hidden" id="addContactButton">Add Contact</button>
+            <button type="button" name="editContact" class="btn btn-info btn-md hidden" id="editContactButton">Edit Contact</button>
+            <button type="button" name="deleteContact" class="btn btn-danger btn-md hidden" id="deleteContactButton">Delete Contact</button>
+        </div>
+    `
+
 function showProfilePage() { 
     document.getElementById("logoffButton").classList.remove("hidden")
     document.getElementById("contactsButton").classList.remove("hidden")
@@ -86,7 +92,7 @@ function showProfilePage() {
 }
 
 function render(id){
-    navigationBar()
+    infoBox.innerHTML = navigationBar
     switch (state.page){
         // first page people see to log in
         case "login":
@@ -104,6 +110,14 @@ function render(id){
                 registerProfile()
             })
         break; 
+        case "registerProfile":
+            registerPage()
+            const submitProfileButton = buttons.submitProfile
+            submitProfileButton.addEventListener("click", function(e) {
+                e.preventDefault()
+                submitProfile(e)
+            })
+        break;
         case "profile":
             showProfilePage()
         break;
@@ -115,31 +129,29 @@ function render(id){
                 updateProfile(e)
             })
         break;
-        case "registerProfile":
-            registerPage()
-            const submitProfileButton = buttons.submitProfile
-            submitProfileButton.addEventListener("click", function(e) {
-                e.preventDefault()
-                submitProfile(e)
-            })
-        break;
         case "contacts":
             getContacts()
-        break;
-        case "contactDetail":
-            getContactDetail(id)
-        break;
-        case "editContactDetail":
-            id=contactDetail.id
-            getContactDetail(id)
-            const submitEditContactButton = buttons.submitEditContact
         break;
         case "addContactDetail":
             addContactForm()
             const submitAddContactButton = buttons.submitAddContact
-            submitAddContactButton.addEventListener("click", function(e) {
+            submitAddContactButton.addEventListener("click", (e) => {
+                    e.preventDefault()
+                    submitAddContact(e)
+                })
+        break;
+        case "contactDetail":
+            contactDetail = getDisplayContactDetail(id)
+        break;
+        case "displayContact":
+            displayContact()
+        break;
+        case "editContactDetail":
+            editContactForm()
+            const submitEditContactButton = buttons.submitEditContact
+            submitEditContactButton.addEventListener("click", (e) => {
                 e.preventDefault()
-                submitAddContact(e)
+                submitEditContact(e)
             })
         break;
     }
@@ -149,50 +161,39 @@ function render(id){
     const contactsButton = buttons.contacts
     const addContactButton = buttons.addContact
     const homeButton = buttons.homeButton
-    logoffButton.addEventListener("click", function(e) {
+    const profileButton = buttons.profileButton
+    logoffButton.addEventListener("click", (e) => {
         e.preventDefault()
         logoff()
     })
-    contactsButton.addEventListener("click", function(e) {
+    contactsButton.addEventListener("click", (e) => {
         e.preventDefault()
         contacts(e)
     })
-    editProfileButton.addEventListener("click", function(e) {
+    profileButton.addEventListener("click", (e) => {
+        e.preventDefault()
+        state.page = "profile"
+        render()
+    })
+    editProfileButton.addEventListener("click", (e) => {
         e.preventDefault()
         editProfile()
     })
-    editContactButton.addEventListener("click", function(e) {
+    editContactButton.addEventListener("click", (e) => {
         e.preventDefault()
-        console.log("edit Contact clicked")
         state.page = "editContactDetail"
         render()
     })
-    addContactButton.addEventListener("click", function(e) {
+    addContactButton.addEventListener("click", (e) => {
         e.preventDefault
-        console.log("add Contact clicked")
         state.page = "addContactDetail"
         render()
     })
-    homeButton.addEventListener("click", function(e) {
+    homeButton.addEventListener("click", (e) => {
         e.preventDefault()
         state.page = "login"
         render()
     })
-}
-
-function navigationBar(){
-    infoBox.innerHTML = `
-        <div class="form-group text-left">
-            <button type="button" name-"home" class="btn btn-info btn-md hidden" id="homeButton">Back To Login</button>
-            <button type="button" name="logoff" class="btn btn-info btn-md hidden" id="logoffButton">Log Off</button>
-            <button type="button" name="profile" class="btn btn-info btn-md hidden" id="profileButton">Profile</button>
-            <button type="button" name="editProfile" class="btn btn-info btn-md hidden"id="editProfileButton">Edit Profile</button>
-            <button type="button" name="contacts" class="btn btn-info btn-md hidden" id="contactsButton">Contacts</button>
-            <button type="button" name="addContact" class="btn btn-info btn-md hidden" id="addContactButton">Add Contact</button>
-            <button type="button" name="editContact" class="btn btn-info btn-md hidden" id="editContactButton">Edit Contact</button>
-            <button type="button" name="deleteContact" class="btn btn-danger btn-md hidden" id="deleteContactButton">Delete Contact</button>
-        </div>
-    `
 }
 
 function hasToken(){
@@ -277,8 +278,6 @@ function contacts() {
     state.page = "contacts"
     render()
 }
-
-
 
 function prevPage()
 {
@@ -376,22 +375,22 @@ function changePage(page)
         btnEnd.style.visibility = "visible";
     }
     // Because the pagination for the contacts page we need some "local" eventListeners
-    logoffButton.addEventListener("click", function(e) { 
-        e.preventDefault()
-        logoff()
-    })
-    profileButton.addEventListener("click", function(e) {
-        e.preventDefault()
-        console.log("profile clicked")
-        state.page= "profile"
-        render()
-    })
-    addContactButton.addEventListener("click", function(e) {
-        e.preventDefault()
-        console.log("add Contact clicked")
-        state.page = "addContactDetail"
-        render()
-    })
+    logoffButton.addEventListener("click", (e) => {
+            e.preventDefault()
+            logoff()
+        })
+    profileButton.addEventListener("click", (e) => {
+            e.preventDefault()
+            console.log("profile clicked")
+            state.page = "profile"
+            render()
+        })
+    addContactButton.addEventListener("click", (e) => {
+            e.preventDefault()
+            console.log("add Contact clicked")
+            state.page = "addContactDetail"
+            render()
+        })
 }
 
 function numPages()
@@ -518,7 +517,5 @@ function submitProfile() {
     })
 
 }
-
-
 
 hasToken()

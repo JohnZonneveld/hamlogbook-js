@@ -1,3 +1,5 @@
+let messageHTML = ""
+
 function createInfo(messages) {
     if (Array.isArray(messages)) {
         messageHTML = ""

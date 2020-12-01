@@ -1,3 +1,8 @@
+let unfilteredContactObjects = []
+let prevContacts = []
+let currentPage = 1;
+let recordsPerPage = 15
+
 const contactsTableHeader = `
     <table class="table-striped" id="Contacts">  
         <tr class="border_bottom">
@@ -75,7 +80,7 @@ function ContactDetail(id) {
     render(id)
 }
 
-function getContactDetail(id) {
+function getDisplayContactDetail(id) {
     fetch(baseUrl+`/contacts/${id}`, {
         method: "GET",
         headers: {
@@ -88,22 +93,13 @@ function getContactDetail(id) {
     .then(json => {
         if (json.error) {
             createInfo(json.error)
-            state.page = "profile"
-            render()
             } 
         else {
             contactDetail=json.contact.data.attributes
             localStorage.setItem("jwt", json.auth_token)
-            if (state.page == "contactDetail") {
-                displayContact(contactDetail)
-            } else {
-                editContactForm()
-                submitEditContactButton=buttons.submitEditContact
-                submitEditContactButton.addEventListener("click", function(e) {
-                    e.preventDefault()
-                    submitEditContact(e)
-                })
-            }
+            // displayContact(contactDetail)
+            state.page = "displayContact"
+            render()
         }
     })
 }
@@ -327,9 +323,11 @@ function submitEditContact(e) {
         if (json.error) {
             createInfo(json.error)
         } else {
-            contactData=json.contact.data.attributes
+            contactDetail = json.contact.data.attributes
             localStorage.setItem("jwt", json.auth_token)
-            displayContact(contactData)
+            // displayContact(contactData)
+            state.page = "displayContact"
+            render()
         }
     })
 }
@@ -672,7 +670,9 @@ function submitAddContact(e) {
             contactDetail=json.contact.data.attributes
             localStorage.setItem("jwt", json.auth_token)
             createInfo(json.message)
-            displayContact(contactDetail)
+            // displayContact(contactDetail)
+            page = "displayContact"
+            render()
         }
     })
 }
@@ -697,9 +697,10 @@ function deleteContact() {
     })
 }
 
-function displayContact(data) {
+function displayContact() {
+    let data = contactDetail
     state.page = "contactDetail"
-    navigationBar()
+    infoBox.innerHTML = navigationBar
     let myGrid = data.my_gridsquare
     let remGrid = data.gridsquare
     myLatLon = gridSquareToLatLon(myGrid)
@@ -806,39 +807,6 @@ function displayContact(data) {
         </section>
     ` 
     loadMapScript()
-    logoffButton.addEventListener("click", function(e) {
-        e.preventDefault()
-        logoff()
-    })
-    contactsButton.addEventListener("click", function (e) {
-        e.preventDefault()
-        console.log("contacts clicked")
-        state.page = "contacts"
-        render()
-    })
-    editContactButton.addEventListener("click", function(e) {
-        e.preventDefault()
-        console.log("edit Contact clicked")
-        state.page = "editContactDetail"
-        render()
-    })
-    addContactButton.addEventListener("click", function(e) {
-        e.preventDefault()
-        console.log("add contact clicked")
-        state.page="addContactDetail"
-        render()
-    })
-    profileButton.addEventListener("click", function(e) {
-        e.preventDefault()
-        console.log("profile clicked")
-        state.page = "profile"
-        render()
-    })
-    buttons.deleteContact.addEventListener("click", function(e) {
-        e.preventDefault()
-        console.log("delete contact clicked")
-        deleteContact()
-    })
 }
 
 function filterContactObjects() {
@@ -921,7 +889,7 @@ function getContacts() {
         } else {
             unfilteredContactObjects = json.contacts.data
             localStorage.setItem("jwt", json.auth_token)
-            navigationBar()
+            infoBox.innerHTML = navigationBar
             infoBox.innerHTML += contactHeader
             contactObjects=unfilteredContactObjects
             changePage(currentPage)
