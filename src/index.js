@@ -233,6 +233,12 @@ function loginHandler(e) {
             render()
         }
     })
+    .catch((error) => {
+        localStorage.clear()
+        state.page = "login"
+        createInfo('Session timed out, please log in again!')
+        render()
+    })
 }
 
 class User {
@@ -263,7 +269,12 @@ function loginWithToken(token){
             render()
         }
     })
-    .catch(error => createInfo(error))
+    .catch((error) => {
+        localStorage.clear()
+        state.page = "login"
+        createInfo('Session timed out, please log in again!')
+        render()
+    })
 }
 
 function logoff() {
@@ -472,6 +483,12 @@ function updateProfile(e) {
             render()
         }
     })
+    .catch((error) => {
+        localStorage.clear()
+        state.page = "login"
+        createInfo('Session timed out, please log in again!')
+        render()
+    })
 }
 
 function registerProfile() {
@@ -514,6 +531,12 @@ function submitProfile() {
         currentUser = new User(userData)
         render()
     }
+    })
+    .catch((error) => {
+        localStorage.clear()
+        state.page = "login"
+        createInfo('Session timed out, please log in again!')
+        render()
     })
 
 }

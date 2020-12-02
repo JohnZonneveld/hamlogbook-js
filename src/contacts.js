@@ -102,6 +102,12 @@ function getDisplayContactDetail(id) {
             render()
         }
     })
+    .catch((error) => {
+        localStorage.clear()
+        state.page = "login"
+        createInfo('Session timed out, please log in again!')
+        render()
+    })
 }
 
 function editContactForm() {
@@ -112,7 +118,7 @@ function editContactForm() {
     infoBox.innerHTML+=`
         <h4 class="text-center text-info">Edit your contact</h4>
         <b>Station</b>
-        <form>
+        <form id="myStation">
             <div class="form-group form-inline">
                 <label for="callsign" class="addContact text-info">Callsign: </label>
                 <input type="text" class="form-control" id="owncall"  value="${contactDetail.owncall}" required>
@@ -127,7 +133,7 @@ function editContactForm() {
             </div>
         </form>
         <b>Worked Station</b>
-        <form>
+        <form id=workedStation>
             <div class="form-group form-inline">
                 <label for="callsign" class="addContact text-info">Callsign: </label>
                 <input type="text" class="form-control" id="call"  value="${contactDetail.call}" required>
@@ -328,6 +334,12 @@ function submitEditContact(e) {
             state.page = "displayContact"
             render()
         }
+    })
+    .catch((error) => {
+        localStorage.clear()
+        state.page = "login"
+        createInfo('Session timed out, please log in again!')
+        render()
     })
 }
 
@@ -673,6 +685,12 @@ function submitAddContact(e) {
             render()
         }
     })
+    .catch((error) => {
+        localStorage.clear()
+        state.page = "login"
+        createInfo('Session timed out, please log in again!')
+        render()
+    })
 }
 
 function deleteContact() {
@@ -692,6 +710,12 @@ function deleteContact() {
             createInfo(json.message)
             getContacts()
         }
+    })
+    .catch((error) => {
+        localStorage.clear()
+        state.page = "login"
+        createInfo('Session timed out, please log in again!')
+        render()
     })
 }
 
@@ -881,6 +905,7 @@ function getContacts() {
     .then(response => response.json())
     .then(json => {
         localStorage.setItem("jwt", json.auth_token)
+        debugger
         if (json.error) {
             createInfo(json.error)
             state.page = "login"
@@ -892,5 +917,11 @@ function getContacts() {
             contactObjects=unfilteredContactObjects
             changePage(currentPage)
         }
+    })
+    .catch((error) => {
+        localStorage.clear()
+        state.page = "login"
+        createInfo('Session timed out, please log in again!')
+        render()
     })
 }
