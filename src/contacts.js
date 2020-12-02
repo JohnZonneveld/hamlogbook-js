@@ -905,7 +905,6 @@ function getContacts() {
     .then(response => response.json())
     .then(json => {
         localStorage.setItem("jwt", json.auth_token)
-        debugger
         if (json.error) {
             createInfo(json.error)
             state.page = "login"
