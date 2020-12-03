@@ -33,7 +33,7 @@ html::before {
     max-width: 2000px;
     border: 2px solid #9C9C9C;
     background-color: #faf8f8;
-    opacity: 0.75;
+    opacity: 0.7;
     display: flex;
     flex-direction: column;
 }
@@ -41,28 +41,19 @@ html::before {
 #loginDiv {
     width: 90%;
 }
-/* #login-form .container #login-row #login-column #login-box #login-form {
-    padding: 0px;
-    display: flex;
-    flex-direction: column;
-} */
 
-/* #login-form .container #login-row #login-column #login-box #login-form #register-link {
-    margin-top: -85px;
-} */
-
-.nav {
+/* .nav {
     display: flex;
     padding: 2px;
     color: white;
-}
+} */
 
 #container-box {
     width: 80%;
     margin: auto;
     border: 1px solid black;
     border-collapse: collapse;
-    padding: 5px;
+    padding: 2px;
     align-items: center;
 }
 
@@ -83,7 +74,7 @@ tr.border_top td {
 }
 
 .btn {
-    margin: 10px 5px 5px 5px;
+    margin: 5px;
     width: auto;
 }
 
@@ -96,25 +87,18 @@ tr.border_top td {
 }
 
 #btn_next {
+    margin: 2px;
     float: right;
-}
-
-#data_index {
-    font-weight: bold;
 }
 
 .mapColumn {
-    margin-left:auto; 
-    margin-right:auto;
     float: right;
     width: 300px;
     height: 400px;
-    margin-bottom: 10px;
+    margin: 10px;
 }
 
 .contactColumn {
-    margin-left:auto; 
-    margin-right:auto;
     font-size: 12px;
     float: left;
     width: 400px;
@@ -124,20 +108,9 @@ tr.border_top td {
     display: none;
 }
 
-.editContact {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-}
-
 form {
     width: 100%;
-    margin: 0 auto;
-  }
-
-label, input {
-    /* In order to define widths */
-    display: inline-block;
+    margin: 10px;
 }
 
 label {
@@ -149,6 +122,7 @@ label {
 input, textarea {
     text-align: left;
     width: 20em;
+    height: 20px
 }
 
 label+input {

@@ -13,7 +13,7 @@ const loginPage = `
     <h2 class="text-center text-info">Login</h2>
     <div id="loginDiv">
         <form id="login-form" class="form">
-            <div class="form-group">
+            <div id="form-group" class="form-group">
                 <label for="callsign" class="text-info">Callsign:</label>
                 <input type="text" name="callsign" id="callsign" class="form-control">
             </div>
@@ -21,10 +21,8 @@ const loginPage = `
                 <label for="password" class="text-info">Password:</label>
                 <input type="password" name="password" id="password" class="form-control">
             </div>
-            <div class="form-group text-text">
-                <input type="submit" name="login" class="btn btn-info btn-md" value="Login">
-                <input type="button" name="registerProfile" class="btn btn-info btn-md" value="Register">
-            </div>
+            <input type="submit" name="login" class="btn btn-info" value="Login">
+            <input type="button" name="registerProfile" class="btn btn-info" value="Register">
         </form>
     </div>
 `
@@ -524,6 +522,7 @@ function submitProfile() {
                 createInfo(json.errors)
             } 
             else {
+                debugger
                 userData=json.user.data.attributes
                 state.page = "profile"
                 currentUser = new User(userData)
