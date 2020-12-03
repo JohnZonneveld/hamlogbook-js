@@ -222,8 +222,8 @@ function loginHandler(e) {
     .then(response => response.json())
     .then(json => {
         localStorage.setItem("jwt", json.auth_token)
-        if (json.error) {
-            createInfo(json.error)
+        if (json.errors) {
+            createInfo(json.errors)
             state.page = "login"
             render()
         } else {
@@ -232,12 +232,6 @@ function loginHandler(e) {
             currentUser = new User(userData)
             render()
         }
-    })
-    .catch((error) => {
-        localStorage.clear()
-        state.page = "login"
-        createInfo('Session timed out, please log in again!')
-        render()
     })
 }
 
@@ -255,25 +249,20 @@ function loginWithToken(token){
         method: "POST",
         headers: { Authorization: `Bearer ${token}` }
     })
-    .then(response => response.json())
+    .then(
+        response => response.json()
+    )
     .then(json => {
+        debugger
         localStorage.setItem("jwt", json.auth_token)
-        if (json.error){
-            localStorage.clear()
-            createInfo(json.error)
-            state.page = "login"
-            render()
+        if (json.message) {
+            createInfo(json.message)
+            backToLogin()
         } else {
             currentUser = new User(json.userdata.data.attributes)
             state.page = "profile"
             render()
         }
-    })
-    .catch((error) => {
-        localStorage.clear()
-        state.page = "login"
-        createInfo('Session timed out, please log in again!')
-        render()
     })
 }
 
@@ -470,24 +459,23 @@ function updateProfile(e) {
     })
     .then(response => response.json())
     .then(json => {
-        if (json.error) {
-            localStorage.setItem("jwt", json.auth_token)
-            createInfo(json.error)
-            state.page = "login"
-            render()
-        } 
-        else {
-            userData=json.user.data.attributes
-            state.page = "profile"
-            currentUser = new User(userData)
-            render()
+        if (json.message) {
+            createInfo(json.message)
+            backToLogin()
+        } else {
+            if (json.errors) {
+                localStorage.setItem("jwt", json.auth_token)
+                createInfo(json.errors)
+                state.page = "login"
+                render()
+            } 
+            else {
+                userData=json.user.data.attributes
+                state.page = "profile"
+                currentUser = new User(userData)
+                render()
+            }
         }
-    })
-    .catch((error) => {
-        localStorage.clear()
-        state.page = "login"
-        createInfo('Session timed out, please log in again!')
-        render()
     })
 }
 
@@ -522,23 +510,28 @@ function submitProfile() {
     .then(response => response.json())
     .then(json => {
         localStorage.setItem("jwt", json.auth_token)
-    if (json.error) {
-        createInfo(json.error)
-    } 
-    else {
-        userData=json.user.data.attributes
-        state.page = "profile"
-        currentUser = new User(userData)
-        render()
-    }
-    })
-    .catch((error) => {
-        localStorage.clear()
-        state.page = "login"
-        createInfo('Session timed out, please log in again!')
-        render()
-    })
+        if (json.message) {
+            createInfo(json.message)
+            backToLogin()
+        } else {
+            if (json.errors) {
+                createInfo(json.errors)
+            } 
+            else {
+                userData=json.user.data.attributes
+                state.page = "profile"
+                currentUser = new User(userData)
+                render()
+            }
+        }
+   })
 
+}
+
+function backToLogin() {
+    localStorage.clear()
+    state.page = "login"
+    render()
 }
 
 hasToken()

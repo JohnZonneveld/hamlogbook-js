@@ -92,21 +92,20 @@ function getDisplayContactDetail(id) {
     .then(response => response.json())
     .then(json => {
         localStorage.setItem("jwt", json.auth_token)
-        if (json.error) {
-            createInfo(json.error)
-            } 
-        else {
-            contactDetail=json.contact.data.attributes
-            localStorage.setItem("jwt", json.auth_token)
-            state.page = "displayContact"
-            render()
+        if (json.message) {
+            createInfo(json.message)
+            backToLogin()
+        } else {
+            if (json.errors) {
+                createInfo(json.errors)
+                } 
+            else {
+                contactDetail=json.contact.data.attributes
+                localStorage.setItem("jwt", json.auth_token)
+                state.page = "displayContact"
+                render()
+            }
         }
-    })
-    .catch((error) => {
-        localStorage.clear()
-        state.page = "login"
-        createInfo('Session timed out, please log in again!')
-        render()
     })
 }
 
@@ -327,19 +326,18 @@ function submitEditContact(e) {
     .then(response => response.json())
     .then(json => {
         localStorage.setItem("jwt", json.auth_token)
-        if (json.error) {
-            createInfo(json.error)
+        if (json.message) {
+            createInfo(json.message)
+            backToLogin()
         } else {
-            contactDetail = json.contact.data.attributes
-            state.page = "displayContact"
-            render()
+            if (json.errors) {
+                createInfo(json.errors)
+            } else {
+                contactDetail = json.contact.data.attributes
+                state.page = "displayContact"
+                render()
+            }
         }
-    })
-    .catch((error) => {
-        localStorage.clear()
-        state.page = "login"
-        createInfo('Session timed out, please log in again!')
-        render()
     })
 }
 
@@ -676,20 +674,19 @@ function submitAddContact(e) {
     .then(response => response.json())
     .then(json => {
         localStorage.setItem("jwt", json.auth_token)
-        if (json.error) {
-            createInfo(json.error)
-        } else {
-            contactDetail=json.contact.data.attributes
+        if (json.message) {
             createInfo(json.message)
-            page = "displayContact"
-            render()
+            backToLogin()
+        } else {
+            if (json.errors) {
+                createInfo(json.errors)
+            } else {
+                contactDetail=json.contact.data.attributes
+                createInfo(json.message)
+                page = "displayContact"
+                render()
+            }
         }
-    })
-    .catch((error) => {
-        localStorage.clear()
-        state.page = "login"
-        createInfo('Session timed out, please log in again!')
-        render()
     })
 }
 
@@ -703,19 +700,18 @@ function deleteContact() {
     .then(response => response.json())
     .then(json => {
         localStorage.setItem("jwt", json.auth_token)
-        if (json.error) {
-            createInfo(json.error)
-            changePage(currentPage)
-        } else {
+        if (json.message) {
             createInfo(json.message)
-            getContacts()
+            backToLogin()
+        } else {
+            if (json.errors) {
+                createInfo(json.errors)
+                changePage(currentPage)
+            } else {
+                createInfo(json.message)
+                getContacts()
+            }
         }
-    })
-    .catch((error) => {
-        localStorage.clear()
-        state.page = "login"
-        createInfo('Session timed out, please log in again!')
-        render()
     })
 }
 
@@ -905,22 +901,21 @@ function getContacts() {
     .then(response => response.json())
     .then(json => {
         localStorage.setItem("jwt", json.auth_token)
-        if (json.error) {
-            createInfo(json.error)
-            state.page = "login"
-            render()
+        if (json.message) {
+            createInfo(json.message)
+            backToLogin()
         } else {
-            unfilteredContactObjects = json.contacts.data
-            infoBox.innerHTML = navigationBar
-            infoBox.innerHTML += contactHeader
-            contactObjects=unfilteredContactObjects
-            changePage(currentPage)
+            if (json.errors) {
+                createInfo(json.errors)
+                state.page = "login"
+                render()
+            } else {
+                unfilteredContactObjects = json.contacts.data
+                infoBox.innerHTML = navigationBar
+                infoBox.innerHTML += contactHeader
+                contactObjects=unfilteredContactObjects
+                changePage(currentPage)
+            }
         }
-    })
-    .catch((error) => {
-        localStorage.clear()
-        state.page = "login"
-        createInfo('Session timed out, please log in again!')
-        render()
     })
 }
