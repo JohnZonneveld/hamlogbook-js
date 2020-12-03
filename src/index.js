@@ -162,6 +162,7 @@ function render(id){
     const addContactButton = buttons.addContact
     const homeButton = buttons.homeButton
     const profileButton = buttons.profileButton
+    const deleteContactButton = buttons.deleteContactButton
     logoffButton.addEventListener("click", (e) => {
         e.preventDefault()
         logoff()
@@ -193,6 +194,10 @@ function render(id){
         e.preventDefault()
         state.page = "login"
         render()
+    })
+    deleteContactButton.addEventListener("click", (e) => {
+        e.preventDefault()
+        deleteContact()
     })
 }
 
@@ -230,6 +235,7 @@ function loginHandler(e) {
             userData=json.user.data.attributes
             state.page = "profile"
             currentUser = new User(userData)
+            createInfo(json.success)
             render()
         }
     })
@@ -253,7 +259,6 @@ function loginWithToken(token){
         response => response.json()
     )
     .then(json => {
-        debugger
         localStorage.setItem("jwt", json.auth_token)
         if (json.message) {
             createInfo(json.message)
@@ -448,7 +453,7 @@ function updateProfile(e) {
         }
     }
     fetch(baseUrl+`/users/${currentUser.userId}`, {
-        method: "PUT",
+        method: "PATCH",
         headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
@@ -473,6 +478,7 @@ function updateProfile(e) {
                 userData=json.user.data.attributes
                 state.page = "profile"
                 currentUser = new User(userData)
+                createInfo(json.success)
                 render()
             }
         }
@@ -521,6 +527,7 @@ function submitProfile() {
                 userData=json.user.data.attributes
                 state.page = "profile"
                 currentUser = new User(userData)
+                createInfo(json.success)
                 render()
             }
         }

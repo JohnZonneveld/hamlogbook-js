@@ -9,12 +9,12 @@ function createInfo(messages) {
     } else {
         messageHTML = messages
     }
-    showInfoMessage(messageHTML)
+    showInfoMessage()
 }
 
 function showInfoMessage() {
     infoLine.innerHTML = `
-            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <div id="message" class="alert alert-warning alert-dismissible fade show" role="alert">
                 <strong>${messageHTML}</strong>
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>

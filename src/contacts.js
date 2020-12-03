@@ -315,7 +315,7 @@ function submitEditContact(e) {
     e.preventDefault()
     editContactData = readContactForm()
     fetch(baseUrl+ `/contacts/${contactDetail.id}`, {
-        method: "PUT",
+        method: "PATCH",
         headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
@@ -335,6 +335,7 @@ function submitEditContact(e) {
             } else {
                 contactDetail = json.contact.data.attributes
                 state.page = "displayContact"
+                createInfo(json.success)
                 render()
             }
         }
@@ -682,8 +683,8 @@ function submitAddContact(e) {
                 createInfo(json.errors)
             } else {
                 contactDetail=json.contact.data.attributes
-                createInfo(json.message)
-                page = "displayContact"
+                state.page = "displayContact"
+                createInfo(json.success)
                 render()
             }
         }
@@ -691,7 +692,8 @@ function submitAddContact(e) {
 }
 
 function deleteContact() {
-    fetch(baseUrl+`/contacts/${contactDetail.id}`, { method: "DELETE",
+    fetch(baseUrl+`/contacts/${contactDetail.id}`, { 
+        method: "DELETE",
         headers: {
             Authorization: `Bearer ${localStorage.getItem("jwt")}`,
             "Content-type":"application/json"
@@ -708,7 +710,7 @@ function deleteContact() {
                 createInfo(json.errors)
                 changePage(currentPage)
             } else {
-                createInfo(json.message)
+                createInfo(json.success)
                 getContacts()
             }
         }
@@ -906,7 +908,7 @@ function getContacts() {
             backToLogin()
         } else {
             if (json.errors) {
-                createInfo(json.errors)
+                createInfo(json.errors, error)
                 state.page = "login"
                 render()
             } else {
