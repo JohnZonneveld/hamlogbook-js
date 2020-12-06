@@ -39,12 +39,12 @@ const contactHeader = `
         <div class="optionsDiv">
             Filter By 
             <select id="selectField" onchange="changePlaceholder()">
-                <option value="contacts" selected>Contacts</option>
+                <option value="callsign" selected>Callsign</option>
                 <option value="country">Country</option>
                 <option value="mode">Mode</option>
                 <br> 
             </select>
-            <input type="text" id="searchInput" placeholder="Start entering contact" oninput="filterContactObjects()">
+            <input type="text" id="searchInput" placeholder="Start entering callsign" oninput="filterContactObjects()">
         </div>
         <div class="table-responsive" id="contactsContentDiv"></div>
     </div>
@@ -834,7 +834,7 @@ function filterContactObjects() {
     let filterCategory = document.getElementById('selectField').value
     let searchFilter = document.getElementById('searchInput').value.toUpperCase()
     contactObjects=[]
-    if (filterCategory == "contacts" ) {
+    if (filterCategory == "callsign" ) {
         if (searchFilter.length > 0) {
             console.log('filtering')
             for (let i=0; i < unfilteredContactObjects.length; i++) {
@@ -896,7 +896,7 @@ function filterContactObjects() {
 }
 
 function getContacts() {
-    fetch("http://localhost:3000/contacts", {
+    fetch(baseUrl+`/contacts`, {
         method: "GET",
         headers: { Authorization: `Bearer ${localStorage.getItem("jwt")}` }
     })
