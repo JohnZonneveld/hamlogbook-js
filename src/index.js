@@ -21,8 +21,8 @@ const loginPage = `
                 <label for="password" class="text-info">Password:</label>
                 <input type="password" name="password" id="password" class="form-control">
             </div>
-            <input type="submit" name="login" class="btn btn-info" value="Login">
-            <input type="button" name="registerProfile" class="btn btn-info" value="Register">
+            <input id="btn" type="submit" name="login" class="btn btn-info" value="Login">
+            <input id="btn" type="button" name="registerProfile" class="btn btn-info" value="Register">
         </form>
     </div>
 `
@@ -47,7 +47,7 @@ const registerForm = `
                 <label for="password" class="text-info">Password:</label>
                 <input type="password" name="password" id="password" class="form-control" placeholder="Password" required>
             </div>
-            <input type="button" name="submitProfile" class="btn btn-info" value="Complete Registration">
+            <input id="btn" type="button" name="submitProfile" class="btn btn-info" value="Complete Registration">
         </form>
     </div>
 `
