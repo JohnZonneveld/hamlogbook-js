@@ -1,5 +1,6 @@
 let infoBox = document.querySelector("#container-box")
-const baseUrl = "http://localhost:3000"
+// const baseUrl = "http://localhost:3000"
+const baseUrl = "https://hamlogbook.herokuapp.com"
 const gMapsScript = "https://maps.googleapis.com/maps/api/js?callback=initMap&signed_in=true&key=AIzaSyBXq06q4pG6fATSosF-sSte5QK8WuanI1Q&language=en"
 const infoLine = document.getElementById("infoViewPort")
 const buttons = document.getElementsByClassName("btn")
@@ -249,7 +250,7 @@ class User {
 }
 
 function loginWithToken(token){
-    fetch("http://localhost:3000/hastoken", {
+    fetch(baseUrl+`/hastoken`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` }
     })
