@@ -327,56 +327,63 @@ function changePage(page)
     document.getElementById("addContactButton").classList.remove("hidden")
     document.getElementById("editContactButton").classList.add("hidden")
     contactsTable.innerHTML = contactsTableHeader;
-    let tableRef = document.getElementById("Contacts").getElementsByTagName("tbody")[0];
-
-    for (let i = (page-1) * recordsPerPage; i < (page * recordsPerPage) && i < contactObjects.length; i++) {
-        // Insert a row in the table at the last row
-        let newRow   = tableRef.insertRow();
-        let newCell0  = newRow.insertCell(0);
-        newCell0.innerHTML = `<a href="javascript:ContactDetail(${contactObjects[i].attributes.id})" id="contactDetail">detail</a>`
-        let newCell1  = newRow.insertCell(1);
-        let newText1  = document.createTextNode(contactObjects[i].attributes.owncall);
-        newCell1.appendChild(newText1);
-        let newCell2  = newRow.insertCell(2);
-        let newText2  = document.createTextNode(contactObjects[i].attributes.call);
-        newCell2.appendChild(newText2);
-        let newCell3  = newRow.insertCell(3);
-        let newText3  = document.createTextNode(contactObjects[i].attributes.qso_date);
-        newCell3.appendChild(newText3);
-        let newCell4  = newRow.insertCell(4);
-        let newText4  = document.createTextNode(contactObjects[i].attributes.time_on.slice(11,19));
-        newCell4.appendChild(newText4);
-        let newCell5  = newRow.insertCell(5);
-        let newText5  = document.createTextNode(contactObjects[i].attributes.band);
-        newCell5.appendChild(newText5);
-        let newCell6  = newRow.insertCell(6);
-        let newText6  = document.createTextNode(contactObjects[i].attributes.mode);
-        newCell6.appendChild(newText6);
-        let newCell7  = newRow.insertCell(7);
-        let newText7  = document.createTextNode(contactObjects[i].attributes.freq);
-        newCell7.appendChild(newText7);
-        let newCell8  = newRow.insertCell(8);
-        let newText8  = document.createTextNode(contactObjects[i].attributes.country);
-        newCell8.appendChild(newText8);
-    }
-    pageSpan.innerHTML = `${page} of ${numPages()}`;
-    let btnNext = document.getElementById("btnNext");
-    let btnPrev = document.getElementById("btnPrev");
-    let btnEnd = document.getElementById("btnEnd");
-    let btnBegin = document.getElementById("btnBegin");
-    if (page == 1) {
-        btnPrev.style.visibility = "hidden";
-        btnBegin.style.visibility = "hidden";
+    if (contactObjects.length != 0) {
+        let tableRef = document.getElementById("Contacts").getElementsByTagName("tbody")[0];
+        for (let i = (page-1) * recordsPerPage; i < (page * recordsPerPage) && i < contactObjects.length; i++) {
+            // Insert a row in the table at the last row
+            let newRow   = tableRef.insertRow();
+            let newCell0  = newRow.insertCell(0);
+            newCell0.innerHTML = `<a href="javascript:ContactDetail(${contactObjects[i].attributes.id})" id="contactDetail">detail</a>`
+            let newCell1  = newRow.insertCell(1);
+            let newText1  = document.createTextNode(contactObjects[i].attributes.owncall);
+            newCell1.appendChild(newText1);
+            let newCell2  = newRow.insertCell(2);
+            let newText2  = document.createTextNode(contactObjects[i].attributes.call);
+            newCell2.appendChild(newText2);
+            let newCell3  = newRow.insertCell(3);
+            let newText3  = document.createTextNode(contactObjects[i].attributes.qso_date);
+            newCell3.appendChild(newText3);
+            let newCell4  = newRow.insertCell(4);
+            let newText4  = document.createTextNode(contactObjects[i].attributes.time_on.slice(11,19));
+            newCell4.appendChild(newText4);
+            let newCell5  = newRow.insertCell(5);
+            let newText5  = document.createTextNode(contactObjects[i].attributes.band);
+            newCell5.appendChild(newText5);
+            let newCell6  = newRow.insertCell(6);
+            let newText6  = document.createTextNode(contactObjects[i].attributes.mode);
+            newCell6.appendChild(newText6);
+            let newCell7  = newRow.insertCell(7);
+            let newText7  = document.createTextNode(contactObjects[i].attributes.freq);
+            newCell7.appendChild(newText7);
+            let newCell8  = newRow.insertCell(8);
+            let newText8  = document.createTextNode(contactObjects[i].attributes.country);
+            newCell8.appendChild(newText8);
+        }
+        pageSpan.innerHTML = `${page} of ${numPages()}`;
+        let btnNext = document.getElementById("btnNext");
+        let btnPrev = document.getElementById("btnPrev");
+        let btnEnd = document.getElementById("btnEnd");
+        let btnBegin = document.getElementById("btnBegin");
+        if (page == 1) {
+            btnPrev.style.visibility = "hidden";
+            btnBegin.style.visibility = "hidden";
+        } else {
+            btnPrev.style.visibility = "visible";
+            btnBegin.style.visibility = "visible"
+        }
+        if (page == numPages()) {
+            btnNext.style.visibility = "hidden";
+            btnEnd.style.visibility = "hidden";
+        } else {
+            btnNext.style.visibility = "visible";
+            btnEnd.style.visibility = "visible";
+        }
     } else {
-        btnPrev.style.visibility = "visible";
-        btnBegin.style.visibility = "visible"
-    }
-    if (page == numPages()) {
-        btnNext.style.visibility = "hidden";
-        btnEnd.style.visibility = "hidden";
-    } else {
-        btnNext.style.visibility = "visible";
-        btnEnd.style.visibility = "visible";
+        contactsTable.innerHTML = `
+            <hr>
+            <b>You don't have any contacts logged yet</b>
+            <hr>
+        `
     }
     // Because the pagination for the contacts page we need some "local" eventListeners
     logoffButton.addEventListener("click", (e) => {
