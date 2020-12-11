@@ -1,16 +1,61 @@
+let jsonContacts = []
 let unfilteredContactObjects = []
 let prevContacts = []
 let currentPage = 1;
-let recordsPerPage = 20
+let objectsPerPage = 15
+let contactObjects = []
+let rowHTML = ""
+
+class Contact {
+    constructor(attributes){
+        if (attributes) {
+            this.id = attributes.id
+            this.owncall = attributes.owncall
+            this.station_callsign = attributes.station_callsign
+            this.my_gridsquare = attributes.my_gridsquare
+            this.call = attributes.call
+            this.band = attributes.band
+            this.freq = attributes.freq
+            this.freq_rcvd = attributes.freq.rcvd
+            this.mode = attributes.mode
+            this.submode = attributes.submode
+            this.mode_group = attributes.mode_group
+            this.qso_date = attributes.qso_date
+            this.time_on = attributes.time_on
+            this.qsl_rcvd = attributes.qsl_rcvd
+            this.qsl_rdate = attributes.qsl_rate
+            this.dxcc = attributes.dxcc
+            this.country = attributes.country
+            this.iota = attributes.iota
+            this.gridsquare = attributes.gridsquare
+            this.state = attributes.state
+            this.county = attributes.county
+            this.cqz = attributes.cqz
+            this.ituz = attributes.ituz
+            this.park = attributes.park
+        } else {
+            let utcDate = new Date().toISOString()
+            let utcD = utcDate.slice(0,10)
+            let utcT = utcDate.slice(11,19)
+            this.owncall = currentUser.callsign
+            this.my_gridsquare = currentUser.my_qth
+            this.qso_date = utcD
+            this.time_on = utcT
+        }
+    }
+}
+
 
 const contactsTableHeader = `
-    <table class="table-striped" id="Contacts">  
+    <table class="table-striped" id="Contacts"> 
         <tr class="border_bottom">
             <td>
-                <a class="btn btn-info btn-sm" id="btnNext" href="javascript:nextPage()" role="button">▶️</a>
-                <a class="btn btn-info btn-sm" id="btnEnd" href="javascript:endPage()" role="button">⏭</a>
+                <a class="btn btn-info btn-sm" id="btnNext" href="javascript:nextPage()" role="button">next</a>
             </td>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+            <td>
+                <a class="btn btn-info btn-sm" id="btnEnd" href="javascript:endPage()" role="button">last</a>
+            </td>
+            </td></td><td></td></td><td></td></td><td></td></td><td></td></td><td></td></td><td></td><td></td>
         </tr>
         <tr style="font-weight:bold">
             <td></td>
@@ -23,11 +68,15 @@ const contactsTableHeader = `
             <td>Frequency</td>
             <td>Country</td>
         </tr>
+        <tbody id=rowHTMLCollection></tbody>
         <tfoot>
             <tr class="border_top">
-                <td><a class="btn btn-info btn-sm" id="btnPrev" href="javascript:prevPage()" role="button">◀️</a>
-                <a class="btn btn-info btn-sm" id="btnBegin" href="javascript:beginPage()" role="button">⏮</a></td>
-                <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                <td>
+                    <a class="btn btn-info btn-sm" id="btnPrev" href="javascript:prevPage()" role="button">previous</a>
+                </td>
+                <td>
+                    <a class="btn btn-info btn-sm" id="btnBegin" href="javascript:beginPage()" role="button">first</a>
+                </td><td></td><td></td><td></td><td></td><td></td></td><td></td></td><td></td>
             </tr>
         <tfoot>
     </table>
@@ -74,7 +123,7 @@ function changePlaceholder() {
     document.getElementById('searchInput').placeholder = `Start entering ${changePlaceholder}`
 }
 
-function ContactDetail(id) {
+function contactDetail(id) {
     console.log("getting details")
     state.page = "contactDetail"
     render(id)
@@ -342,28 +391,34 @@ function submitEditContact(e) {
     })
 }
 
-function addContactForm() {
+function addSubmitButton() {
+    infoBox.innerHTML += `
+        <br>
+        <button type="button" name="submitAddContact" class="btn btn-info" id="submitAddContact">Submit Contact</button>
+    `
+}
+
+function ContactForm() {
+    let testContact = new Contact()
+    debugger
     document.getElementById("logoffButton").classList.remove("hidden")
     document.getElementById("contactsButton").classList.remove("hidden")
     document.getElementById("profileButton").classList.remove("hidden")
-    let utcDate = new Date().toISOString()
-    let utcD = utcDate.slice(0,10)
-    let utcT = utcDate.slice(11,19)
     infoBox.innerHTML += `
         <h4 class="text-center text-info">Add contact</h4>
         <h4><b>Station</b></h4>
         <form>
             <div class="form-group form-inline">
                 <label for="callsign" class="addContact text-info">Callsign: </label>
-                <input type="text" class="form-control-sm" id="owncall" value="${currentUser.callsign}" required>
+                <input type="text" class="form-control-sm" id="owncall" value="${(typeof testContact.owncall == 'undefined') ? "":testContact.owncall}" required>
             </div>
             <div class="form-group form-inline">
                 <label for="callsign" class="addContact text-info">Station Callsign: </label>
-                <input type="text" class="form-control-sm" id="station_callsign" value="${currentUser.callsign}" required>
+                <input type="text" class="form-control-sm" id="station_callsign" value="${(typeof testContact.owncall == 'undefined') ? "":testContact.owncall}" required>
             </div>
             <div class="form-group form-inline">
                 <label for="gridsquare" class="addContact text-info">Gridsquare: </label>
-                <input type="text" class="form-control-sm" id="my_gridsquare" value="${currentUser.my_qth}" pattern="[A-R]{2}[0-9]{2}([a-x]{2})?([0-9]{2})?" required>
+                <input type="text" class="form-control-sm" id="my_gridsquare" value="${testContact.my_gridsquare}" pattern="[A-R]{2}[0-9]{2}([a-x]{2})?([0-9]{2})?" required>
             </div>
         </form>
         <h4><b>Worked Station</b></h4>
@@ -379,7 +434,7 @@ function addContactForm() {
             <form>
             <div class="form-group form-inline">
                 <label for="band" class="addContact text-info">Band: </label>
-                <input type="text" class="form-control-sm" id="getBand" list="band" />
+                <input type="text" class="form-control-sm" id="getBand" list="band" value="${(typeof testContact.band == 'undefined') ? "":testContact.band}"/>
                 <datalist id="band">
                     <option value="2200M">2200M</option>
                     <option value="630M">630M</option>
@@ -403,15 +458,15 @@ function addContactForm() {
             </div>
             <div class="form-group form-inline">
                 <label for="frequency" class="addContact text-info">Frequency: </label>
-                <input type="text" class="form-control-sm" id="freq">
+                <input type="text" class="form-control-sm" id="freq" value="${(typeof testContact.freq == 'undefined') ? "":testContact.freq}">
             </div>
             <div class="form-group form-inline">
                 <label for="frequency_rcvd" class="addContact text-info">Frequency received: </label>
-                <input type="text" class="form-control-sm" id="freq_rcvd" value="-">
+                <input type="text" class="form-control-sm" id="freq_rcvd" value="${(typeof testContact.freq_rcvd == 'undefined') ? "":testContact.freq_rcvd}">
             </div>
             <div class="form-group form-inline">
             <label for="mode" class="addContact text-info">Mode: </label>
-            <input type="text" class="form-control-sm" list="mode" id="getMode"/>
+            <input type="text" class="form-control-sm" list="mode" id="getMode" value="${(typeof testContact.mode == 'undefined') ? "":testContact.mode}"/>
                 <datalist id="mode">
                     <option value="CW"CW</option>
                     <option value="PHONE"E">PHONE</option>
@@ -477,14 +532,14 @@ function addContactForm() {
             </div>
             <div class="form-group form-inline">
                 <label for="submode" class="addContact text-info">Submode: </label>
-                <input type="text" class="form-control-sm" list="submode" id="getSubmode"/>
+                <input type="text" class="form-control-sm" list="submode" id="getSubmode" value="${(typeof testContact.submode == 'undefined') ? "":testContact.submode}"/>
                 <datalist id="submode">
                     <option value="FT4">FT4</option>
                 </datalist>
             </div>
             <div class="form-group form-inline">
                 <label for="modegroup" class="addContact text-info">Modegroup: </label>
-                <input type="text" class="form-control-sm" list="modegroup" id="getModegroup"/>
+                <input type="text" class="form-control-sm" list="modegroup" id="getModegroup" value="${(typeof testContact.modegroup == 'undefined') ? "":testContact.modegroup}"/>
                 <datalist id="modegroup">
                     <option value="-">-</option>
                     <option value="CW">CW</option>
@@ -495,60 +550,58 @@ function addContactForm() {
             </div>
             <div class="form-group form-inline">
                 <label for="qso_date" class="addContact text-info">Date: </label>
-                <input type="text" class="form-control-sm" id="qso_date"   value="${utcD}">
+                <input type="text" class="form-control-sm" id="qso_date" value="${(typeof testContact.qso_date == 'undefined') ? "":testContact.qso_date}">
             </div>
             <div class="form-group form-inline">
                 <label for="time_on" class="addContact text-info">Time: </label>
-                <input type="text" class="form-control-sm" id="time_on" value="${utcT}">
+                <input type="text" class="form-control-sm" id="time_on" value="${(typeof testContact.time_on == 'undefined') ? "":testContact.time_on}">
             </div>
             <div class="form-group form-inline">
                 <label for="qsl_rcvd" class="addContact text-info">QSL received: </label>
-                <input type="checkbox" id="qsl_rcvd">
+                <input type="checkbox" id="qsl_rcvd" >
             </div>
             <div class="form-group form-inline">
                 <label for="qsl_rdate" class="addContact text-info">QSL receive date: </label>
-                <input type="text" class="form-control-sm" id="qsl_rdate" value="-">
+                <input type="text" class="form-control-sm" id="qsl_rdate" value="${(typeof testContact.rdate == 'undefined') ? "":testContact.rdate}">
             </div>
             <div class="form-group form-inline">
                 <label for="dxcc" class="addContact text-info">DXCC: </label>
-                <input type="text" class="form-control-sm" id="dxcc"  value="-">
+                <input type="text" class="form-control-sm" id="dxcc"  value="${(typeof testContact.dxcc == 'undefined') ? "":testContact.dxcc}">
             </div>
             <div class="form-group form-inline">
                 <label for="country" class="addContact text-info">Country: </label>
-                <input type="text" class="form-control-sm" id="country">
+                <input type="text" class="form-control-sm" id="country" value="${(typeof testContact.country == 'undefined') ? "":testContact.country}">
             </div>
             <div class="form-group form-inline">
                 <label for="state" class="addContact text-info">State: </label>
-                <input type="text" class="form-control-sm" id="state">
+                <input type="text" class="form-control-sm" id="state" value="${(typeof testContact.state == 'undefined') ? "":testContact.state}">
             </div>
             <div class="form-group form-inline">
                 <label for="county" class="addContact text-info">County: </label>
-                <input type="text" class="form-control-sm" id="cnty" value="-">
+                <input type="text" class="form-control-sm" id="cnty" value="${(typeof testContact.cnty == 'undefined') ? "":testContact.cnty}">
             </div>
             <div class="form-group form-inline">
-                <label for="callsign" class="addContact text-info">IOTA: </label>
-                <input type="text" class="form-control-sm" id="iota"  value="-">
+                <label for="iota" class="addContact text-info">IOTA: </label>
+                <input type="text" class="form-control-sm" id="iota"  value="${(typeof testContact.iota == 'undefined') ? "":testContact.iota}">
             </div>
             <div class="form-group form-inline">
                 <label for="gridsquare" class="addContact text-info">Gridsquare: </label>
-                <input type="text" class="form-control-sm" pattern="[A-R]{2}[0-9]{2}([a-x]{2})?([0-9]{2})?" id="gridsquare">
+                <input type="text" class="form-control-sm" value="${(typeof testContact.gridsquare == 'undefined') ? "":testContact.gridsquare}" pattern="[A-R]{2}[0-9]{2}([a-x]{2})?([0-9]{2})?" id="gridsquare">
             </div>
             <div class="form-group form-inline">
                 <label for="cqz" class="addContact text-info">CQ Zone: </label>
-                <input type="text" class="form-control-sm" id="cqz" value="-">
+                <input type="text" class="form-control-sm" id="cqz" value="${(typeof testContact.cqz == 'undefined') ? "":testContact.cqz}">
             </div>
             <div class="form-group form-inline">
                 <label for="ituz" class="addContact text-info">ITU Zone: </label>
-                <input type="text" class="form-control-sm" id="ituz" value="-">
+                <input type="text" class="form-control-sm" id="ituz" value="${(typeof testContact.ituz == 'undefined') ? "":testContact.ituz}">
             </div>
             <div class="form-group form-inline">
                 <label for="park" class="addContact text-info">Park: </label>
-                <input type="text" class="form-control-sm" id="park" value="-">
+                <input type="text" class="form-control-sm" id="park" value="${(typeof testContact.park == 'undefined') ? "":testContact.park}">
             </div>
         </form>  
         </div>
-        <br>
-        <button type="button" name="submitAddContact" class="btn btn-info" id="submitAddContact">Submit Contact</button>
     ` 
 }
 
@@ -717,7 +770,8 @@ function deleteContact() {
     })
 }
 
-function displayContact() {
+function getAndDisplayContact() {
+    debugger
     let data = contactDetail
     state.page = "contactDetail"
     infoBox.innerHTML = navigationBar
@@ -912,12 +966,165 @@ function getContacts() {
                 state.page = "login"
                 render()
             } else {
-                unfilteredContactObjects = json.contacts.data
+                jsonContacts = json.contacts.data
+                if (jsonContacts.length != 0) {
+                    for (let i = 0; i < jsonContacts.length; i++) {
+                        contactObject = new Contact(jsonContacts[i].attributes)
+                        contactObjects.push(contactObject)
+                    }
+                }
                 infoBox.innerHTML = navigationBar
                 infoBox.innerHTML += contactHeader
-                contactObjects=unfilteredContactObjects
+                // contactObjects=unfilteredContactObjects
                 changePage(currentPage)
             }
         }
     })
+}
+
+function contacts() {
+    console.log("contacts clicked")
+    state.page = "contacts"
+    render()
+}
+
+function prevPage()
+{
+    if (currentPage > 1) {
+        table = document.getElementById('rowHTMLCollection')
+        table.innerHTML = ""
+        currentPage--;
+        changePage(currentPage);
+    }
+}
+
+function nextPage()
+{
+    if (currentPage < numPages()) {
+        table = document.getElementById('rowHTMLCollection')
+        table.innerHTML = ""
+        currentPage++;
+        changePage(currentPage);
+    }
+}
+
+function beginPage()
+{
+    if(currentPage > 1) {
+        table = document.getElementById('rowHTMLCollection')
+        table.innerHTML = ""
+        currentPage = 1
+        changePage(currentPage)
+    }
+}
+
+function endPage()
+{
+    if (currentPage < numPages()) {
+        table = document.getElementById('rowHTMLCollection')
+        table.innerHTML = ""
+        currentPage=numPages()
+        changePage(currentPage);
+    }
+}
+    
+function changePage(page)
+{
+    let contactsTable = document.getElementById("contactsContentDiv");
+    let pageSpan = document.getElementById("page");
+    // Validate page
+    if (page < 1) page = 1;
+    if (page > numPages()) page = numPages();
+    document.getElementById("logoffButton").classList.remove("hidden")
+    document.getElementById("profileButton").classList.remove("hidden")
+    document.getElementById("addContactButton").classList.remove("hidden")
+    document.getElementById("editContactButton").classList.add("hidden")
+    contactsTable.innerHTML = contactsTableHeader;
+    if (contactObjects.length != 0) {
+        for (let i = (page-1) * objectsPerPage; i < (page * objectsPerPage ) && i < contactObjects.length; i++) {
+            renderObject(contactObjects[i])
+        }
+        pageSpan.innerHTML = `${page} of ${numPages()}`;
+        let btnNext = document.getElementById("btnNext");
+        let btnPrev = document.getElementById("btnPrev");
+        let btnEnd = document.getElementById("btnEnd");
+        let btnBegin = document.getElementById("btnBegin");
+        if (page == 1) {
+            btnPrev.style.visibility = "hidden";
+            btnBegin.style.visibility = "hidden";
+        } else {
+            btnPrev.style.visibility = "visible";
+            btnBegin.style.visibility = "visible"
+        }
+        if (page == numPages()) {
+            btnNext.style.visibility = "hidden";
+            btnEnd.style.visibility = "hidden";
+        } else {
+            btnNext.style.visibility = "visible";
+            btnEnd.style.visibility = "visible";
+        }
+    } else {
+        contactsTable.innerHTML = `
+            <hr>
+            <b>You don't have any contacts logged yet</b>
+            <hr>
+        `
+    }
+    // Because the pagination for the contacts page we need some "local" eventListeners
+    logoffButton.addEventListener("click", (e) => {
+            e.preventDefault()
+            logoff()
+        })
+    profileButton.addEventListener("click", (e) => {
+            e.preventDefault()
+            console.log("profile clicked")
+            state.page = "profile"
+            render()
+        })
+    addContactButton.addEventListener("click", (e) => {
+            e.preventDefault()
+            console.log("add Contact clicked")
+            state.page = "addContactDetail"
+            render()
+        })
+}
+
+function numPages()
+{
+    return Math.ceil(contactObjects.length / objectsPerPage);
+}
+
+function renderObject(object) {
+    let tableRef = document.getElementById("Contacts").getElementsByTagName("tbody")[0];
+    rowHTML = document.getElementById('rowHTMLCollection')
+    rowHTML.innerHTML += `
+    <tr>
+        <td>
+            <a href="javascript:contactDetail(${object.id})" id="contactDetail">detail</a>
+        </td>
+        <td>
+            ${object.owncall}
+        </td>
+        <td>
+            ${object.call}
+        </td>
+        <td>
+            ${object.qso_date}
+        </td>
+        <td>
+            ${object.time_on.slice(11,19)}
+        </td>
+        <td>
+            ${object.band}
+        </td>
+        <td>
+            ${object.mode}
+        </td>
+        <td>
+            ${object.freq}
+        </td>
+        <td>
+            ${object.country}
+        </td>
+    </tr>`
 }

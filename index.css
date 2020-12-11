@@ -30,7 +30,7 @@ html::before {
 
 #main .container #container-row #container-column #container-box {
     margin-top: 5px;
-    max-width: 2000px;
+    max-width: 2200px;
     border: 2px solid #9C9C9C;
     background-color: #faf8f8;
     opacity: 0.7;
@@ -70,11 +70,11 @@ tr.border_top td {
 }
 
 #contactsDiv {
-    width: 90%;
+    width: 95%;
 }
 
 .btn {
-    margin: 5px;
+    margin: 10px;
     width: auto;
 }
 
@@ -83,6 +83,7 @@ tr.border_top td {
     font-size: 12px;
     margin-left:auto; 
     margin-right:auto;
+    white-space: nowrap;
     text-align: center;    
 }
 

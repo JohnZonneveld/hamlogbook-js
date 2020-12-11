@@ -131,8 +131,9 @@ function render(id){
         case "contacts":
             getContacts()
         break;
-        case "addContactDetail":
-            addContactForm()
+        case "addContact":
+            ContactForm()
+            addSubmitButton()
             const submitAddContactButton = buttons.submitAddContact
             submitAddContactButton.addEventListener("click", (e) => {
                     e.preventDefault()
@@ -146,7 +147,7 @@ function render(id){
             displayContact()
         break;
         case "editContactDetail":
-            editContactForm()
+            ContactForm()
             const submitEditContactButton = buttons.submitEditContact
             submitEditContactButton.addEventListener("click", (e) => {
                 e.preventDefault()
@@ -168,7 +169,7 @@ function render(id){
     })
     contactsButton.addEventListener("click", (e) => {
         e.preventDefault()
-        contacts(e)
+        contacts()
     })
     profileButton.addEventListener("click", (e) => {
         e.preventDefault()
@@ -186,7 +187,7 @@ function render(id){
     })
     addContactButton.addEventListener("click", (e) => {
         e.preventDefault
-        state.page = "addContactDetail"
+        state.page = "addContact"
         render()
     })
     homeButton.addEventListener("click", (e) => {
@@ -240,15 +241,6 @@ function loginHandler(e) {
     })
 }
 
-class User {
-    constructor({callsign, id, email, my_qth}){
-        this.callsign = callsign
-        this.userId = id
-        this.email = email
-        this.my_qth = my_qth
-    }
-}
-
 function loginWithToken(token){
     fetch(baseUrl+`/hastoken`, {
         method: "POST",
@@ -277,270 +269,6 @@ function logoff() {
     render()
 }
 
-function contacts() {
-    console.log("contacts clicked")
-    state.page = "contacts"
-    render()
-}
-
-function prevPage()
-{
-    if (currentPage > 1) {
-        currentPage--;
-        changePage(currentPage);
-    }
-}
-
-function nextPage()
-{
-    if (currentPage < numPages()) {
-        currentPage++;
-        changePage(currentPage);
-    }
-}
-
-function beginPage()
-{
-    if(currentPage > 1) {
-        currentPage = 1
-        changePage(currentPage)
-    }
-}
-
-function endPage()
-{
-    if (currentPage < numPages()) {
-        currentPage=numPages()
-        changePage(currentPage);
-    }
-}
-    
-function changePage(page)
-{
-    let contactsTable = document.getElementById("contactsContentDiv");
-    let pageSpan = document.getElementById("page");
-    // Validate page
-    if (page < 1) page = 1;
-    if (page > numPages()) page = numPages();
-    document.getElementById("logoffButton").classList.remove("hidden")
-    document.getElementById("profileButton").classList.remove("hidden")
-    document.getElementById("addContactButton").classList.remove("hidden")
-    document.getElementById("editContactButton").classList.add("hidden")
-    contactsTable.innerHTML = contactsTableHeader;
-    if (contactObjects.length != 0) {
-        let tableRef = document.getElementById("Contacts").getElementsByTagName("tbody")[0];
-        for (let i = (page-1) * recordsPerPage; i < (page * recordsPerPage) && i < contactObjects.length; i++) {
-            // Insert a row in the table at the last row
-            let newRow   = tableRef.insertRow();
-            let newCell0  = newRow.insertCell(0);
-            newCell0.innerHTML = `<a href="javascript:ContactDetail(${contactObjects[i].attributes.id})" id="contactDetail">detail</a>`
-            let newCell1  = newRow.insertCell(1);
-            let newText1  = document.createTextNode(contactObjects[i].attributes.owncall);
-            newCell1.appendChild(newText1);
-            let newCell2  = newRow.insertCell(2);
-            let newText2  = document.createTextNode(contactObjects[i].attributes.call);
-            newCell2.appendChild(newText2);
-            let newCell3  = newRow.insertCell(3);
-            let newText3  = document.createTextNode(contactObjects[i].attributes.qso_date);
-            newCell3.appendChild(newText3);
-            let newCell4  = newRow.insertCell(4);
-            let newText4  = document.createTextNode(contactObjects[i].attributes.time_on.slice(11,19));
-            newCell4.appendChild(newText4);
-            let newCell5  = newRow.insertCell(5);
-            let newText5  = document.createTextNode(contactObjects[i].attributes.band);
-            newCell5.appendChild(newText5);
-            let newCell6  = newRow.insertCell(6);
-            let newText6  = document.createTextNode(contactObjects[i].attributes.mode);
-            newCell6.appendChild(newText6);
-            let newCell7  = newRow.insertCell(7);
-            let newText7  = document.createTextNode(contactObjects[i].attributes.freq);
-            newCell7.appendChild(newText7);
-            let newCell8  = newRow.insertCell(8);
-            let newText8  = document.createTextNode(contactObjects[i].attributes.country);
-            newCell8.appendChild(newText8);
-        }
-        pageSpan.innerHTML = `${page} of ${numPages()}`;
-        let btnNext = document.getElementById("btnNext");
-        let btnPrev = document.getElementById("btnPrev");
-        let btnEnd = document.getElementById("btnEnd");
-        let btnBegin = document.getElementById("btnBegin");
-        if (page == 1) {
-            btnPrev.style.visibility = "hidden";
-            btnBegin.style.visibility = "hidden";
-        } else {
-            btnPrev.style.visibility = "visible";
-            btnBegin.style.visibility = "visible"
-        }
-        if (page == numPages()) {
-            btnNext.style.visibility = "hidden";
-            btnEnd.style.visibility = "hidden";
-        } else {
-            btnNext.style.visibility = "visible";
-            btnEnd.style.visibility = "visible";
-        }
-    } else {
-        contactsTable.innerHTML = `
-            <hr>
-            <b>You don't have any contacts logged yet</b>
-            <hr>
-        `
-    }
-    // Because the pagination for the contacts page we need some "local" eventListeners
-    logoffButton.addEventListener("click", (e) => {
-            e.preventDefault()
-            logoff()
-        })
-    profileButton.addEventListener("click", (e) => {
-            e.preventDefault()
-            console.log("profile clicked")
-            state.page = "profile"
-            render()
-        })
-    addContactButton.addEventListener("click", (e) => {
-            e.preventDefault()
-            console.log("add Contact clicked")
-            state.page = "addContactDetail"
-            render()
-        })
-}
-
-function numPages()
-{
-    return Math.ceil(contactObjects.length / recordsPerPage);
-}
-
-function editProfile() {
-    console.log("editProfile clicked")
-    state.page = "editProfile"
-    render()
-}
-
-function editProfilePage() {
-    document.getElementById("logoffButton").classList.remove("hidden")
-    document.getElementById("profileButton").classList.remove("hidden")
-    document.getElementById("contactsButton").classList.remove("hidden")
-    infoBox.innerHTML += `
-        <h2 class="text-center text-info">Edit Profile</h2>
-        <div id="profileDiv">
-            <form>
-                <div class="form-group">
-                    <label for="callsign" class="text-info">Callsign: </label>
-                    <input type="text" class="form-control" id="callsign"  value="${currentUser.callsign}">
-                </div>
-                <div class="form-group">
-                    <label for="email" class="text-info">Email: </label>
-                    <input type="text" class="form-control" id="email" value="${currentUser.email}">
-                </div>
-                <div class="form-group">
-                    <label for="my_qth" class="text-info">Grid Square: </label>
-                    <input type="text" class="form-control" id="my_qth" value="${currentUser.my_qth}">
-                </div>
-                <div class="form-group">
-                    <label for="password" class="text-info">Password:</label>
-                    <input type="password" name="password" id="password" class="form-control" placeholder="Update your password">
-                </div>
-                <button type="button" name="updateProfile" class="btn btn-info">Update Profile</button>
-            </form>
-        </div>
-    `
-}
-
-function updateProfile(e) {
-    e.preventDefault()
-    const csProfileInput = document.querySelector("#callsign").value
-    const pwProfileInput = document.querySelector("#password").value
-    const mqProfileInput = document.querySelector("#my_qth").value
-    const emProfileInput = document.querySelector("#email").value
-    const updateProfileData = {user: {
-        callsign: csProfileInput,
-        password: pwProfileInput,
-        email: emProfileInput,
-        my_qth: mqProfileInput
-        }
-    }
-    fetch(baseUrl+`/users/${currentUser.userId}`, {
-        method: "PATCH",
-        headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization: `Bearer: ${localStorage.getItem("jwt")}`
-        },
-        body: JSON.stringify(updateProfileData)
-        
-    })
-    .then(response => response.json())
-    .then(json => {
-        if (json.message) {
-            createInfo(json.message)
-            backToLogin()
-        } else {
-            if (json.errors) {
-                localStorage.setItem("jwt", json.auth_token)
-                createInfo(json.errors)
-                state.page = "login"
-                render()
-            } 
-            else {
-                userData=json.user.data.attributes
-                state.page = "profile"
-                currentUser = new User(userData)
-                createInfo(json.success)
-                render()
-            }
-        }
-    })
-}
-
-function registerProfile() {
-    console.log("register clicked")
-    state.page = "registerProfile"
-    render()
-}
-
-function registerPage() {
-    document.getElementById("homeButton").classList.remove("hidden")
-    infoBox.innerHTML += registerForm
-}
-
-function submitProfile() {
-    csRegisterInput=document.getElementById("callsign").value.toUpperCase()
-    pwRegisterInput=document.getElementById("password").value
-    emRegisterInput=document.getElementById("email").value
-    gsRegisterInput=document.getElementById("my_qth").value
-    const registerProfileData = {user: {
-        callsign: csRegisterInput,
-        password: pwRegisterInput,
-        email: emRegisterInput,
-        my_qth: gsRegisterInput
-        }
-    }
-    fetch(baseUrl+`/auth/register`, {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(registerProfileData)
-    })
-    .then(response => response.json())
-    .then(json => {
-        localStorage.setItem("jwt", json.auth_token)
-        if (json.message) {
-            createInfo(json.message)
-            backToLogin()
-        } else {
-            if (json.errors) {
-                createInfo(json.errors)
-            } 
-            else {
-                debugger
-                userData=json.user.data.attributes
-                state.page = "profile"
-                currentUser = new User(userData)
-                createInfo(json.success)
-                render()
-            }
-        }
-   })
-
-}
 
 function backToLogin() {
     localStorage.clear()
