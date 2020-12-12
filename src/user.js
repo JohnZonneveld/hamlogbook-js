@@ -1,9 +1,11 @@
 class User {
-    constructor({callsign, id, email, my_qth}){
-        this.callsign = callsign
-        this.userId = id
-        this.email = email
-        this.my_qth = my_qth
+    constructor(attributes) {
+        if (attributes) {
+            this.callsign = attributes.callsign
+            this.userId = attributes.id
+            this.email = attributes.email
+            this.my_qth = attributes.my_qth
+        } 
     }
 }
 
@@ -13,34 +15,60 @@ function editProfile() {
     render()
 }
 
-function editProfilePage() {
-    document.getElementById("logoffButton").classList.remove("hidden")
-    document.getElementById("profileButton").classList.remove("hidden")
-    document.getElementById("contactsButton").classList.remove("hidden")
+function userForm() {
+    let title
+    let user
+    if (state.page == "editProfile") {
+        title = "Edit Profile"
+        document.getElementById("logoffButton").classList.remove("hidden")
+        document.getElementById("profileButton").classList.remove("hidden")
+        document.getElementById("contactsButton").classList.remove("hidden")
+        user = currentUser
+    } else {
+        document.getElementById("homeButton").classList.remove("hidden")
+        title = "Create Profile"
+        user = new User
+    }
     infoBox.innerHTML += `
-        <h2 class="text-center text-info">Edit Profile</h2>
+        <h2 class="text-center text-info">${title}</h2>
         <div id="profileDiv">
             <form>
-                <div class="form-group">
-                    <label for="callsign" class="text-info">Callsign: </label>
-                    <input type="text" class="form-control" id="callsign"  value="${currentUser.callsign}">
+                <div class="form-group form-inline ">
+                    <label for="callsign" class="col-sm-3 text-info">Callsign: </label>
+                    <input type="text" class="col-sm-6 form-control" id="callsign" value="${(typeof user.callsign == 'undefined') ? "":user.callsign}" required>
                 </div>
-                <div class="form-group">
-                    <label for="email" class="text-info">Email: </label>
-                    <input type="text" class="form-control" id="email" value="${currentUser.email}">
+                <div class="form-group form-inline">
+                    <label for="email" class="col-sm-3 text-info">Email: </label>
+                    <input type="email" class="col-sm-6 form-control" id="email" value="${typeof user.email == "undefined" ? "" : user.email}" required>
                 </div>
-                <div class="form-group">
-                    <label for="my_qth" class="text-info">Grid Square: </label>
-                    <input type="text" class="form-control" id="my_qth" value="${currentUser.my_qth}">
+                <div class="form-group form-inline">
+                    <label for="my_qth" class="col-sm-3 text-info">Grid Square: </label>
+                    <input type="text" class="col-sm-6 form-control" id="my_qth" value="${typeof user.my_qth == "undefined" ? "" : user.my_qth}" required pattern="[A-R]{2}[0-9]{2}([a-x]{2})?([0-9]{2})?">
                 </div>
-                <div class="form-group">
-                    <label for="password" class="text-info">Password:</label>
-                    <input type="password" name="password" id="password" class="form-control" placeholder="Update your password">
+                <div class="form-group form-inline">
+                    <label for="password" class="col-sm-3 text-info">Password:</label>
+                    <input type="password" name="password" id="password" class="col-sm-6 form-control" placeholder="password">
                 </div>
-                <button type="button" name="updateProfile" class="btn btn-info">Update Profile</button>
             </form>
         </div>
     `
+    if (state.page == "registerProfile") {
+        document.getElementById("password").setAttribute("required","")
+    }
+}
+
+function profileSubmitButton() {
+    if (state.page == "editProfile") {
+        infoBox.innerHTML += `
+            <br>
+            <button type="button" name="updateProfile" class="btn btn-info">Update Profile</button>
+        `
+    } else {
+        infoBox.innerHTML += `
+            <br>
+            <input id="btn" type="button" name="submitProfile" class="btn btn-info" value="Complete Registration">  
+        `
+    }
 }
 
 function updateProfile(e) {
@@ -128,7 +156,6 @@ function submitProfile() {
                 createInfo(json.errors)
             } 
             else {
-                debugger
                 userData=json.user.data.attributes
                 state.page = "profile"
                 currentUser = new User(userData)
@@ -139,3 +166,4 @@ function submitProfile() {
    })
 
 }
+

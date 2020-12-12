@@ -30,7 +30,7 @@ html::before {
 
 #main .container #container-row #container-column #container-box {
     margin-top: 5px;
-    max-width: 2200px;
+    max-width: 80%;
     border: 2px solid #9C9C9C;
     background-color: #faf8f8;
     opacity: 0.7;
@@ -66,7 +66,7 @@ tr.border_top td {
 }
 
 #profileDiv {
-    width: 90%;
+    width: 80%;
 }
 
 #contactsDiv {
@@ -74,7 +74,7 @@ tr.border_top td {
 }
 
 .btn {
-    margin: 10px;
+    margin: 5px;
     width: auto;
 }
 
@@ -94,15 +94,16 @@ tr.border_top td {
 
 .mapColumn {
     float: right;
-    width: 300px;
-    height: 400px;
+    width: 380px;
     margin: 10px;
+    float: left;
 }
 
 .contactColumn {
     font-size: 12px;
     float: left;
-    width: 400px;
+    width: 380px;
+    padding: 5px;
 }
 
 .hidden {
@@ -110,14 +111,14 @@ tr.border_top td {
 }
 
 form {
-    width: 100%;
-    margin: 10px;
+    width: 90%;
+    margin: auto;
 }
 
 label {
     width: 80c;
     display: inline-block;
-    margin-left: 32px;
+    margin-left: 28px;
 }
 
 input, textarea {
@@ -127,24 +128,14 @@ input, textarea {
 }
 
 label+input {
-    width: 40%;
+    width: auto;
     /* Large margin-right to force the next element to the new-line
              and margin-left to create a gutter between the label and input */
-    margin: 0 20% 0 3%;
+    margin: 0 0% 0 3%;
 }
 
 .addContact {
     width: 150px;
-}
-
-input:focus:invalid {
-    /* border-color: red; */
-    border: 2px dashed red;
-}
-
-input,
-input:valid {
-    border: 1px solid rgb(7, 7, 7);
 }
 
 #optionsDiv {
@@ -154,3 +145,44 @@ input:valid {
 input#btn {
     height: auto;
 }
+
+#prevContacts {
+    width: 95%;
+    overflow: scroll;
+    border: none;
+}
+
+input + span {
+    padding-right: 30px;
+  }
+  
+  input:invalid+span:after {
+    position: relative;
+    content: '✖';
+    padding: 5px 8px;
+  }
+
+  input:invalid {
+      background-color: coral;
+  }
+  
+  input:valid+span:after {
+    position: relative;
+    content: '✓';
+    padding: 5px 8px;
+  }
+
+  input:valid {
+      background-color: white;
+  }
+
+  #infoViewPort {
+      width: 80%;
+      margin: auto;
+  }
+
+  hr {
+      width: 100%;
+      height: 1px;
+      background: #44bcd8;
+  }

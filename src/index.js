@@ -4,7 +4,7 @@ const baseUrl = "http://localhost:3000"
 const gMapsScript = "https://maps.googleapis.com/maps/api/js?callback=initMap&signed_in=true&key=AIzaSyBXq06q4pG6fATSosF-sSte5QK8WuanI1Q&language=en"
 const infoLine = document.getElementById("infoViewPort")
 const buttons = document.getElementsByClassName("btn")
-let user = {}
+// let user = {}
 let page
 
 // set initial state and user
@@ -22,33 +22,8 @@ const loginPage = `
                 <label for="password" class="text-info">Password:</label>
                 <input type="password" name="password" id="password" class="form-control">
             </div>
-            <input id="btn" type="submit" name="login" class="btn btn-info" value="Login">
+            <input id="btn" type="button" name="login" class="btn btn-info" value="Login">
             <input id="btn" type="button" name="registerProfile" class="btn btn-info" value="Register">
-        </form>
-    </div>
-`
-
-const registerForm = `
-    <h2 class="text-center text-info">Register</h2>
-    <div id="registerProfileDiv">
-        <form>
-            <div class="form-group">
-                <label for="callsign" class="text-info">Callsign: </label>
-                <input type="text" class="form-control" id="callsign"placeholder="Callsign" required>
-            </div>
-            <div class="form-group">
-                <label for="email" class="text-info">Email: </label>
-                <input type="text" class="form-control" id="email"placeholder="Email" required>
-            </div>
-            <div class="form-group">
-                <label for="my_qth" class="text-info">Grid Square: </label>
-                <input type="text" class="form-control" id="my_qth" placeholder="Grid Square, format AA11((aa)(11))" pattern="[A-R]{2}[0-9]{2}([a-x]{2})?([0-9]{2})?" required>
-            </div>
-            <div class="form-group">
-                <label for="password" class="text-info">Password:</label>
-                <input type="password" name="password" id="password" class="form-control" placeholder="Password" required>
-            </div>
-            <input id="btn" type="button" name="submitProfile" class="btn btn-info" value="Complete Registration">
         </form>
     </div>
 `
@@ -110,7 +85,8 @@ function render(id){
             })
         break; 
         case "registerProfile":
-            registerPage()
+            userForm()
+            profileSubmitButton()
             const submitProfileButton = buttons.submitProfile
             submitProfileButton.addEventListener("click", function(e) {
                 e.preventDefault()
@@ -121,7 +97,8 @@ function render(id){
             showProfilePage()
         break;
         case "editProfile":
-            editProfilePage()
+            userForm()
+            profileSubmitButton()
             const updateProfileButton = buttons.updateProfile
             updateProfileButton.addEventListener("click", function(e) {
                 e.preventDefault()
@@ -132,8 +109,8 @@ function render(id){
             getContacts()
         break;
         case "addContact":
-            ContactForm()
-            addSubmitButton()
+            contactForm()
+            contactSubmitButton()
             const submitAddContactButton = buttons.submitAddContact
             submitAddContactButton.addEventListener("click", (e) => {
                     e.preventDefault()
@@ -147,7 +124,8 @@ function render(id){
             displayContact()
         break;
         case "editContactDetail":
-            ContactForm()
+            contactForm()
+            contactSubmitButton()
             const submitEditContactButton = buttons.submitEditContact
             submitEditContactButton.addEventListener("click", (e) => {
                 e.preventDefault()
@@ -169,7 +147,7 @@ function render(id){
     })
     contactsButton.addEventListener("click", (e) => {
         e.preventDefault()
-        contacts()
+        getContacts()
     })
     profileButton.addEventListener("click", (e) => {
         e.preventDefault()

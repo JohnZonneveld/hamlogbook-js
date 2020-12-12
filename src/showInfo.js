@@ -15,31 +15,17 @@ function createInfo(messages) {
 function showInfoMessage() {
 
     let infoDiv = document.createElement('div')
-    infoDiv.className = "alert-warning"
+    infoDiv.className = "alert alert-warning alert-dismissible"
+    messageHTML = messageHTML + `<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>`
     infoDiv.innerHTML = messageHTML
 
     document.getElementById('infoViewPort').appendChild(infoDiv)
 
-    let closeButton = document.createElement('span')
-    closeButton.className = "closebtn"
-    closeButton.innerHTML = `
-        &times
-    `
-    infoDiv.appendChild(closeButton)
-
-    //alert goes away on it's own after 3 seconds
+    // alert goes away on it's own after 5 seconds
     window.setTimeout(() => {
-        closeButton.parentElement.hidden = true
+        infoDiv.hidden = true
     }, 5000)
-
-    //alert disappears when they click the closeButton
-    closeButton.addEventListener('click', close)
     
-        // Jump to top to see info messages if any
-        window.scrollTo(0, 0)
-}
-
-function close(e){
-    console.log('close pressed')
-    e.target.parentElement.hidden = true
+    // Jump to top to see info messages if any
+    window.scrollTo(0, 0)
 }
