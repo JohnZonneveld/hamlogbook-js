@@ -93,7 +93,7 @@ const contactHeader = `
                 <option value="mode">Mode</option>
                 <br> 
             </select>
-            <input type="text" id="searchInput" placeholder="Start entering callsign" oninput="filterContactObjects()">
+            <input type="text" id="searchInput" placeholder="Filtering on partially match of callsign" oninput="filterContactObjects()">
         </div>
         <div class="table-responsive" id="contactsContentDiv"></div>
     </div>
@@ -120,7 +120,7 @@ const prevContactsTableHeader = `
 function changePlaceholder() {
     console.log('change placeholder')
     let changePlaceholder =document.getElementById('selectField').value
-    document.getElementById('searchInput').placeholder = `Start entering ${changePlaceholder}`
+    document.getElementById('searchInput').placeholder = `Filtering partially match of ${changePlaceholder}`
 }
 
 function contactDetail(id) {
@@ -223,12 +223,12 @@ function contactForm() {
         <form>
             <div class="form-group form-inline">
                 <label col-sm-3 for="callsign" class="addContact text-info">Callsign: </label>
-                <input type="text" col-sm-6 class="form-control" id="owncall" value="${contact.owncall}" required>
+                <input type="text" class="form-control-sm" id="owncall" value="${contact.owncall}" required>
                 <span class="validity"></span>
             </div>
             <div class="form-group form-inline">
                 <label col-sm-3 for="callsign" class="addContact text-info">Station Callsign: </label>
-                <input type="text" col-sm-6class="form-control" id="station_callsign" value="${contact.owncall}" required>
+                <input type="text" class="form-control-sm" id="station_callsign" value="${contact.owncall}" required>
                 <span class="validity"></span>
             </div>
             <div class="form-group form-inline">

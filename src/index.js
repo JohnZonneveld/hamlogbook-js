@@ -197,6 +197,7 @@ function loginHandler(e) {
         password: pwInput
         }
     }
+    debugger
     fetch(baseUrl+`/auth_user`, {
         method: "POST",
         headers: {"Content-Type": "application/json"},
