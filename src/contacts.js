@@ -5,6 +5,7 @@ let currentPage = 1;
 let objectsPerPage = 15
 let contactObjects = []
 let rowHTML = ""
+let page
 
 class Contact {
     constructor(attributes){

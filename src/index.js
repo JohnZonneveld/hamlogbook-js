@@ -1,11 +1,9 @@
-let infoBox = document.querySelector("#container-box")
+// Switch between either local or heroku environment
 const baseUrl = "http://localhost:3000"
 // const baseUrl = "https://hamlogbook.herokuapp.com"
-const gMapsScript = "https://maps.googleapis.com/maps/api/js?callback=initMap&signed_in=true&key=AIzaSyBXq06q4pG6fATSosF-sSte5QK8WuanI1Q&language=en"
-const infoLine = document.getElementById("infoViewPort")
+
 const buttons = document.getElementsByClassName("btn")
-// let user = {}
-let page
+let infoBox = document.querySelector("#container-box")
 
 // set initial state and user
 let state = {page: "login"}
@@ -23,11 +21,12 @@ const loginPage = `
                 <input type="password" name="password" id="password" class="form-control">
             </div>
             <input id="btn" type="button" name="login" class="btn btn-info" value="Login">
-            <input id="btn" type="button" name="registerProfile" class="btn btn-info" value="Register">
+            <input id="btn" type="button" name="register" class="btn btn-info" value="Register">
         </form>
     </div>
 `
 
+// All navigation buttons are created hidden
 const navigationBar = `
         <div class="form-group text-left">
             <button type="button" name-"home" class="btn btn-info btn-md hidden" id="homeButton">Back To Login</button>
@@ -41,28 +40,77 @@ const navigationBar = `
         </div>
     `
 
-function showProfilePage() { 
-    document.getElementById("logoffButton").classList.remove("hidden")
-    document.getElementById("contactsButton").classList.remove("hidden")
-    document.getElementById("editProfileButton").classList.remove("hidden")
-    infoBox.innerHTML += `
-        <div id="profileDiv">
-            <h4 class="text-center text-info">Your profile:</h4>
-            <div class="table-responsive">
-                <table class="table table-sm table-borderless table-condensed table-hover">
-                    <tr>
-                        <td><label class="text- text-info">Callsign: </h3></td><td>${currentUser.callsign}</td>
-                    </tr>
-                    <tr>
-                        <td><label class="text-center text-info">Email: </h3></td><td>${currentUser.email}</td>
-                    </tr>
-                    <tr>
-                        <td><label class="text-center text-info">Grid Square: </h3></td><td>${currentUser.my_qth}</td>
-                    </tr>
-                </table>
-            </div>    
-        </div>    
-    `
+
+function hasToken(){
+    if (!!localStorage.getItem("jwt")){
+        loginWithToken(localStorage.getItem("jwt"))
+    } else {
+        render()
+    }
+}
+
+function loginWithToken(token){
+    fetch(baseUrl+`/hastoken`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` }
+    })
+    .then(
+        response => response.json()
+    )
+    .then(json => {
+        localStorage.setItem("jwt", json.auth_token)
+        if (json.message) {
+            createInfo(json.message)
+            backToLogin()
+        } else {
+            currentUser = new User(json.userdata.data.attributes)
+            state.page = "profile"
+            render()
+        }
+    })
+}
+function loginHandler() {
+    const csInput = document.querySelector("#callsign").value.toUpperCase()
+    const pwInput = document.querySelector("#password").value
+    const loginData = {user: {
+        callsign: csInput,
+        password: pwInput
+        }
+    }
+    fetch(baseUrl+`/auth_user`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(loginData)
+    })
+    .then(response => response.json())
+    .then(json => {
+        localStorage.setItem("jwt", json.auth_token)
+        if (json.errors) {
+            createInfo(json.errors)
+            state.page = "login"
+            render()
+        } else {
+            userData=json.user.data.attributes
+            state.page = "profile"
+            debugger
+            currentUser = new User(userData)
+            createInfo(json.success)
+            render()
+        }
+    })
+}
+
+function logoff() {
+    console.log("logoff clicked")
+    localStorage.clear()
+    state.page = "login"
+    render()
+}
+
+function backToLogin() {
+    localStorage.clear()
+    state.page = "login"
+    render()
 }
 
 function render(id){
@@ -71,26 +119,26 @@ function render(id){
         // first page people see to log in
         case "login":
             infoBox.innerHTML += loginPage
-            // buttons for login and register page
-            const registerButton = buttons.registerProfile
+            // buttons for login and register
+            const registerButton = buttons.register
             const loginButton = buttons.login
             // event listeners for those buttons
             loginButton.addEventListener("click", function(e) {
                 e.preventDefault()
-                loginHandler(e)
+                loginHandler()
             })
             registerButton.addEventListener("click", function(e) {
                 e.preventDefault()
-                registerProfile()
+                register()
             })
         break; 
-        case "registerProfile":
+        case "register":
             userForm()
             profileSubmitButton()
             const submitProfileButton = buttons.submitProfile
             submitProfileButton.addEventListener("click", function(e) {
                 e.preventDefault()
-                submitProfile(e)
+                submitProfile()
             })
         break;
         case "profile":
@@ -102,7 +150,7 @@ function render(id){
             const updateProfileButton = buttons.updateProfile
             updateProfileButton.addEventListener("click", function(e) {
                 e.preventDefault()
-                updateProfile(e)
+                updateProfile()
             })
         break;
         case "contacts":
@@ -133,7 +181,8 @@ function render(id){
             })
         break;
     }
-
+    // Almost every page is rendered through render() so we have a central place
+    // for the eventListeners for the navigation bar buttons
     const editPofileButton = buttons.editProfile
     const logoffButton = buttons.logoff
     const contactsButton = buttons.contacts
@@ -177,82 +226,6 @@ function render(id){
         e.preventDefault()
         deleteContact()
     })
-}
-
-function hasToken(){
-    if (!!localStorage.getItem("jwt")){
-        loginWithToken(localStorage.getItem("jwt"))
-    } else {
-        render()
-    }
-}
-
-function loginHandler(e) {
-    e.preventDefault()
-    console.log("login clicked")
-    const csInput = document.querySelector("#callsign").value.toUpperCase()
-    const pwInput = document.querySelector("#password").value
-    const loginData = {user: {
-        callsign: csInput,
-        password: pwInput
-        }
-    }
-    debugger
-    fetch(baseUrl+`/auth_user`, {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(loginData)
-    })
-    .then(response => response.json())
-    .then(json => {
-        localStorage.setItem("jwt", json.auth_token)
-        if (json.errors) {
-            createInfo(json.errors)
-            state.page = "login"
-            render()
-        } else {
-            userData=json.user.data.attributes
-            state.page = "profile"
-            currentUser = new User(userData)
-            createInfo(json.success)
-            render()
-        }
-    })
-}
-
-function loginWithToken(token){
-    fetch(baseUrl+`/hastoken`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` }
-    })
-    .then(
-        response => response.json()
-    )
-    .then(json => {
-        localStorage.setItem("jwt", json.auth_token)
-        if (json.message) {
-            createInfo(json.message)
-            backToLogin()
-        } else {
-            currentUser = new User(json.userdata.data.attributes)
-            state.page = "profile"
-            render()
-        }
-    })
-}
-
-function logoff() {
-    console.log("logoff clicked")
-    localStorage.clear()
-    state.page = "login"
-    render()
-}
-
-
-function backToLogin() {
-    localStorage.clear()
-    state.page = "login"
-    render()
 }
 
 hasToken()

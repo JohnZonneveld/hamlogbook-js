@@ -15,6 +15,30 @@ function editProfile() {
     render()
 }
 
+function showProfilePage() { 
+    document.getElementById("logoffButton").classList.remove("hidden")
+    document.getElementById("contactsButton").classList.remove("hidden")
+    document.getElementById("editProfileButton").classList.remove("hidden")
+    infoBox.innerHTML += `
+        <div id="profileDiv">
+            <h4 class="text-center text-info">Your profile:</h4>
+            <div class="table-responsive">
+                <table class="table table-sm table-borderless table-condensed table-hover">
+                    <tr>
+                        <td><label class="text- text-info">Callsign: </h3></td><td>${currentUser.callsign}</td>
+                    </tr>
+                    <tr>
+                        <td><label class="text-center text-info">Email: </h3></td><td>${currentUser.email}</td>
+                    </tr>
+                    <tr>
+                        <td><label class="text-center text-info">Grid Square: </h3></td><td>${currentUser.my_qth}</td>
+                    </tr>
+                </table>
+            </div>    
+        </div>    
+    `
+}
+
 function userForm() {
     let title
     let user
@@ -52,7 +76,7 @@ function userForm() {
             </form>
         </div>
     `
-    if (state.page == "registerProfile") {
+    if (state.page == "register") {
         document.getElementById("password").setAttribute("required","")
     }
 }
@@ -117,9 +141,9 @@ function updateProfile(e) {
     })
 }
 
-function registerProfile() {
+function register() {
     console.log("register clicked")
-    state.page = "registerProfile"
+    state.page = "register"
     render()
 }
 

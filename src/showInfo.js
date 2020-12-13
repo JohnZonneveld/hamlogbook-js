@@ -1,4 +1,5 @@
 let messageHTML = ""
+const infoLine = document.getElementById("infoViewPort")
 
 function createInfo(messages) {
     if (Array.isArray(messages)) {
