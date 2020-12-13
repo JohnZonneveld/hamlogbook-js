@@ -2,7 +2,7 @@ let jsonContacts = []
 let contactObjectsToDisplay = []
 let prevContacts = []
 let currentPage = 1;
-let objectsPerPage = 15
+let objectsPerPage = 20
 let contactObjects = []
 let rowHTML = ""
 let page
@@ -10,6 +10,7 @@ let page
 class Contact {
     constructor(attributes){
         if (attributes) {
+            // in case a existing contact set all the values present in the attributes
             this.id = attributes.id
             this.owncall = attributes.owncall
             this.station_callsign = attributes.station_callsign
@@ -35,6 +36,7 @@ class Contact {
             this.ituz = attributes.ituz
             this.park = attributes.park
         } else {
+            // in case creating a new contact set my info and current date and time in utc
             let utcDate = new Date().toISOString()
             let utcD = utcDate.slice(0,10)
             let utcT = utcDate.slice(11,19)
@@ -46,7 +48,7 @@ class Contact {
     }
 }
 
-
+//  table header used to display all contacts
 const contactsTableHeader = `
     <table class="table-striped" id="Contacts"> 
         <tr class="border_bottom">
@@ -82,7 +84,7 @@ const contactsTableHeader = `
         <tfoot>
     </table>
 `
-
+//  contacts table header used to display filter option and page numbering
 const contactHeader = `
     <div id="contactsDiv">
         <h4 class="text-center text-info">Your contacts</h4>
@@ -101,6 +103,7 @@ const contactHeader = `
     page: <span id="page"></span>
 `
 
+// header to display when adding contact so we can see previous contacts
 const prevContactsTableHeader = `
     <b>Previous contacts</b>
     <table class="table-striped" id="prevContacts">  
@@ -118,6 +121,7 @@ const prevContactsTableHeader = `
     <br>
 `
 
+// change placeholder depending on filter selection
 function changePlaceholder() {
     console.log('change placeholder')
     let changePlaceholder =document.getElementById('selectField').value
@@ -431,6 +435,7 @@ function contactForm() {
     }
 }
 
+// function used to search for previous contacts
 function searchContact() {
     filteredContacts=[]
     filter = document.getElementById("call").value
@@ -744,7 +749,6 @@ function filterContactObjects() {
                 // grab an instance
                 let contactObject = contactObjects[i]
                 let country = contactObject.country
-                // https://www.w3schools.com/jsref/jsref_indexof.asp
                 // indexOf will return -1 if the name does not contain the filter
                 if (country.indexOf(searchFilter) > -1){
                     //if it is greater than -1 then the name does contain the filter
@@ -763,7 +767,6 @@ function filterContactObjects() {
                 // grab an instance
                 let contactObject = contactObjects[i]
                 let mode = contactObject.mode
-                // https://www.w3schools.com/jsref/jsref_indexof.asp
                 // indexOf will return -1 if the name does not contain the filter
                 if (mode.indexOf(searchFilter) > -1){
                     //if it is greater than -1 then the name does contain the filter

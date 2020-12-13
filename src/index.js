@@ -92,7 +92,6 @@ function loginHandler() {
         } else {
             userData=json.user.data.attributes
             state.page = "profile"
-            debugger
             currentUser = new User(userData)
             createInfo(json.success)
             render()
@@ -110,6 +109,12 @@ function logoff() {
 function backToLogin() {
     localStorage.clear()
     state.page = "login"
+    render()
+}
+
+function register() {
+    console.log("register clicked")
+    state.page = "register"
     render()
 }
 

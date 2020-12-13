@@ -14,9 +14,10 @@ function createInfo(messages) {
 }
 
 function showInfoMessage() {
-
     let infoDiv = document.createElement('div')
+    // set infoDiv className (alert-dismissbile allows for us to close it)
     infoDiv.className = "alert alert-warning alert-dismissible"
+    // add the closebutton to the messageHTML
     messageHTML = messageHTML + `<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>`
     infoDiv.innerHTML = messageHTML
 

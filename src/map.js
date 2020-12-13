@@ -15,21 +15,21 @@ function loadMapScript() {
     mapSpace.appendChild(mapScript);
 }
 
-// The Maidenhead Grid system is build up by squares of 10° latitude
-// and 20° longitude and are indicated by the letters AA-RR. These squares
-// contain sub-squares in a 10x10 grid of squares in size 1° in latitude 
-// and 2° in longitude and are indicated by the numbers 00-99.
-// These sub-squares again are divided into a 24x24 grid of 2.5" latitude  
-// and 5" longitude and are indicated by the letters aa-xx and subsequently 
-// divided again in a 10x10 grid measuring 15" latitude and 30" longitude
-// indicated by numbers 00-99. 
-// This will give a Maidenhead grid in the form AA00aa00.
-// For example my location islocated in the Maidenhead gridsquare EL15fx62.
-// To calculate the distance we need to determine the center of the square 
-// indicated by the gridsquare. Because when we use the grid as supplied and 
-// convert it to a latitide and longitude it will lead us to the left bottom 
-// corner of the square. 
-// The longer the given gridsquare, the more precise the calculated location is.
+/*  The Maidenhead Grid system is build up by squares of 10° latitude
+    and 20° longitude and are indicated by the letters AA-RR. These squares
+    contain sub-squares in a 10x10 grid of squares in size 1° in latitude 
+    and 2° in longitude and are indicated by the numbers 00-99.
+    These sub-squares again are divided into a 24x24 grid of 2.5" latitude  
+    and 5" longitude and are indicated by the letters aa-xx and subsequently 
+    divided again in a 10x10 grid measuring 15" latitude and 30" longitude
+    indicated by numbers 00-99. 
+    This will give a Maidenhead grid in the form AA00aa00.
+    For example my location is located in the Maidenhead gridsquare EL15fx62(ma).
+    To calculate the distance we need to determine the center of the square 
+    indicated by the gridsquare. Because when we use the grid as supplied and 
+    convert it to a latitide and longitude it will lead us to the left bottom 
+    corner of the square. 
+    The longer the given gridsquare, the more precise the calculated location is. */
 gridSquareToLatLon = function(grid){
     // set lat and lon to 0.0
     let lat=0.0,lon=0.0
@@ -37,36 +37,36 @@ gridSquareToLatLon = function(grid){
     let aNum="a".charCodeAt(0),numA = "A".charCodeAt(0);
     // latitude is divided in 10°, because the equator is 0 we have to substract 90°
     function lat4(g){
-        //  example my location EL15 = 25.5, -97
-        //     10 * (ASCII value of "L" - 65) + integer value of "5") - 90 = 10 * (76-65) + 5 - 90 = 25
+        /*  example my location EL15 = 25.5, -97
+            10 * (ASCII value of "L" - 65) + integer value of "5") - 90 = 10 * (76-65) + 5 - 90 = 25 */
         return 10 * (g.charCodeAt(1) - numA) + parseInt(g.charAt(3)) - 90;
     }
     function lon4(g){
-        // example my location EL15
-        //     20 * (ASCII value of "E" - 65) + 2 * integer value of "1") -180 = 20 * (69 -65) + 2*1 - 180 = -98
+        /*  example my location EL15
+            20 * (ASCII value of "E" - 65) + 2 * integer value of "1") -180 = 20 * (69 -65) + 2*1 - 180 = -98 */
         return 20 * (g.charCodeAt(0) - numA) + 2 * parseInt(g.charAt(2)) - 180;
     }
     // test to see if grid is a 4-digit square, if not the value will be false
     if (/^[A-R][A-R][0-9][0-9]$/.test(grid)) {
-        // A 4-digit square is 1° latitude and 2° longitude to find the
-        // center we add 0.5° to the latitude and 1° to the longitude
-        // from example EL15 lat4 = 25 => lat = 25.5
+        /*  A 4-digit square is 1° latitude and 2° longitude to find the
+            center we add 0.5° to the latitude and 1° to the longitude
+            from example EL15 lat4 = 25 => lat = 25.5 */
         lat = lat4(grid)+0.5;
         // from example EL15 lon4 = -98 => lon = -97
         lon = lon4(grid)+1;
     } 
     // test to see if grid is a 6-digit square
     else if (/^[A-R][A-R][0-9][0-9][a-x][a-x]$/.test(grid)) {
-        // example EL15fx = 25.97917, -97.54167
-        //     25 + 1/24 * (ASCII value of "x" - 97 + 0.5) = 25 + 1/24 * (120 - 97 + 0.5 ) = 25.979167
+        /*  example EL15fx = 25.97917, -97.54167
+            25 + 1/24 * (ASCII value of "x" - 97 + 0.5) = 25 + 1/24 * (120 - 97 + 0.5 ) = 25.979167*/
         lat = lat4(grid)+(1/60)*2.5*(grid.charCodeAt(5)-aNum+0.5);
         //     -98 + 2/24 * (ASCII value of "f" -97 + 0.5) = -98 + 2/24 * (102 - 97 + 0.5 ) = -97.54167
         lon = lon4(grid)+(1/60)*5*(grid.charCodeAt(4)-aNum+0.5);
     } 
     // test to see if grid is a 8-digit square
     else if (/^[A-R][A-R][0-9][0-9][a-x][a-x][0-9][0-9]$/.test(grid)) {
-        // example EL15fx62 is circa 25.96858, -97.52951 
-        //  25 + 1/24 * (120-97) + 1/240 * (int(charAt(7)) = 2) = 2 + 0.5) = 25 + 23/24 + 2.5/240 = 25.96875
+        /*  example EL15fx62 is circa 25.96858, -97.52951 
+            25 + 1/24 * (120-97) + 1/240 * (int(charAt(7)) = 2) = 2 + 0.5) = 25 + 23/24 + 2.5/240 = 25.96875 */
         lat = lat4(grid)+(1/60)*2.5*(grid.charCodeAt(5)-aNum)+(1/3600)*15*(parseInt(grid.charAt(7))+0.5);
         //  -98 + 2/24 * (102-97) + 2/240 * (int(charAt(6)) = 6 + 0.5) = -98 + 10/24 + 13/240 = -97.529166
         lon = lon4(grid)+(1/60)*5*(grid.charCodeAt(4)-aNum)+(1/3600)*30*(parseInt(grid.charAt(6))+0.5);
@@ -88,7 +88,7 @@ function distance(myLatLon, remLatLon) {
     if (a != 0) {
         return (2 * radius * Math.asin(Math.sqrt(a))).toFixed(0); // no decimals needed as location is not pinpointed.
     } else {
-        return "Location info missing for calculation"
+        return "Location info missing for calculation" // if no remote grid given, calculation will end up 0 as myLatLon == remLatLon
     }
 }
 

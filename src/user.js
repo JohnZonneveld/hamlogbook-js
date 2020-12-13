@@ -1,3 +1,9 @@
+let csInput
+let pwInput
+let emRegisterInput
+let gsInput
+let profileData = {}
+
 class User {
     constructor(attributes) {
         if (attributes) {
@@ -81,6 +87,21 @@ function userForm() {
     }
 }
 
+function readUserForm() {
+    csInput = document.getElementById("callsign").value
+    pwInput = document.getElementById("password").value
+    emInput = document.getElementById("email").value
+    gsInput = document.getElementById("my_qth").value
+    profileData = {
+        user: {
+            callsign: csInput,
+            password: pwInput,
+            email: emInput,
+            my_qth: gsInput
+        }
+    }
+}
+
 function profileSubmitButton() {
     if (state.page == "editProfile") {
         infoBox.innerHTML += `
@@ -95,19 +116,8 @@ function profileSubmitButton() {
     }
 }
 
-function updateProfile(e) {
-    e.preventDefault()
-    const csProfileInput = document.querySelector("#callsign").value
-    const pwProfileInput = document.querySelector("#password").value
-    const mqProfileInput = document.querySelector("#my_qth").value
-    const emProfileInput = document.querySelector("#email").value
-    const updateProfileData = {user: {
-        callsign: csProfileInput,
-        password: pwProfileInput,
-        email: emProfileInput,
-        my_qth: mqProfileInput
-        }
-    }
+function updateProfile() {
+    readUserForm()
     fetch(baseUrl+`/users/${currentUser.userId}`, {
         method: "PATCH",
         headers: {
@@ -115,71 +125,22 @@ function updateProfile(e) {
             Accept: "application/json",
             Authorization: `Bearer: ${localStorage.getItem("jwt")}`
         },
-        body: JSON.stringify(updateProfileData)
-        
-    })
-    .then(response => response.json())
-    .then(json => {
-        if (json.message) {
-            createInfo(json.message)
-            backToLogin()
-        } else {
-            if (json.errors) {
-                localStorage.setItem("jwt", json.auth_token)
-                createInfo(json.errors)
-                state.page = "login"
-                render()
-            } 
-            else {
-                userData=json.user.data.attributes
-                state.page = "profile"
-                currentUser = new User(userData)
-                createInfo(json.success)
-                render()
-            }
-        }
-    })
-}
-
-function register() {
-    console.log("register clicked")
-    state.page = "register"
-    render()
-}
-
-function registerPage() {
-    document.getElementById("homeButton").classList.remove("hidden")
-    infoBox.innerHTML += registerForm
-}
-
-function submitProfile() {
-    csRegisterInput=document.getElementById("callsign").value.toUpperCase()
-    pwRegisterInput=document.getElementById("password").value
-    emRegisterInput=document.getElementById("email").value
-    gsRegisterInput=document.getElementById("my_qth").value
-    const registerProfileData = {user: {
-        callsign: csRegisterInput,
-        password: pwRegisterInput,
-        email: emRegisterInput,
-        my_qth: gsRegisterInput
-        }
-    }
-    fetch(baseUrl+`/auth/register`, {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(registerProfileData)
+        body: JSON.stringify(profileData)
     })
     .then(response => response.json())
     .then(json => {
         localStorage.setItem("jwt", json.auth_token)
+        // is session timed out, go to log in
         if (json.message) {
             createInfo(json.message)
             backToLogin()
         } else {
             if (json.errors) {
+                // if errors encountered, display errors but stay on page
                 createInfo(json.errors)
             } 
             else {
+                // if successful display profile and create and set currentUser
                 userData=json.user.data.attributes
                 state.page = "profile"
                 currentUser = new User(userData)
@@ -187,7 +148,30 @@ function submitProfile() {
                 render()
             }
         }
-   })
-
+    })
 }
 
+function submitProfile() {
+    readUserForm()
+    fetch(baseUrl+`/auth/register`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(profileData)
+    })
+    .then(response => response.json())
+    .then(json => {
+        localStorage.setItem("jwt", json.auth_token)
+        // if registration fails and errors encountered, display errors
+        if (json.errors) {
+            createInfo(json.errors)
+        } 
+        else {
+            // if successful display profile page
+            userData=json.user.data.attributes
+            state.page = "profile"
+            currentUser = new User(userData)
+            createInfo(json.success)
+            render()
+        }
+   })
+}
