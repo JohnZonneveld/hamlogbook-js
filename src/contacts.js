@@ -906,7 +906,7 @@ function changePage(page)
             <hr>
         `
     }
-    // Because the pagination for the contacts page we need some "local" eventListeners
+    // Because the pagination for the contacts page is not going through the render() function we need some "local" eventListeners
     logoffButton.addEventListener("click", (e) => {
             e.preventDefault()
             logoff()
