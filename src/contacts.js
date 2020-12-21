@@ -163,8 +163,7 @@ function getDisplayContactDetail(id) {
     })
 }
 
-function submitEditContact(e) {
-    e.preventDefault()
+function submitEditContact() {
     editContactData = readContactForm()
     fetch(baseUrl+ `/contacts/${contactDetail.id}`, {
         method: "PATCH",
@@ -547,9 +546,7 @@ function readContactForm() {
     return contactData
 }
 
-function submitAddContact(e) {
-    e.preventDefault()
-    debugger
+function submitAddContact() {
     const contactData = readContactForm()
     fetch(baseUrl+`/contacts/`, {
         method: "POST",
@@ -562,7 +559,6 @@ function submitAddContact(e) {
     })
     .then(response => response.json())
     .then(json => {
-        debugger
         localStorage.setItem("jwt", json.auth_token)
         if (json.message) {
             createInfo(json.message)
@@ -907,18 +903,15 @@ function changePage(page)
         `
     }
     // Because the pagination for the contacts page is not going through the render() function we need some "local" eventListeners
-    logoffButton.addEventListener("click", (e) => {
-            e.preventDefault()
+    logoffButton.addEventListener("click", () => {
             logoff()
         })
-    profileButton.addEventListener("click", (e) => {
-            e.preventDefault()
+    profileButton.addEventListener("click", () => {
             console.log("profile clicked")
             state.page = "profile"
             render()
         })
-    addContactButton.addEventListener("click", (e) => {
-            e.preventDefault()
+    addContactButton.addEventListener("click", () => {
             console.log("add Contact clicked")
             state.page = "addContact"
             render()

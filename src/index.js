@@ -1,6 +1,6 @@
 // Switch between either local or heroku environment
-// const baseUrl = "http://localhost:3000"
-const baseUrl = "https://hamlogbook.herokuapp.com"
+const baseUrl = "http://localhost:3000"
+// const baseUrl = "https://hamlogbook.herokuapp.com"
 
 const buttons = document.getElementsByClassName("btn")
 let infoBox = document.querySelector("#container-box")
@@ -128,12 +128,10 @@ function render(id){
             const registerButton = buttons.register
             const loginButton = buttons.login
             // event listeners for those buttons
-            loginButton.addEventListener("click", function(e) {
-                e.preventDefault()
+            loginButton.addEventListener("click", () => {
                 loginHandler()
             })
-            registerButton.addEventListener("click", function(e) {
-                e.preventDefault()
+            registerButton.addEventListener("click", () => {
                 register()
             })
         break; 
@@ -141,8 +139,7 @@ function render(id){
             userForm()
             profileSubmitButton()
             const submitProfileButton = buttons.submitProfile
-            submitProfileButton.addEventListener("click", function(e) {
-                e.preventDefault()
+            submitProfileButton.addEventListener("click", () => {
                 submitProfile()
             })
         break;
@@ -153,8 +150,7 @@ function render(id){
             userForm()
             profileSubmitButton()
             const updateProfileButton = buttons.updateProfile
-            updateProfileButton.addEventListener("click", function(e) {
-                e.preventDefault()
+            updateProfileButton.addEventListener("click", () => {
                 updateProfile()
             })
         break;
@@ -165,9 +161,8 @@ function render(id){
             contactForm()
             contactSubmitButton()
             const submitAddContactButton = buttons.submitAddContact
-            submitAddContactButton.addEventListener("click", (e) => {
-                    e.preventDefault()
-                    submitAddContact(e)
+            submitAddContactButton.addEventListener("click", () => {
+                    submitAddContact()
                 })
         break;
         case "contactDetail":
@@ -180,9 +175,8 @@ function render(id){
             contactForm()
             contactSubmitButton()
             const submitEditContactButton = buttons.submitEditContact
-            submitEditContactButton.addEventListener("click", (e) => {
-                e.preventDefault()
-                submitEditContact(e)
+            submitEditContactButton.addEventListener("click", () => {
+                submitEditContact()
             })
         break;
     }
