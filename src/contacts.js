@@ -96,8 +96,8 @@ const contactHeader = `
                 <option value="mode">Mode</option>
                 <br> 
             </select>
-            <input type="text" id="searchInput" placeholder="Filtering on partially match of callsign" oninput="filterContactObjects()">
-        </div>
+            <input type="text" id="searchInput" placeholder="Filtering on partially match of callsign">
+            </div>
         <div class="table-responsive" id="contactsContentDiv"></div>
     </div>
     page: <span id="page"></span>
@@ -862,6 +862,7 @@ function endPage()
     
 function changePage(page)
 {
+    document.getElementById('searchInput').addEventListener('input', filterContactObjects)
     let contactsTable = document.getElementById("contactsContentDiv");
     let pageSpan = document.getElementById("page");
     // Validate page
