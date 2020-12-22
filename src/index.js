@@ -202,8 +202,4 @@ function render(id){
     deleteContactButton.addEventListener("click", deleteContact)
 }
 
-function doThing(){
-    alert('Horray! Someone wrote "' + this.value + '"!');
- }
-
 hasToken()
