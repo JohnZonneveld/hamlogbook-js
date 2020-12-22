@@ -4,7 +4,7 @@ const infoLine = document.getElementById("infoViewPort")
 function createInfo(messages) {
     if (Array.isArray(messages)) {
         messageHTML = ""
-        messages.forEach(function (message) {
+        messages.forEach( (message) => {
             messageHTML += message + "<br>";
         });
     } else {

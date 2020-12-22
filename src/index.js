@@ -128,20 +128,14 @@ function render(id){
             const registerButton = buttons.register
             const loginButton = buttons.login
             // event listeners for those buttons
-            loginButton.addEventListener("click", () => {
-                loginHandler()
-            })
-            registerButton.addEventListener("click", () => {
-                register()
-            })
+            loginButton.addEventListener("click", loginHandler)
+            registerButton.addEventListener("click", register)
         break; 
         case "register":
             userForm()
             profileSubmitButton()
             const submitProfileButton = buttons.submitProfile
-            submitProfileButton.addEventListener("click", () => {
-                submitProfile()
-            })
+            submitProfileButton.addEventListener("click", submitProfile)
         break;
         case "profile":
             showProfilePage()
@@ -150,9 +144,7 @@ function render(id){
             userForm()
             profileSubmitButton()
             const updateProfileButton = buttons.updateProfile
-            updateProfileButton.addEventListener("click", () => {
-                updateProfile()
-            })
+            updateProfileButton.addEventListener("click", updateProfile)
         break;
         case "contacts":
             getContacts()
@@ -161,9 +153,7 @@ function render(id){
             contactForm()
             contactSubmitButton()
             const submitAddContactButton = buttons.submitAddContact
-            submitAddContactButton.addEventListener("click", () => {
-                    submitAddContact()
-                })
+            submitAddContactButton.addEventListener("click", submitAddContact)
         break;
         case "contactDetail":
             contactDetail = getDisplayContactDetail(id)
@@ -171,13 +161,11 @@ function render(id){
         case "displayContact":
             displayContact()
         break;
-        case "editContactDetail":
+        case "editContact":
             contactForm()
             contactSubmitButton()
             const submitEditContactButton = buttons.submitEditContact
-            submitEditContactButton.addEventListener("click", () => {
-                submitEditContact()
-            })
+            submitEditContactButton.addEventListener("click", submitEditContact)
         break;
     }
     // Almost every page is rendered through render() so we have a central place
@@ -189,42 +177,26 @@ function render(id){
     const homeButton = buttons.homeButton
     const profileButton = buttons.profileButton
     const deleteContactButton = buttons.deleteContactButton
-    logoffButton.addEventListener("click", (e) => {
-        e.preventDefault()
-        logoff()
-    })
-    contactsButton.addEventListener("click", (e) => {
-        e.preventDefault()
-        getContacts()
-    })
-    profileButton.addEventListener("click", (e) => {
-        e.preventDefault()
-        state.page = "profile"
-        render()
-    })
-    editProfileButton.addEventListener("click", (e) => {
-        e.preventDefault()
-        editProfile()
-    })
-    editContactButton.addEventListener("click", (e) => {
-        e.preventDefault()
-        state.page = "editContactDetail"
-        render()
-    })
-    addContactButton.addEventListener("click", (e) => {
-        e.preventDefault
-        state.page = "addContact"
-        render()
-    })
-    homeButton.addEventListener("click", (e) => {
-        e.preventDefault()
-        state.page = "login"
-        render()
-    })
-    deleteContactButton.addEventListener("click", (e) => {
-        e.preventDefault()
-        deleteContact()
-    })
+    logoffButton.addEventListener("click", logoff)
+    contactsButton.addEventListener("click", getContacts)
+    profileButton.addEventListener("click", function () {
+            state.page = "profile"
+            render()
+        })
+    editProfileButton.addEventListener("click", editProfile)
+    editContactButton.addEventListener("click", function () {
+            state.page = "editContact"
+            render()
+        })
+    addContactButton.addEventListener("click", function () {
+            state.page = "addContact"
+            render()
+        })
+    homeButton.addEventListener("click", function () {
+            state.page = "login"
+            render()
+        })
+    deleteContactButton.addEventListener("click", deleteContact)
 }
 
 hasToken()
