@@ -8,6 +8,7 @@ let rowHTML = ""
 let page
 
 class Contact {
+    static all = []
     constructor(attributes){
         if (attributes) {
             // in case a existing contact set all the values present in the attributes
@@ -35,6 +36,7 @@ class Contact {
             this.cqz = attributes.cqz
             this.ituz = attributes.ituz
             this.park = attributes.park
+            Contact.all.push(this)
         } else {
             // in case creating a new contact set my info and current date and time in utc
             let utcDate = new Date().toISOString()
@@ -246,7 +248,7 @@ function contactForm() {
         <form>
             <div class="form-group form-inline">
                 <label for="callsign" class="addContact text-info">Callsign: </label>
-                <input type="text" class="form-control-sm" id="call" oninput="searchContact()" value="${(typeof contact.call == 'undefined') ? "":contact.call}" required>
+                <input type="text" class="form-control-sm" id="call"  value="${(typeof contact.call == 'undefined') ? "":contact.call}" required>
                 <span class="validity"></span>
             </div>
         </form>
@@ -445,9 +447,9 @@ function searchContact() {
         console.log('filtering')
         // filteredContacts=[]
         prevContactsView.style.display = "block"
-        for (let i=0; i < contactObjects.length; i++) {
+        for (let i=0; i < Contact.all.length; i++) {
             // grab an instance
-            let contactObject = contactObjects[i]
+            let contactObject = Contact.all[i]
             let call = contactObject.call
             // indexOf will return -1 if the call does not contain the filter
             if (call.indexOf(filter) > -1){
@@ -722,15 +724,15 @@ function filterContactObjects() {
     if (filterCategory == "callsign" ) {
         if (searchFilter.length > 0) {
             console.log('filtering')
-            for (let i=0; i < contactObjects.length; i++) {
+            for (let i=0; i < Contact.all.length; i++) {
                 // grab an instance
-                let contactObject = contactObjects[i]
+                let contactObject = Contact.all[i]
                 let call = contactObject.call
                 // https://www.w3schools.com/jsref/jsref_indexof.asp
                 // indexOf will return -1 if the name does not contain the filter
                 if (call.indexOf(searchFilter) > -1){
                     //if it is greater than -1 then the name does contain the filter
-                    //therefor push it into the array of filteredDottomodachi
+                    //therefor push it into the array of contactObjectsToDisplay
                 contactObjectsToDisplay.push(contactObject)
                 }
             }
@@ -741,37 +743,37 @@ function filterContactObjects() {
     if (filterCategory == "country" ) {
         if (searchFilter.length > 0) {
             console.log('filtering')
-            for (let i=0; i < contactObjects.length; i++) {
+            for (let i=0; i < Contact.all.length; i++) {
                 // grab an instance
-                let contactObject = contactObjects[i]
+                let contactObject = Contact.all[i]
                 let country = contactObject.country
                 // indexOf will return -1 if the name does not contain the filter
                 if (country.indexOf(searchFilter) > -1){
                     //if it is greater than -1 then the name does contain the filter
-                    //therefor push it into the array of filteredDottomodachi
+                    //therefor push it into the array of contactObjectsToDisplay
                 contactObjectsToDisplay.push(contactObject)
                 }
             }
         } else {
-            contactObjectsToDisplay = contactObjects
+            contactObjectsToDisplay = Contact.all
         }
     }
     if (filterCategory == "mode" ) {
         if (searchFilter.length > 0) {
             console.log('filtering')
-            for (let i=0; i < contactObjects.length; i++) {
+            for (let i=0; i < Contact.all.length; i++) {
                 // grab an instance
-                let contactObject = contactObjects[i]
+                let contactObject = Contact[i]
                 let mode = contactObject.mode
                 // indexOf will return -1 if the name does not contain the filter
                 if (mode.indexOf(searchFilter) > -1){
                     //if it is greater than -1 then the name does contain the filter
-                    //therefor push it into the array of filteredDottomodachi
+                    //therefor push it into the array of contactObjectsToDisplay
                 contactObjectsToDisplay.push(contactObject)
                 }
             }
         } else {
-            contactObjectsToDisplay = contactObjects
+            contactObjectsToDisplay = Contact.all
         }
     }
     page = 1
@@ -802,12 +804,12 @@ function getContacts() {
                 if (jsonContacts.length != 0) {
                     for (let i = 0; i < jsonContacts.length; i++) {
                         contactObject = new Contact(jsonContacts[i].attributes)
-                        contactObjects.push(contactObject)
+                        // contactObjects.push(contactObject)
                     }
                 }
                 infoBox.innerHTML = navigationBar
                 infoBox.innerHTML += contactHeader
-                contactObjectsToDisplay = contactObjects
+                contactObjectsToDisplay = Contact.all
                 changePage(currentPage)
             }
         }

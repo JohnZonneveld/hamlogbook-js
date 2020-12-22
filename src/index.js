@@ -151,9 +151,12 @@ function render(id){
         break;
         case "addContact":
             contactForm()
+            
             contactSubmitButton()
+            
             const submitAddContactButton = buttons.submitAddContact
             submitAddContactButton.addEventListener("click", submitAddContact)
+            document.getElementById('call').addEventListener('input', searchContact)
         break;
         case "contactDetail":
             contactDetail = getDisplayContactDetail(id)
@@ -198,5 +201,9 @@ function render(id){
         })
     deleteContactButton.addEventListener("click", deleteContact)
 }
+
+function doThing(){
+    alert('Horray! Someone wrote "' + this.value + '"!');
+ }
 
 hasToken()
