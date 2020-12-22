@@ -11,4 +11,16 @@ Backend at  https://github.com/johnzonneveld/hamlogbook-api
 
 Fork and Clone this repository. You will need to setup the rails api back-end to get the application working properly. Once you have your API up and running you will need to alter the BASEURL constant in index.js to match the url which your API server is running on. After that open index.html in your browser.
 
+<h2>Usage</h2>
 
+This application is made to be used in tandem with the [rails api backend](https://github.com/johnzonneveld/hamlogbook-api). Once your server is up and running and you have `index.html` open in the browser:
+
+- Users can register and login
+- Users can edit their profile
+- User can create/read/update/delete contacts
+- Contact detail has a Google Map with the path user<->contact based on the maidenhead grids
+
+
+<h2>License</h2>
+
+[MIT License](https://opensource.org/licenses/MIT).
