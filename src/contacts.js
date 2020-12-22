@@ -724,58 +724,44 @@ function filterContactObjects() {
     if (filterCategory == "callsign" ) {
         if (searchFilter.length > 0) {
             console.log('filtering')
-            for (let i=0; i < Contact.all.length; i++) {
-                // grab an instance
-                let contactObject = Contact.all[i]
-                let call = contactObject.call
-                // https://www.w3schools.com/jsref/jsref_indexof.asp
-                // indexOf will return -1 if the name does not contain the filter
+            Contact.all.forEach(function(contact) {
+                let call = contact.call
                 if (call.indexOf(searchFilter) > -1){
-                    //if it is greater than -1 then the name does contain the filter
-                    //therefor push it into the array of contactObjectsToDisplay
-                contactObjectsToDisplay.push(contactObject)
+                        // if it is greater than -1 then the name does contain the filter
+                        // therefor push it into the array of contactObjectsToDisplay
+                        contactObjectsToDisplay.push(contact)
                 }
-            }
-        } else {
-            contactObjectsToDisplay = contactObjects
+            })
         }
-    }
-    if (filterCategory == "country" ) {
+    } else if (filterCategory == "country" ){
         if (searchFilter.length > 0) {
             console.log('filtering')
-            for (let i=0; i < Contact.all.length; i++) {
-                // grab an instance
-                let contactObject = Contact.all[i]
-                let country = contactObject.country
-                // indexOf will return -1 if the name does not contain the filter
+            Contact.all.forEach(function(contact) {
+                let country = contact.country
                 if (country.indexOf(searchFilter) > -1){
-                    //if it is greater than -1 then the name does contain the filter
-                    //therefor push it into the array of contactObjectsToDisplay
-                contactObjectsToDisplay.push(contactObject)
+                    // if it is greater than -1 then the name does contain the filter
+                    // therefor push it into the array of contactObjectsToDisplay
+                    contactObjectsToDisplay.push(contact)
                 }
-            }
-        } else {
-            contactObjectsToDisplay = Contact.all
+            })
         }
-    }
-    if (filterCategory == "mode" ) {
+    } else if (filterCategory == "mode"){
         if (searchFilter.length > 0) {
             console.log('filtering')
-            for (let i=0; i < Contact.all.length; i++) {
-                // grab an instance
-                let contactObject = Contact[i]
-                let mode = contactObject.mode
-                // indexOf will return -1 if the name does not contain the filter
+            Contact.all.forEach(function(contact) {
+                let mode = contact.mode
                 if (mode.indexOf(searchFilter) > -1){
-                    //if it is greater than -1 then the name does contain the filter
-                    //therefor push it into the array of contactObjectsToDisplay
-                contactObjectsToDisplay.push(contactObject)
+                        // if it is greater than -1 then the name does contain the filter
+                        // therefor push it into the array of contactObjectsToDisplay
+                        contactObjectsToDisplay.push(contact)
                 }
-            }
-        } else {
-            contactObjectsToDisplay = Contact.all
+            })
         }
+    } else {
+        contactObjectsToDisplay = Contact.all
     }
+    
+    
     page = 1
     changePage(page)
 }
