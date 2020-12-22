@@ -93,7 +93,7 @@ const contactHeader = `
         <div class="optionsDiv">
             Filter By 
             <select id="selectField">
-                <option value="callsign" selected>Callsign</option>
+                <option value="call" selected>Callsign</option>
                 <option value="country">Country</option>
                 <option value="mode">Mode</option>
                 <br> 
@@ -721,46 +721,20 @@ function filterContactObjects() {
     let filterCategory = document.getElementById('selectField').value
     let searchFilter = document.getElementById('searchInput').value.toUpperCase()
     contactObjectsToDisplay=[]
-    if (filterCategory == "callsign" ) {
+    // if (filterCategory == "call" ) {
         if (searchFilter.length > 0) {
             console.log('filtering')
             Contact.all.forEach(function(contact) {
-                let call = contact.call
-                if (call.indexOf(searchFilter) > -1){
+                let filter = contact[filterCategory]
+                if (filter.indexOf(searchFilter) > -1){
                         // if it is greater than -1 then the name does contain the filter
                         // therefor push it into the array of contactObjectsToDisplay
                         contactObjectsToDisplay.push(contact)
                 }
             })
+        } else {
+            contactObjectsToDisplay = Contact.all
         }
-    } else if (filterCategory == "country" ){
-        if (searchFilter.length > 0) {
-            console.log('filtering')
-            Contact.all.forEach(function(contact) {
-                let country = contact.country
-                if (country.indexOf(searchFilter) > -1){
-                    // if it is greater than -1 then the name does contain the filter
-                    // therefor push it into the array of contactObjectsToDisplay
-                    contactObjectsToDisplay.push(contact)
-                }
-            })
-        }
-    } else if (filterCategory == "mode"){
-        if (searchFilter.length > 0) {
-            console.log('filtering')
-            Contact.all.forEach(function(contact) {
-                let mode = contact.mode
-                if (mode.indexOf(searchFilter) > -1){
-                        // if it is greater than -1 then the name does contain the filter
-                        // therefor push it into the array of contactObjectsToDisplay
-                        contactObjectsToDisplay.push(contact)
-                }
-            })
-        }
-    } else {
-        contactObjectsToDisplay = Contact.all
-    }
-    
     
     page = 1
     changePage(page)
