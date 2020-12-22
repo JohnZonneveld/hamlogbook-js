@@ -782,7 +782,7 @@ function filterContactObjects() {
 
 function getContacts() {
     console.log('entering get contacts')
-    contactObjects = []
+    Contact.all = []
     contactObjectsToDisplay = []
     fetch(baseUrl+`/contacts`, {
         method: "GET",
