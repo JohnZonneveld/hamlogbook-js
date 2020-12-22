@@ -92,7 +92,7 @@ const contactHeader = `
         <h4 class="text-center text-info">Your contacts</h4>
         <div class="optionsDiv">
             Filter By 
-            <select id="selectField" onchange="changePlaceholder()">
+            <select id="selectField">
                 <option value="callsign" selected>Callsign</option>
                 <option value="country">Country</option>
                 <option value="mode">Mode</option>
@@ -865,6 +865,7 @@ function endPage()
 function changePage(page)
 {
     document.getElementById('searchInput').addEventListener('input', filterContactObjects)
+    document.getElementById('selectField').addEventListener('change', changePlaceholder)
     let contactsTable = document.getElementById("contactsContentDiv");
     let pageSpan = document.getElementById("page");
     // Validate page
