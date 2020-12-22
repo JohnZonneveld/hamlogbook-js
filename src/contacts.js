@@ -454,7 +454,7 @@ function searchContact() {
             // indexOf will return -1 if the call does not contain the filter
             if (call.indexOf(filter) > -1){
                 //if it is greater than -1 then the name does contain the filter
-                //therefor push it into the array of filteredDottomodachi
+                //therefor push it into the array of contactOjectsToDisplay
                filteredContacts.push(contactObject)
             }
         }
