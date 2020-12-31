@@ -1,6 +1,6 @@
 // Switch between either local or heroku environment
-// const baseUrl = "http://localhost:3000"
-const baseUrl = "https://hamlogbook.herokuapp.com"
+const baseUrl = "http://localhost:3000"
+// const baseUrl = "https://hamlogbook.herokuapp.com"
 
 const buttons = document.getElementsByClassName("btn")
 let infoBox = document.querySelector("#container-box")

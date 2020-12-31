@@ -82,7 +82,7 @@ function distance(myLatLon, remLatLon) {
     let lon1=myLatLon.slice(",",2)[1]  // get the longitude part of myLatLon
     let lat2=remLatLon.slice(",",2)[0] // get the latitude part of remLatLon
     let lon2=remLatLon.slice(",",2)[1] // get the longitude part of remLatLon
-    var a = 0.5 - cos((lat2 - lat1) * degreeToRad)/2 + 
+    let a = 0.5 - cos((lat2 - lat1) * degreeToRad)/2 + 
             cos(lat1 * degreeToRad) * cos(lat2 * degreeToRad) * 
             (1 - cos((lon2 - lon1) * degreeToRad))/2;
     if (a != 0) {
