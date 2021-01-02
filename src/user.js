@@ -88,7 +88,8 @@ function userForm() {
 }
 
 function readUserForm() {
-    csInput = document.getElementById("callsign").value
+    csInput = document.getElementById("callsign").value.toUpperCase()
+    debugger
     pwInput = document.getElementById("password").value
     emInput = document.getElementById("email").value
     gsInput = document.getElementById("my_qth").value
