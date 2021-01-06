@@ -776,6 +776,12 @@ function getContacts() {
     })
 }
 
+function sortContacts() {
+    contactObjectsToDisplay = Contact.all.sort((a, b) => (a.country > b.country ? 1 : -1));
+    changePage(currentPage)
+    
+}
+
 function contacts() {
     console.log("contacts clicked")
     state.page = "contacts"
@@ -834,7 +840,8 @@ function changePage(page)
     document.getElementById("logoffButton").classList.remove("hidden")
     document.getElementById("profileButton").classList.remove("hidden")
     document.getElementById("addContactButton").classList.remove("hidden")
-    document.getElementById("editContactButton").classList.add("hidden")
+    debugger
+    document.getElementById("sortContactButton").classList.remove("hiddden")
     contactsTable.innerHTML = contactsTableHeader;
     if (contactObjectsToDisplay.length != 0) {
         for (let i = (page-1) * objectsPerPage; i < (page * objectsPerPage ) && i < contactObjectsToDisplay.length; i++) {
@@ -880,6 +887,10 @@ function changePage(page)
             state.page = "addContact"
             render()
         })
+    sortContactButton.addEventListener("click", () => {
+        console.log("sort contacts clicked")
+        sortContacts()
+    })
 }
 
 function numPages()

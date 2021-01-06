@@ -37,7 +37,8 @@ const navigationBar = `
             <button type="button" name="addContact" class="btn btn-info btn-md hidden" id="addContactButton">Add Contact</button>
             <button type="button" name="editContact" class="btn btn-info btn-md hidden" id="editContactButton">Edit Contact</button>
             <button type="button" name="deleteContact" class="btn btn-danger btn-md hidden" id="deleteContactButton">Delete Contact</button>
-        </div>
+            <button type="button" name="sortContact" class="btn btn-info btn-md hidden" id="sortContactButton">Sort Contacts</button>
+            </div>
     `
 
 
