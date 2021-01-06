@@ -840,8 +840,7 @@ function changePage(page)
     document.getElementById("logoffButton").classList.remove("hidden")
     document.getElementById("profileButton").classList.remove("hidden")
     document.getElementById("addContactButton").classList.remove("hidden")
-    debugger
-    document.getElementById("sortContactButton").classList.remove("hiddden")
+    document.getElementById("sortContactButton").classList.remove("hidden")
     contactsTable.innerHTML = contactsTableHeader;
     if (contactObjectsToDisplay.length != 0) {
         for (let i = (page-1) * objectsPerPage; i < (page * objectsPerPage ) && i < contactObjectsToDisplay.length; i++) {
