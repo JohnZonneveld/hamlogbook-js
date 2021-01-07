@@ -898,6 +898,9 @@ function renderObject() {
     let cell0 = row.insertCell(-1)
     let data0 = document.createTextNode('detail')
     cell0.appendChild(data0)
+    
+    cell0.style = "cursor: pointer;"
+    cell0.style.color = "blue"
     cell0.dataset.id = this.id
     cell0.addEventListener('click', (event) => getDisplayContactDetail())
     let cell1 = row.insertCell(-1)
