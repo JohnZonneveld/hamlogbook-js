@@ -119,7 +119,7 @@ function register() {
     render()
 }
 
-function render(id){
+function render(){
     infoBox.innerHTML = navigationBar
     switch (state.page){
         // first page people see to log in

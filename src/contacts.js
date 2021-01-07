@@ -130,14 +130,7 @@ function changePlaceholder() {
     document.getElementById('searchInput').placeholder = `Filtering partially match of ${changePlaceholder}`
 }
 
-function contactDetail(id) {
-    console.log("getting details")
-    state.page = "contactDetail"
-    render(id)
-}
-
 function getDisplayContactDetail() {
-    debugger
     const id = event.target.dataset.id
     fetch(baseUrl+`/contacts/${id}`, {
         method: "GET",
@@ -905,6 +898,8 @@ function renderObject() {
     let cell0 = row.insertCell(-1)
     let data0 = document.createTextNode('detail')
     cell0.appendChild(data0)
+    cell0.dataset.id = this.id
+    cell0.addEventListener('click', (event) => getDisplayContactDetail())
     let cell1 = row.insertCell(-1)
     let data1 = document.createTextNode(`${this.owncall}`)
     cell1.appendChild(data1)
@@ -929,8 +924,7 @@ function renderObject() {
     let cell8 = row.insertCell(-1)
     let data8 = document.createTextNode(`${this.country}`)
     cell8.appendChild(data8)
-    cell0.dataset.id = this.id
-    cell0.addEventListener('click', getDisplayContactDetail)
+    
 
     
     
