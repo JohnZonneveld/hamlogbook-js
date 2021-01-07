@@ -136,7 +136,9 @@ function contactDetail(id) {
     render(id)
 }
 
-function getDisplayContactDetail(id) {
+function getDisplayContactDetail() {
+    debugger
+    const id = event.target.dataset.id
     fetch(baseUrl+`/contacts/${id}`, {
         method: "GET",
         headers: {
@@ -844,7 +846,7 @@ function changePage(page)
     contactsTable.innerHTML = contactsTableHeader;
     if (contactObjectsToDisplay.length != 0) {
         for (let i = (page-1) * objectsPerPage; i < (page * objectsPerPage ) && i < contactObjectsToDisplay.length; i++) {
-            renderObject(contactObjectsToDisplay[i])
+            renderObject.call(contactObjectsToDisplay[i])
         }
         pageSpan.innerHTML = `${page} of ${numPages()}`;
         let btnNext = document.getElementById("btnNext");
@@ -897,37 +899,39 @@ function numPages()
     return Math.ceil(contactObjectsToDisplay.length / objectsPerPage);
 }
 
-function renderObject(object) {
-    let tableRef = document.getElementById("Contacts").getElementsByTagName("tbody")[0];
-    rowHTML = document.getElementById('rowHTMLCollection')
-    rowHTML.innerHTML += `
-    <tr>
-        <td>
-            <a href="javascript:getDisplayContactDetail(${object.id})" id="contactDetail">detail</a>
-        </td>
-        <td>
-            ${object.owncall}
-        </td>
-        <td>
-            ${object.call}
-        </td>
-        <td>
-            ${object.qso_date}
-        </td>
-        <td>
-            ${object.time_on.slice(11,19)}
-        </td>
-        <td>
-            ${object.band}
-        </td>
-        <td>
-            ${object.mode}
-        </td>
-        <td>
-            ${object.freq}
-        </td>
-        <td>
-            ${object.country}
-        </td>
-    </tr>`
+function renderObject() {
+    let table = document.getElementById("Contacts").getElementsByTagName("tbody")[0];
+    let row = table.insertRow(-1)
+    let cell0 = row.insertCell(-1)
+    let data0 = document.createTextNode('detail')
+    cell0.appendChild(data0)
+    let cell1 = row.insertCell(-1)
+    let data1 = document.createTextNode(`${this.owncall}`)
+    cell1.appendChild(data1)
+    let cell2 = row.insertCell(-1)
+    let data2 = document.createTextNode(`${this.call}`)
+    cell2.appendChild(data2)
+    let cell3 = row.insertCell(-1)
+    let data3 = document.createTextNode(`${this.qso_date}`)
+    cell3.appendChild(data3)
+    let cell4 = row.insertCell(-1)
+    let data4 = document.createTextNode(`${this.time_on.slice(11,19)}`)
+    cell4.appendChild(data4)
+    let cell5 = row.insertCell(-1)
+    let data5 = document.createTextNode(`${this.band}`)
+    cell5.appendChild(data5)
+    let cell6 = row.insertCell(-1)
+    let data6 = document.createTextNode(`${this.mode}`)
+    cell6.appendChild(data6)
+    let cell7 = row.insertCell(-1)
+    let data7 = document.createTextNode(`${this.freq}`)
+    cell7.appendChild(data7)
+    let cell8 = row.insertCell(-1)
+    let data8 = document.createTextNode(`${this.country}`)
+    cell8.appendChild(data8)
+    cell0.dataset.id = this.id
+    cell0.addEventListener('click', getDisplayContactDetail)
+
+    
+    
 }
