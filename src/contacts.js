@@ -927,8 +927,4 @@ function renderObject() {
     let cell8 = row.insertCell(-1)
     let data8 = document.createTextNode(`${this.country}`)
     cell8.appendChild(data8)
-    
-
-    
-    
 }
