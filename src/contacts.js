@@ -48,6 +48,43 @@ class Contact {
             this.time_on = utcT
         }
     }
+
+    renderObject() {
+        let table = document.getElementById("Contacts").getElementsByTagName("tbody")[0];
+        let row = table.insertRow(-1)
+        let cell0 = row.insertCell(-1)
+        let data0 = document.createTextNode('detail')
+        cell0.appendChild(data0)
+        
+        cell0.style = "cursor: pointer;"
+        cell0.style.color = "blue"
+        cell0.dataset.id = this.id
+        cell0.addEventListener('click', (event) => getDisplayContactDetail())
+        let cell1 = row.insertCell(-1)
+        let data1 = document.createTextNode(`${this.owncall}`)
+        cell1.appendChild(data1)
+        let cell2 = row.insertCell(-1)
+        let data2 = document.createTextNode(`${this.call}`)
+        cell2.appendChild(data2)
+        let cell3 = row.insertCell(-1)
+        let data3 = document.createTextNode(`${this.qso_date}`)
+        cell3.appendChild(data3)
+        let cell4 = row.insertCell(-1)
+        let data4 = document.createTextNode(`${this.time_on.slice(11,19)}`)
+        cell4.appendChild(data4)
+        let cell5 = row.insertCell(-1)
+        let data5 = document.createTextNode(`${this.band}`)
+        cell5.appendChild(data5)
+        let cell6 = row.insertCell(-1)
+        let data6 = document.createTextNode(`${this.mode}`)
+        cell6.appendChild(data6)
+        let cell7 = row.insertCell(-1)
+        let data7 = document.createTextNode(`${this.freq}`)
+        cell7.appendChild(data7)
+        let cell8 = row.insertCell(-1)
+        let data8 = document.createTextNode(`${this.country}`)
+        cell8.appendChild(data8)
+    }
 }
 
 //  table header used to display all contacts
@@ -839,7 +876,8 @@ function changePage(page)
     contactsTable.innerHTML = contactsTableHeader;
     if (contactObjectsToDisplay.length != 0) {
         for (let i = (page-1) * objectsPerPage; i < (page * objectsPerPage ) && i < contactObjectsToDisplay.length; i++) {
-            renderObject.call(contactObjectsToDisplay[i])
+            debugger
+            contactObjectsToDisplay[i].renderObject()
         }
         pageSpan.innerHTML = `${page} of ${numPages()}`;
         let btnNext = document.getElementById("btnNext");
@@ -890,41 +928,4 @@ function changePage(page)
 function numPages()
 {
     return Math.ceil(contactObjectsToDisplay.length / objectsPerPage);
-}
-
-function renderObject() {
-    let table = document.getElementById("Contacts").getElementsByTagName("tbody")[0];
-    let row = table.insertRow(-1)
-    let cell0 = row.insertCell(-1)
-    let data0 = document.createTextNode('detail')
-    cell0.appendChild(data0)
-    
-    cell0.style = "cursor: pointer;"
-    cell0.style.color = "blue"
-    cell0.dataset.id = this.id
-    cell0.addEventListener('click', (event) => getDisplayContactDetail())
-    let cell1 = row.insertCell(-1)
-    let data1 = document.createTextNode(`${this.owncall}`)
-    cell1.appendChild(data1)
-    let cell2 = row.insertCell(-1)
-    let data2 = document.createTextNode(`${this.call}`)
-    cell2.appendChild(data2)
-    let cell3 = row.insertCell(-1)
-    let data3 = document.createTextNode(`${this.qso_date}`)
-    cell3.appendChild(data3)
-    let cell4 = row.insertCell(-1)
-    let data4 = document.createTextNode(`${this.time_on.slice(11,19)}`)
-    cell4.appendChild(data4)
-    let cell5 = row.insertCell(-1)
-    let data5 = document.createTextNode(`${this.band}`)
-    cell5.appendChild(data5)
-    let cell6 = row.insertCell(-1)
-    let data6 = document.createTextNode(`${this.mode}`)
-    cell6.appendChild(data6)
-    let cell7 = row.insertCell(-1)
-    let data7 = document.createTextNode(`${this.freq}`)
-    cell7.appendChild(data7)
-    let cell8 = row.insertCell(-1)
-    let data8 = document.createTextNode(`${this.country}`)
-    cell8.appendChild(data8)
 }
